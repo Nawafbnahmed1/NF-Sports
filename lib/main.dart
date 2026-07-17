@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'screens/home_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,31 +26,7 @@ class NFSportsApp extends StatelessWidget {
         scaffoldBackgroundColor: const Color(0xFF07111F),
         primaryColor: const Color(0xFF00B4FF),
       ),
-      home: const HomePage(),
-    );
-  }
-}
-
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("NF Sports"),
-        centerTitle: true,
-        backgroundColor: Colors.black,
-      ),
-      body: const Center(
-        child: Text(
-          "مرحباً بك في NF Sports",
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
+      home: const HomeScreen(),
     );
   }
 }
