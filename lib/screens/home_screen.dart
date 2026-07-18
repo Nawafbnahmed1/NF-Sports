@@ -12,6 +12,7 @@ class HomeScreen extends StatelessWidget {
       body: SafeArea(
         child: Stack(
           children: [
+            // خلفية الصورة الفخمة والأصلية للتصميم
             Positioned.fill(
               child: Image.asset(
                 'assets/images/home_mockup.png',
@@ -19,44 +20,50 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
 
-            // منطقة مباريات اليوم الشفافة والتفاعلية
+            // 1️⃣ زر منطقة مباريات اليوم (مع تأثير انبثاق أزرق غامض)
             Positioned(
               top: 250,
               left: 20,
               right: 20,
               height: 260,
-              child: GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const MatchesScreen(),
-                    ),
-                  );
-                },
-                child: Container(
-                  color: Colors.transparent,
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(25),
+                  splashColor: const Color(0xFF1B5DFF).withValues(alpha: 0.35), // الانبثاق الأزرق الغامض
+                  highlightColor: const Color(0xFF00B4FF).withValues(alpha: 0.15), // توهج اللمس الخفيف
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const MatchesScreen(),
+                      ),
+                    );
+                  },
                 ),
               ),
             ),
 
-            // منطقة آخر الأخبار الشفافة والتفاعلية
+            // 2️⃣ زر منطقة آخر الأخبار (مع تأثير انبثاق أزرق غامض)
             Positioned(
               top: 540,
               left: 20,
               right: 20,
               height: 210,
-              child: GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const NewsScreen(),
-                    ),
-                  );
-                },
-                child: Container(
-                  color: Colors.transparent,
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(20),
+                  splashColor: const Color(0xFF1B5DFF).withValues(alpha: 0.35), // الانبثاق الأزرق الغامض
+                  highlightColor: const Color(0xFF00B4FF).withValues(alpha: 0.15), // توهج اللمس الخفيف
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const NewsScreen(),
+                      ),
+                    );
+                  },
                 ),
               ),
             ),

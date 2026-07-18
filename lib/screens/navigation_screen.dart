@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-
 import 'home_screen.dart';
 import 'matches_screen.dart';
 import 'news_screen.dart';
 import 'more_screen.dart';
-import '../widgets/bottom_nav_bar.dart';
 
 class NavigationScreen extends StatefulWidget {
   const NavigationScreen({super.key});
@@ -26,15 +24,8 @@ class _NavigationScreenState extends State<NavigationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFF050B14),
       body: _pages[_currentIndex],
-      bottomNavigationBar: NFSportsBottomNavBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-      ),
     );
   }
 }
