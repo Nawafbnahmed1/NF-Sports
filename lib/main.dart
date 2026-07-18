@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'screens/home_screen.dart';
+
+import 'screens/navigation_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,7 +27,7 @@ class NFSportsApp extends StatelessWidget {
         scaffoldBackgroundColor: const Color(0xFF07111F),
         primaryColor: const Color(0xFF00B4FF),
       ),
-      home: const HomeScreen(),
+      home: const NavigationScreen(),
     );
   }
 }
