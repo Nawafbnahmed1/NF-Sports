@@ -6,8 +6,14 @@ class MoreScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
-      body: Center(
-        child: Text("صفحة المزيد")
+      backgroundColor: Colors.black,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Image(
+            image: AssetImage('assets/images/highlights_mockup.png'),
+            fit: BoxFit.fitWidth,
+          ),
+        ),
       ),
     );
   }

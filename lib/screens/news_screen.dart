@@ -6,8 +6,14 @@ class NewsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
-      body: Center(
-        child: Text("صفحة الأخبار"),
+      backgroundColor: Colors.black,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Image(
+            image: AssetImage('assets/images/news_mockup.jpg'),
+            fit: BoxFit.fitWidth,
+          ),
+        ),
       ),
     );
   }
