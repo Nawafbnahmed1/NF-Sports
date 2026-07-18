@@ -1,7 +1,19 @@
 import 'package:flutter/material.dart';
+import '../models/match_model.dart';
+import '../widgets/match_card.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
+
+  final MatchModel todayMatch = const MatchModel(
+    homeTeam: "Real Madrid",
+    awayTeam: "Barcelona",
+    homeLogo: "",
+    awayLogo: "",
+    league: "La Liga",
+    matchTime: "20:00",
+    status: "قادمة",
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -12,7 +24,6 @@ class HomeScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // الهيدر الفخم الممتد بالصورة الرسمية والتدرج اللوني واسم التطبيق
               Container(
                 height: 230,
                 width: double.infinity,
@@ -31,7 +42,7 @@ class HomeScreen extends StatelessWidget {
                       end: Alignment.bottomCenter,
                       colors: [
                         Colors.transparent,
-                        const Color(0xFF050B14).withOpacity(0.8),
+                        const Color(0xFF050B14).withValues(alpha: 0.8),
                       ],
                     ),
                   ),
@@ -47,18 +58,12 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20),
-              
-              // عنوان مباريات اليوم وكارد عرض المباراة بتوقيت 20:00
               sectionTitle("مباريات اليوم"),
-              matchCard("Team 1", "Team 2", "20:00"),
+              MatchCard(match: todayMatch),
               const SizedBox(height: 25),
-
-              // قسم الأخبار
               sectionTitle("آخر الأخبار"),
               newsCard("أحدث أخبار كرة القدم العالمية"),
               const SizedBox(height: 25),
-
-              // قسم اللقطات
               sectionTitle("أبرز اللقطات"),
               newsCard("ملخصات وأهداف المباريات"),
               const SizedBox(height: 25),
@@ -69,7 +74,6 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  // دالة عنوان القسم
   Widget sectionTitle(String title) {
     return Align(
       alignment: Alignment.centerRight,
@@ -87,33 +91,6 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  // دالة كارد المباراة المتوافقة مع كود المطور
-  Widget matchCard(String team1, String team2, String time) {
-    return Container(
-      margin: const EdgeInsets.all(20),
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: const Color(0xFF101C2B),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.blueAccent, width: 0.8),
-      ),
-      child: Column(
-        children: [
-          Text(
-            "$team1 VS $team2",
-            style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 15),
-          Text(
-            time,
-            style: const TextStyle(color: Colors.lightBlueAccent, fontSize: 24, fontWeight: FontWeight.bold),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // دالة كارد الأخبار واللقطات
   Widget newsCard(String text) {
     return Container(
       margin: const EdgeInsets.all(20),
