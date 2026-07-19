@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'theme/app_theme.dart';
-import 'screens/home_screen.dart';
+import 'screens/navigation_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'NF Sports',
       theme: AppTheme.darkTheme,
-      home: const HomeScreen(), // الانطلاق المباشر من شاشتك البرمجية الفخمة
+      home: const NavigationScreen(), // الانطلاق المباشر من شاشة الإدارة والشريط الموحد المتناسق
     );
   }
 }
