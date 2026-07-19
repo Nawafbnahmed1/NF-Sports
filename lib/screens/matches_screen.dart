@@ -1,3 +1,4 @@
+import "match_detail_screen.dart";
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import '../widgets/glass_card.dart';
@@ -83,6 +84,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
                   ),
                 ),
               ),
+              
               SizedBox(
                 height: 75,
                 child: ListView.builder(
@@ -120,42 +122,26 @@ class _MatchesScreenState extends State<MatchesScreen> {
                 ),
               ),
               const SizedBox(height: 15),
+              
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                child: GlassCard(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          CircleAvatar(
-                            radius: 14,
-                            backgroundColor: Colors.white.withValues(alpha: 0.05),
-                            child: const Icon(Icons.emoji_events, color: Colors.white70, size: 14),
-                          ),
-                          const SizedBox(width: 10),
-                          const Text('الدوري السعودي للمحترفين', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14)),
-                          const Spacer(),
-                          const Icon(Icons.keyboard_arrow_down, color: Colors.white38),
-                        ],
-                      ),
-                      const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 12.0),
-                        child: Divider(color: Colors.white10, height: 1),
-                      ),
-                      if (!_isResultsTab) ...[
-                        _buildLiveMatchRow('الهلال', 'النصر', '21:45'),
-                        const SizedBox(height: 15),
-                        _buildLiveMatchRow('الاتحاد', 'الأهلي', '19:30'),
-                      ] else ...[
-                        _buildResultMatchRow('الهلال', 'النصر', '3 - 1'),
-                        const SizedBox(height: 15),
-                        _buildResultMatchRow('الاتحاد', 'الأهلي', '0 - 2'),
-                      ],
-                    ],
-                  ),
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+                child: Row(
+                  children: [
+                    CircleAvatar(radius: 12, backgroundColor: Colors.white.withValues(alpha: 0.05), child: const Icon(Icons.emoji_events, color: Colors.white70, size: 12)),
+                    const SizedBox(width: 8),
+                    const Text('الدوري السعودي للمحترفين', style: TextStyle(color: Colors.white70, fontWeight: FontWeight.bold, fontSize: 13)),
+                  ],
                 ),
               ),
+              const SizedBox(height: 5),
+              // 🏆 عرض الكروت الفردية الصغيرة والمستقلة بناءً على التبويب المختار
+              if (!_isResultsTab) ...[
+                _buildIndependentLiveMatchCard('الهلال', 'النصر', '21:45', 'المركز: 1', 'المركز: 2', 'W W W', 'W D L', 'باقي 4 ساعات'),
+                _buildIndependentLiveMatchCard('الاتحاد', 'الأهلي', '19:30', 'المركز: 3', 'المركز: 5', 'W L W', 'D W L', 'باقي ساعتان'),
+              ] else ...[
+                _buildIndependentResultMatchCard('الهلال', 'النصر', '3 - 1', 'المركز: 1', 'المركز: 2', 'W W W', 'W D L'),
+                _buildIndependentResultMatchCard('الاتحاد', 'الأهلي', '0 - 2', 'المركز: 3', 'المركز: 5', 'W L W', 'D W L'),
+              ],
               const SizedBox(height: 40),
             ],
           ),
@@ -164,63 +150,132 @@ class _MatchesScreenState extends State<MatchesScreen> {
     );
   }
 
-  Widget _buildLiveMatchRow(String team1, String team2, String time) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Row(
+  // 🌟 كارد مباراة فردي وصغير مستقل لجدول المباريات (نفس تصميمك بالملي)
+  Widget _buildIndependentLiveMatchCard(
+    String team1, String team2, String time, 
+    String rank1, String rank2, String form1, String form2, String countdown
+  ) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      child: GlassCard(
+        borderRadius: 20,
+        child: Column(
           children: [
-            CircleAvatar(radius: 16, backgroundColor: Colors.white.withValues(alpha: 0.05), child: const Icon(Icons.sports_soccer, color: Colors.white70, size: 16)),
-            const SizedBox(width: 8),
-            Text(team1, style: const TextStyle(color: Colors.white, fontSize: 13)),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // الفريق الأول وإحصاءاته
+                Expanded(
+                  child: Column(
+                    children: [
+                      CircleAvatar(radius: 20, backgroundColor: Colors.white.withValues(alpha: 0.04), child: const Icon(Icons.sports_soccer, color: Colors.white, size: 20)),
+                      const SizedBox(height: 6),
+                      Text(team1, style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 4),
+                      Text(rank1, style: const TextStyle(color: Colors.white38, fontSize: 10)),
+                      Text(form1, style: const TextStyle(color: Colors.green, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1)),
+                    ],
+                  ),
+                ),
+                // التوقيت والعداد التنازلي الذكي في المنتصف
+                Column(
+                  children: [
+                    Text(time, style: const TextStyle(color: AppTheme.neonBlue, fontSize: 18, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 2),
+                    Text(countdown, style: const TextStyle(color: Colors.amber, fontSize: 10, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 2),
+                    const Text('لم تبدأ', style: TextStyle(color: Colors.white30, fontSize: 10)),
+                  ],
+                ),
+                // الفريق الثاني وإحصاءاته
+                Expanded(
+                  child: Column(
+                    children: [
+                      CircleAvatar(radius: 20, backgroundColor: Colors.white.withValues(alpha: 0.04), child: const Icon(Icons.sports_soccer, color: Colors.white, size: 20)),
+                      const SizedBox(height: 6),
+                      Text(team2, style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 4),
+                      Text(rank2, style: const TextStyle(color: Colors.white38, fontSize: 10)),
+                      Text(form2, style: const TextStyle(color: Colors.redAccent, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1)),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 12.0),
+              child: Divider(color: Colors.white10, height: 1),
+            ),
+            NeonButton(
+              text: 'تفاصيل المباراة',
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (_) => MatchDetailScreen(team1: team1, team2: team2)));
+              },
+            ),
           ],
         ),
-        Column(
-          children: [
-            Text(time, style: const TextStyle(color: AppTheme.neonBlue, fontSize: 16, fontWeight: FontWeight.bold)),
-            const Text('لم تبدأ', style: TextStyle(color: Colors.white30, fontSize: 10)),
-          ],
-        ),
-        Row(
-          children: [
-            Text(team2, style: const TextStyle(color: Colors.white, fontSize: 13)),
-            const SizedBox(width: 8),
-            CircleAvatar(radius: 16, backgroundColor: Colors.white.withValues(alpha: 0.05), child: const Icon(Icons.sports_soccer, color: Colors.white70, size: 16)),
-          ],
-        ),
-        const SizedBox(width: 5),
-        SizedBox(width: 95, child: NeonButton(text: 'تفاصيل', onPressed: () {})),
-      ],
+      ),
     );
   }
 
-  Widget _buildResultMatchRow(String team1, String team2, String score) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Row(
+  // 🌟 كارد مباراة فردي وصغير مستقل لصفحة النتائج (نفس تصميمك بالملي)
+  Widget _buildIndependentResultMatchCard(
+    String team1, String team2, String score, 
+    String rank1, String rank2, String form1, String form2
+  ) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      child: GlassCard(
+        borderRadius: 20,
+        child: Column(
           children: [
-            CircleAvatar(radius: 16, backgroundColor: Colors.white.withValues(alpha: 0.05), child: const Icon(Icons.sports_soccer, color: Colors.white70, size: 16)),
-            const SizedBox(width: 8),
-            Text(team1, style: const TextStyle(color: Colors.white, fontSize: 13)),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Column(
+                    children: [
+                      CircleAvatar(radius: 20, backgroundColor: Colors.white.withValues(alpha: 0.04), child: const Icon(Icons.sports_soccer, color: Colors.white, size: 20)),
+                      const SizedBox(height: 6),
+                      Text(team1, style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 4),
+                      Text(rank1, style: const TextStyle(color: Colors.white38, fontSize: 10)),
+                      Text(form1, style: const TextStyle(color: Colors.green, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1)),
+                    ],
+                  ),
+                ),
+                Column(
+                  children: [
+                    Text(score, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 4),
+                    const Text('انتهت', style: TextStyle(color: Colors.green, fontSize: 10, fontWeight: FontWeight.bold)),
+                  ],
+                ),
+                Expanded(
+                  child: Column(
+                    children: [
+                      CircleAvatar(radius: 20, backgroundColor: Colors.white.withValues(alpha: 0.04), child: const Icon(Icons.sports_soccer, color: Colors.white, size: 20)),
+                      const SizedBox(height: 6),
+                      Text(team2, style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 4),
+                      Text(rank2, style: const TextStyle(color: Colors.white38, fontSize: 10)),
+                      Text(form2, style: const TextStyle(color: Colors.redAccent, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1)),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 12.0),
+              child: Divider(color: Colors.white10, height: 1),
+            ),
+            NeonButton(
+              text: 'شاهد الملخص',
+              onPressed: () {},
+            ),
           ],
         ),
-        Column(
-          children: [
-            Text(score, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
-            const Text('انتهت', style: TextStyle(color: Colors.green, fontSize: 10, fontWeight: FontWeight.bold)),
-          ],
-        ),
-        Row(
-          children: [
-            Text(team2, style: const TextStyle(color: Colors.white, fontSize: 13)),
-            const SizedBox(width: 8),
-            CircleAvatar(radius: 16, backgroundColor: Colors.white.withValues(alpha: 0.05), child: const Icon(Icons.sports_soccer, color: Colors.white70, size: 16)),
-          ],
-        ),
-        const SizedBox(width: 5),
-        SizedBox(width: 95, child: NeonButton(text: 'الملخص', onPressed: () {})),
-      ],
+      ),
     );
   }
 }
