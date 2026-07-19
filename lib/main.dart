@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'theme/app_theme.dart';
+import 'screens/home_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -9,17 +11,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        backgroundColor: Color(0xFF050B14),
-        body: Center(
-          child: Text(
-            "NF Sports\nتم التنظيف.. بانتظار الأكواد الحقيقية 🚀",
-            style: TextStyle(color: Colors.white, fontSize: 16),
-          ),
-        ),
-      ),
+      title: 'NF Sports',
+      theme: AppTheme.darkTheme,
+      home: const HomeScreen(), // الانطلاق المباشر من شاشتك البرمجية الفخمة
     );
   }
 }
