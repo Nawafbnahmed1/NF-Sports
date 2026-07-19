@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'home_screen.dart';
 import 'matches_screen.dart';
+import 'results_screen.dart';
 import 'news_screen.dart';
 import 'more_screen.dart';
 
@@ -17,6 +18,7 @@ class _NavigationScreenState extends State<NavigationScreen> {
   final List<Widget> _pages = const [
     HomeScreen(),
     MatchesScreen(),
+    ResultsScreen(),
     NewsScreen(),
     MoreScreen(),
   ];

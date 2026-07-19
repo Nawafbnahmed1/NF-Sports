@@ -1,52 +1,45 @@
 import 'package:flutter/material.dart';
 import 'results_screen.dart';
 
-class MatchesScreen extends StatefulWidget {
+class MatchesScreen extends StatelessWidget {
   const MatchesScreen({super.key});
 
   @override
-  State<MatchesScreen> createState() => _MatchesScreenState();
-}
-
-class _MatchesScreenState extends State<MatchesScreen> {
-  bool showResults = false;
-
-  @override
   Widget build(BuildContext context) {
-    return showResults
-        ? const ResultsScreen()
-        : Scaffold(
-            backgroundColor: const Color(0xFF050B14),
-            body: SafeArea(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    Image.asset(
-                      "assets/images/matches_mockup.png",
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                    ),
+    final double screenHeight = MediaQuery.of(context).size.height;
+    final double screenWidth = MediaQuery.of(context).size.width;
 
-                    const SizedBox(height: 20),
-
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            setState(() {
-                              showResults = true;
-                            });
-                          },
-                          child: const Text("عرض النتائج"),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+    return Scaffold(
+      backgroundColor: const Color(0xFF050B14),
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Image.asset(
+              'assets/images/matches_mockup.png',
+              fit: BoxFit.fill,
+            ),
+          ),
+          Positioned(
+            top: screenHeight * 0.05,
+            left: 20,
+            width: screenWidth * 0.43,
+            height: 50,
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(15),
+                splashColor: const Color(0xFF1B5DFF).withValues(alpha: 0.35),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const ResultsScreen()),
+                  );
+                },
               ),
             ),
-          );
+          ),
+        ],
+      ),
+    );
   }
 }

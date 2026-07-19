@@ -7,14 +7,15 @@ class MoreScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF050B14),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Image.asset(
-            'assets/images/more_mockup.png',
-            width: double.infinity,
-            fit: BoxFit.cover,
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Image.asset(
+              'assets/images/highlights_mockup.png',
+              fit: BoxFit.fill,
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
