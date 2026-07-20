@@ -70,7 +70,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with SingleTicker
           ),
           const SizedBox(height: 15),
 
-          // 📊 شريط التبويبات العلوي الزجاجي المحدث لطلب نواف العبقري (RTL)
+          // شريط التبويبات المزدوج
           Directionality(
             textDirection: TextDirection.rtl,
             child: Container(
@@ -91,20 +91,20 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with SingleTicker
                 unselectedLabelColor: Colors.white38,
                 labelStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, fontFamily: 'Cairo'),
                 tabs: const [
-                  Tab(text: 'تفاصيل المباراة'), // تعديل اسم التبويب الفخم لطلب نواف
+                  Tab(text: 'تفاصيل المباراة'),
                   Tab(text: 'التشكيلات'),
                 ],
               ),
             ),
           ),
 
-          // 🔄 عرض الصفحات الفرعية التفاعلية المستقلة المربوطة بالتبويب المزدوج الجديد
+          // عرض الصفحات الفرعية التفاعلية المستقلة
           Expanded(
             child: TabBarView(
               controller: _tabController,
               children: const [
-                DetailsTab(), // صفحة تفاصيل المباراة المدمجة بالمجريات والإحصائيات والغيابات
-                LineupTab(),  // صفحة التشكيلات وعشب الملعب التفاعلي الخارق
+                DetailsTab(),
+                LineupTab(),
               ],
             ),
           ),
