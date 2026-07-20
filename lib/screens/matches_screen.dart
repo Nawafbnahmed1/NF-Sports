@@ -24,7 +24,6 @@ class _MatchesScreenState extends State<MatchesScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // 📊 التبويب الثنائي العلوي الفخم العريض (RTL)
               Directionality(
                 textDirection: TextDirection.rtl,
                 child: Padding(
@@ -41,7 +40,6 @@ class _MatchesScreenState extends State<MatchesScreen> {
                               color: !_isResultsTab ? const Color(0x3300B4FF) : const Color(0xCC0A1220),
                               borderRadius: BorderRadius.circular(14),
                               border: Border.all(color: !_isResultsTab ? AppTheme.neonBlue : Colors.white10, width: 2),
-                              boxShadow: !_isResultsTab ? [const BoxShadow(color: Color(0x4D00B4FF), blurRadius: 12)] : null,
                             ),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -65,7 +63,6 @@ class _MatchesScreenState extends State<MatchesScreen> {
                               color: _isResultsTab ? const Color(0x3300B4FF) : const Color(0xCC0A1220),
                               borderRadius: BorderRadius.circular(14),
                               border: Border.all(color: _isResultsTab ? AppTheme.neonBlue : Colors.white10, width: 2),
-                              boxShadow: _isResultsTab ? [const BoxShadow(color: Color(0x4D00B4FF), blurRadius: 12)] : null,
                             ),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -82,8 +79,6 @@ class _MatchesScreenState extends State<MatchesScreen> {
                   ),
                 ),
               ),
-              
-              // 📅 شريط الأيام الأفقي
               SizedBox(
                 height: 80,
                 child: ListView.builder(
@@ -114,8 +109,6 @@ class _MatchesScreenState extends State<MatchesScreen> {
                 ),
               ),
               const SizedBox(height: 25),
-
-              // 🏆 عنوان الدوري السعودي للمحترفين الفخم والعريض
               const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                 child: Row(
@@ -127,13 +120,12 @@ class _MatchesScreenState extends State<MatchesScreen> {
                 ),
               ),
               const SizedBox(height: 10),
-
               if (!_isResultsTab) ...[
-                _buildLiveCard('الهلال', 'النصر', '09:45 م', 'المركز: 1', 'المركز: 2', ['W', 'W', 'W'], ['W', 'D', 'L'], 'ميتروفيتش (١٨ هدف)', 'رونالدو (٢٠ هدف)', '03:59:59'),
-                _buildLiveCard('الاتحاد', 'الأهلي', '07:30 م', 'المركز: 3', 'المركز: 5', ['W', 'L', 'W'], ['D', 'W', 'L'], 'بنزيما (١٢ هدف)', 'محرز (٩ أهداف)', '01:45:12'),
+                _buildLiveCard('الهلال', 'النصر', '09:45 PM', 'المركز: 1', 'المركز: 2', ['W', 'W', 'W'], ['W', 'D', 'L'], 'هداف الفريق: ميتروفيتش (18 هدف)', 'هداف الفريق: رونالدو (20 هدف)', '03:59:59'),
+                _buildLiveCard('الاتحاد', 'الأهلي', '07:30 PM', 'المركز: 3', 'المركز: 5', ['W', 'L', 'W'], ['D', 'W', 'L'], 'هداف الفريق: بنزيما (12 هدف)', 'هداف الفريق: محرز (9 أهداف)', '01:45:12'),
               ] else ...[
-                _buildResultCard('الهلال', 'النصر', '3 - 1', 'المركز: 1', 'المركز: 2'),
-                _buildResultCard('الاتحاد', 'الأهلي', '0 - 2', 'المركز: 3', 'المركز: 5'),
+                _buildCustomResultCard(context, 'الهلال', 'النصر', '3 - 1', 'المركز: 1', 'المركز: 2', true),
+                _buildCustomResultCard(context, 'الاتحاد', 'الأهلي', '0 - 2', 'المركز: 3', 'المركز: 5', false),
               ],
               const SizedBox(height: 120),
             ],
@@ -153,47 +145,19 @@ class _MatchesScreenState extends State<MatchesScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Expanded(
-                  child: Column(
-                    children: [
-                      const Icon(Icons.shield, color: Colors.white, size: 36),
-                      const SizedBox(height: 10),
-                      Text(team1, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
-                      const SizedBox(height: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(color: const Color(0x2600B4FF), borderRadius: BorderRadius.circular(10), border: Border.all(color: AppTheme.neonBlue)),
-                        child: Text(r1, style: const TextStyle(color: Color(0xFF00B4FF), fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
-                      ),
-                    ],
-                  ),
-                ),
+                Expanded(child: Column(children: [const Icon(Icons.shield, color: Colors.white, size: 36), const SizedBox(height: 10), Text(team1, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold, fontFamily: 'Cairo')), const SizedBox(height: 8), Container(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6), decoration: BoxDecoration(color: const Color(0x2600B4FF), borderRadius: BorderRadius.circular(10), border: Border.all(color: AppTheme.neonBlue)), child: Text(r1, style: const TextStyle(color: Color(0xFF00B4FF), fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo')))])) ,
                 Column(
                   children: [
-                    Text(time, style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                    Text(time, style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
                     const SizedBox(height: 8),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      decoration: BoxDecoration(color: const Color(0x4D00B4FF), borderRadius: BorderRadius.circular(12), border: Border.all(color: AppTheme.neonBlue, width: 1.8)),
-                      child: Text(countdown, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(color: const Color(0x4D00B4FF), borderRadius: BorderRadius.circular(8), border: Border.all(color: AppTheme.neonBlue, width: 1.2)),
+                      child: Text(countdown, style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
                     ),
                   ],
                 ),
-                Expanded(
-                  child: Column(
-                    children: [
-                      const Icon(Icons.shield, color: Colors.white, size: 36),
-                      const SizedBox(height: 10),
-                      Text(team2, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
-                      const SizedBox(height: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(color: const Color(0x2600B4FF), borderRadius: BorderRadius.circular(10), border: Border.all(color: AppTheme.neonBlue)),
-                        child: Text(r2, style: const TextStyle(color: Color(0xFF00B4FF), fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
-                      ),
-                    ],
-                  ),
-                ),
+                Expanded(child: Column(children: [const Icon(Icons.shield, color: Colors.white, size: 36), const SizedBox(height: 10), Text(team2, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold, fontFamily: 'Cairo')), const SizedBox(height: 8), Container(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6), decoration: BoxDecoration(color: const Color(0x2600B4FF), borderRadius: BorderRadius.circular(10), border: Border.all(color: AppTheme.neonBlue)), child: Text(r2, style: const TextStyle(color: Color(0xFF00B4FF), fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo')))])) ,
               ],
             ),
             const Padding(padding: EdgeInsets.symmetric(vertical: 14.0), child: Divider(color: Colors.white10)),
@@ -225,7 +189,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
     );
   }
 
-  Widget _buildResultCard(String team1, String team2, String score, String r1, String r2) {
+  Widget _buildCustomResultCard(BuildContext context, String team1, String team2, String score, String r1, String r2, bool isAlhilalMatch) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       child: GlassCard(
@@ -242,32 +206,56 @@ class _MatchesScreenState extends State<MatchesScreen> {
             ),
             const Padding(padding: EdgeInsets.symmetric(vertical: 16.0), child: Divider(color: Colors.white10)),
             
-            // 🌟 تثبيت وإظهار مسجلي الأهداف والبطاقات الملونة المضيئة عمودياً داخل صفحة النتائج بالتفصيل بالملي
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(children: [const Icon(Icons.sports_soccer, color: Colors.green, size: 14), const SizedBox(width: 4), const Text('ميتروفيتش \'٤٢', style: TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold, fontFamily: 'Cairo'))]),
-                    Row(children: [const Icon(Icons.sports_soccer, color: Colors.green, size: 14), const SizedBox(width: 4), const Text('سالم الدوسري \'٦٨', style: TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold, fontFamily: 'Cairo'))]),
-                    Row(children: [Container(width: 10, height: 14, color: Colors.amber), const SizedBox(width: 4), const Text('مالكوم \'٨١ (🟨)', style: TextStyle(color: Colors.white60, fontSize: 11, fontFamily: 'Cairo'))]),
-                  ],
-                ),
-                const Text('الأحداث والبطاقات', style: TextStyle(color: Colors.white24, fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Row(children: [const Text('رونالدو \'٥٥', style: TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold, fontFamily: 'Cairo')), const SizedBox(width: 4), const Icon(Icons.sports_soccer, color: Colors.green, size: 14)]),
-                    Row(children: [const Text('أوتافيو \'٣٠ (🟨)', style: TextStyle(color: Colors.white60, fontSize: 11, fontFamily: 'Cairo')), const SizedBox(width: 4), Container(width: 10, height: 14, color: Colors.amber)]),
-                    Row(children: [const Text('لابورت \'٨٩ (🟥)', style: TextStyle(color: Colors.red, fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo')), const SizedBox(width: 4), Container(width: 10, height: 14, color: Colors.red)]),
-                  ],
-                ),
+                if (isAlhilalMatch) ...[
+                  const Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(children: [Icon(Icons.style, color: Colors.amber, size: 13), SizedBox(width: 6), Text('مالكوم  د 81 (🟨)', style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold, fontFamily: 'Cairo'))]),
+                      SizedBox(height: 8),
+                      Row(children: [Icon(Icons.sports_soccer, color: Colors.green, size: 13), SizedBox(width: 6), Text('سالم الدوسري  د 68', style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold, fontFamily: 'Cairo'))]),
+                      SizedBox(height: 8),
+                      Row(children: [Icon(Icons.sports_soccer, color: Colors.green, size: 13), SizedBox(width: 6), Text('ميتروفيتش  د 42', style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold, fontFamily: 'Cairo'))]),
+                    ],
+                  ),
+                  const Text('الأحداث والبطاقات', style: TextStyle(color: Colors.white24, fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                  const Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Row(children: [Text('لابورت  د 89 (🟥)', style: TextStyle(color: Colors.redAccent, fontSize: 13, fontWeight: FontWeight.bold, fontFamily: 'Cairo')), SizedBox(width: 6), Icon(Icons.style, color: Colors.red, size: 13)]),
+                      SizedBox(height: 8),
+                      Row(children: [Text('رونالدو  د 55', style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold, fontFamily: 'Cairo')), SizedBox(width: 6), Icon(Icons.sports_soccer, color: Colors.green, size: 13)]),
+                      SizedBox(height: 8),
+                      Row(children: [Text('أوتافيو  د 30 (🟨)', style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold, fontFamily: 'Cairo')), SizedBox(width: 6), Icon(Icons.style, color: Colors.amber, size: 13)]),
+                    ],
+                  ),
+                ] else ...[
+                  const Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(children: [Icon(Icons.style, color: Colors.amber, size: 13), SizedBox(width: 6), Text('بنزيما  د 76 (🟨)', style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold, fontFamily: 'Cairo'))]),
+                      SizedBox(height: 8),
+                      Row(children: [Icon(Icons.sports_soccer, color: Colors.green, size: 13), SizedBox(width: 6), Text('كانتي  د 22', style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold, fontFamily: 'Cairo'))]),
+                    ],
+                  ),
+                  const Text('الأحداث والبطاقات', style: TextStyle(color: Colors.white24, fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                  const Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Row(children: [Text('توني  د 88 (🟨)', style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold, fontFamily: 'Cairo')), SizedBox(width: 6), Icon(Icons.style, color: Colors.amber, size: 13)]),
+                      SizedBox(height: 8),
+                      Row(children: [Text('فرانك كيسي  د 61', style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold, fontFamily: 'Cairo')), SizedBox(width: 6), Icon(Icons.sports_soccer, color: Colors.green, size: 13)]),
+                      SizedBox(height: 8),
+                      Row(children: [Text('محرز  د 14 (🟨)', style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold, fontFamily: 'Cairo')), SizedBox(width: 6), Icon(Icons.style, color: Colors.amber, size: 13)]),
+                    ],
+                  ),
+                ],
               ],
             ),
             const Padding(padding: EdgeInsets.symmetric(vertical: 14.0), child: Divider(color: Colors.white10)),
             
-            // 🌟 الإضافة الخرافية لنواف: فصل الأزرار برمجياً إلى مربعين نيون مستقلين متجاورين بفخامة مذهلة
             Row(
               children: [
                 Expanded(
@@ -301,7 +289,6 @@ class _MatchesScreenState extends State<MatchesScreen> {
                 ),
               ],
             ),
-            const SizedBox(height: 5),
           ],
         ),
       ),
