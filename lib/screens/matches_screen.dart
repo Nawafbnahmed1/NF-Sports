@@ -121,8 +121,8 @@ class _MatchesScreenState extends State<MatchesScreen> {
               ),
               const SizedBox(height: 10),
               if (!_isResultsTab) ...[
-                _buildLiveCard('الهلال', 'النصر', '09:45 PM', 'المركز: 1', 'المركز: 2', ['W', 'W', 'W'], ['W', 'D', 'L'], '🏆 هداف الفريق: ميتروفيتش (18 هدف)', '🏆 هداف الفريق: رونالدو (20 هدف)', '03:59:59'),
-                _buildLiveCard('الاتحاد', 'الأهلي', '07:30 PM', 'المركز: 3', 'المركز: 5', ['W', 'L', 'W'], ['D', 'W', 'L'], '🏆 هداف الفريق: بنزيما (12 هدف)', '🏆 هداف الفريق: محرز (9 أهداف)', '01:45:12'),
+                _buildLiveCard('الهلال', 'النصر', '09:45 PM', 'المركز: 1', 'المركز: 2', ['W', 'W', 'W'], ['W', 'D', 'L'], 'ميتروفيتش (18 هدف)', 'رونالدو (20 هدف)', '03:59:59'),
+                _buildLiveCard('الاتحاد', 'الأهلي', '07:30 PM', 'المركز: 3', 'المركز: 5', ['W', 'L', 'W'], ['D', 'W', 'L'], 'بنزيما (12 هدف)', 'محرز (9 أهداف)', '01:45:12'),
               ] else ...[
                 _buildCustomResultCard(context, 'الهلال', 'النصر', '3 - 1', 'المركز: 1', 'المركز: 2', true),
                 _buildCustomResultCard(context, 'الاتحاد', 'الأهلي', '0 - 2', 'المركز: 3', 'المركز: 5', false),
@@ -161,25 +161,46 @@ class _MatchesScreenState extends State<MatchesScreen> {
               ],
             ),
             const Padding(padding: EdgeInsets.symmetric(vertical: 14.0), child: Divider(color: Colors.white10)),
+            
+            // 📊 وضع شريط نتائج المباريات والدوائر الملونة في صف علوي مستقل وممتد بكامل الراحة البصرية
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Column(
-                  children: [
-                    Row(children: f1.map((f) => Container(width: 15, height: 15, margin: const EdgeInsets.symmetric(horizontal: 2), decoration: BoxDecoration(color: f == 'W' ? Colors.green.withValues(alpha: 0.2) : Colors.redAccent.withValues(alpha: 0.2), shape: BoxShape.circle, border: Border.all(color: f == 'W' ? Colors.green : Colors.redAccent, width: 1.2)), child: Center(child: Text(f, style: TextStyle(color: f == 'W' ? Colors.green : Colors.redAccent, fontSize: 9, fontWeight: FontWeight.bold))))).toList()),
-                    const SizedBox(height: 8),
-                    Text(s1, style: const TextStyle(color: Colors.white60, fontSize: 12, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
-                  ],
-                ),
-                const Text('الهدافين والنتائج الأخيرة', style: TextStyle(color: Colors.white38, fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
-                Column(
-                  children: [
-                    Row(children: f2.map((f) => Container(width: 15, height: 15, margin: const EdgeInsets.symmetric(horizontal: 2), decoration: BoxDecoration(color: f == 'W' ? Colors.green.withValues(alpha: 0.2) : Colors.redAccent.withValues(alpha: 0.2), shape: BoxShape.circle, border: Border.all(color: f == 'W' ? Colors.green : Colors.redAccent, width: 1.2)), child: Center(child: Text(f, style: TextStyle(color: f == 'W' ? Colors.green : Colors.redAccent, fontSize: 9, fontWeight: FontWeight.bold))))).toList()),
-                    const SizedBox(height: 8),
-                    Text(s2, style: const TextStyle(color: Colors.white60, fontSize: 12, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
-                  ],
-                ),
+                Row(children: f1.map((f) => Container(width: 15, height: 15, margin: const EdgeInsets.symmetric(horizontal: 2), decoration: BoxDecoration(color: f == 'W' ? Colors.green.withValues(alpha: 0.2) : Colors.redAccent.withValues(alpha: 0.2), shape: BoxShape.circle, border: Border.all(color: f == 'W' ? Colors.green : Colors.redAccent, width: 1.2)), child: Center(child: Text(f, style: TextStyle(color: f == 'W' ? Colors.green : Colors.redAccent, fontSize: 9, fontWeight: FontWeight.bold))))).toList()),
+                const Text('مؤشرات الأداء الأخيرة', style: TextStyle(color: Colors.white38, fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                Row(children: f2.map((f) => Container(width: 15, height: 15, margin: const EdgeInsets.symmetric(horizontal: 2), decoration: BoxDecoration(color: f == 'W' ? Colors.green.withValues(alpha: 0.2) : Colors.redAccent.withValues(alpha: 0.2), shape: BoxShape.circle, border: Border.all(color: f == 'W' ? Colors.green : Colors.redAccent, width: 1.2)), child: Center(child: Text(f, style: TextStyle(color: f == 'W' ? Colors.green : Colors.redAccent, fontSize: 9, fontWeight: FontWeight.bold))))).toList()),
               ],
+            ),
+            const Padding(padding: EdgeInsets.symmetric(vertical: 8.0), child: Divider(color: Colors.white10)),
+            
+            // ⚽ توزيع الهدافين عمودياً وبتناظر محمي ومحاط لمنع نفاد النص خارج حدود الكارد نهائياً لطلب نواف العالمي
+            Directionality(
+              textDirection: TextDirection.rtl,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Row(
+                      children: [
+                        const Icon(Icons.sports_soccer, color: Colors.white38, size: 14),
+                        const SizedBox(width: 6),
+                        Expanded(child: Text('هداف الفريق: $s1', maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold, fontFamily: 'Cairo'))),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 15),
+                  Expanded(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Expanded(child: Text('هداف الفريق: $s2', maxLines: 1, overflow: TextOverflow.ellipsis, textAlign: TextAlign.left, style: const TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold, fontFamily: 'Cairo'))),
+                        const SizedBox(width: 6),
+                        const Icon(Icons.sports_soccer, color: Colors.white38, size: 14),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
             const Padding(padding: EdgeInsets.symmetric(vertical: 12.0), child: Divider(color: Colors.white10)),
             NeonButton(text: 'تفاصيل المباراة', onPressed: () { Navigator.push(context, MaterialPageRoute(builder: (_) => MatchDetailScreen(team1: team1, team2: team2))); }),
@@ -226,7 +247,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
                     children: [
                       Row(children: [Text('لابورت  د 89 (🟥)', style: TextStyle(color: Colors.redAccent, fontSize: 13, fontWeight: FontWeight.bold, fontFamily: 'Cairo')), SizedBox(width: 6), Icon(Icons.style, color: Colors.red, size: 13)]),
                       SizedBox(height: 8),
-                      Row(children: [Text('رونالدو  د 55', style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold, fontFamily: 'Cairo')), SizedBox(width: 6), Icon(Icons.sports_soccer, color: Colors.green, size: 13)]),
+                      Row(children: [Text('رونالدو   د 55', style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold, fontFamily: 'Cairo')), SizedBox(width: 6), Icon(Icons.sports_soccer, color: Colors.green, size: 13)]),
                       SizedBox(height: 8),
                       Row(children: [Text('أوتافيو  د 30 (🟨)', style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold, fontFamily: 'Cairo')), SizedBox(width: 6), Icon(Icons.style, color: Colors.amber, size: 13)]),
                     ],

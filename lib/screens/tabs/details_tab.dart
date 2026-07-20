@@ -114,7 +114,7 @@ class DetailsTab extends StatelessWidget {
             
             const SizedBox(height: 25),
             
-            // 🌟 3. نقل ودمج مربع المقارنة الرقمية المتقدمة هنا بالأسفل لطلب نواف العبقري
+            // 🌟 3. دمج مربع المقارنة الرقمية المتقدمة (المنقول بالأسفل لطلب نواف العبقري)
             const Text(
               'المقارنة الرقمية المتقدمة',
               style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold, fontFamily: 'Cairo'),
@@ -135,44 +135,57 @@ class DetailsTab extends StatelessWidget {
                 ],
               ),
             ),
-
+            
             const SizedBox(height: 25),
             
-            // 🏥 4. إضافة القسم الملكي الجديد (تقرير العيادة الطبية والغيابات) بأيقونة متوهجة لطلب نواف الشامل
+            // 🏥 4. إعادة هندسة قسم الغيابات بالكامل: حذف القلب ورص الكروت عمودياً بكامل العرض لمنع خروج الأسطر لطلب نواف
             const Text(
               'تقرير العيادة الطبية والغيابات',
               style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold, fontFamily: 'Cairo'),
             ),
             const SizedBox(height: 12),
+            
+            // كارد غيابات نادي الهلال المستقل الممتد بكامل العرض الفخم
             GlassCard(
-              padding: const EdgeInsets.all(16),
-              borderRadius: 22,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              padding: const EdgeInsets.all(14),
+              borderRadius: 18,
+              child: const Row(
                 children: [
-                  // غيابات الهلال
-                  const Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(children: [Icon(Icons.healing, color: AppTheme.neonBlue, size: 14), SizedBox(width: 6), Text('نيمار جونيور (رباط صليبي)', style: TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold, fontFamily: 'Cairo'))]),
-                      SizedBox(height: 6),
-                      Row(children: [Icon(Icons.healing, color: AppTheme.neonBlue, size: 14), SizedBox(width: 6), Text('مالك العبدالمنعم (إصابة عضلة)', style: TextStyle(color: Colors.white70, fontSize: 12, fontFamily: 'Cairo'))]),
-                    ],
+                  Icon(Icons.healing, color: AppTheme.neonBlue, size: 18),
+                  SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('غيابات نادي الهلال:', style: TextStyle(color: AppTheme.neonBlue, fontSize: 13, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                        SizedBox(height: 4),
+                        Text('نيمار جونيور (رباط صليبي) • مالك العبدالمنعم (إصابة عضلة)', style: TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                      ],
+                    ),
                   ),
-                  // أيقونة نبض قلب طبي نيون متوهجة بالمنتصف
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: const BoxDecoration(color: Color(0x1FFF3B30), shape: BoxShape.circle),
-                    child: const Icon(Icons.favorite, color: Color(0xFFFF3B30), size: 22, shadows: [Shadow(color: Color(0xFFFF3B30), blurRadius: 10)]),
-                  ),
-                  // غيابات النصر
-                  const Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Row(children: [Text('أندرسون تاليسكا (تمزق عضلي)', style: TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold, fontFamily: 'Cairo')), SizedBox(width: 6), Icon(Icons.healing, color: Colors.redAccent, size: 14)]),
-                      SizedBox(height: 6),
-                      Row(children: [Text('سامي النجعي (تأهيل طبي)', style: TextStyle(color: Colors.white70, fontSize: 12, fontFamily: 'Cairo')), SizedBox(width: 6), Icon(Icons.healing, color: Colors.redAccent, size: 14)]),
-                    ],
+                ],
+              ),
+            ),
+            
+            const SizedBox(height: 12),
+            
+            // كارد غيابات نادي النصر المستقل الممتد بكامل العرض الفخم
+            GlassCard(
+              padding: const EdgeInsets.all(14),
+              borderRadius: 18,
+              child: const Row(
+                children: [
+                  Icon(Icons.healing, color: Colors.redAccent, size: 18),
+                  SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('غيابات نادي النصر:', style: TextStyle(color: Colors.redAccent, fontSize: 13, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                        SizedBox(height: 4),
+                        Text('أندرسون تاليسكا (تمزق عضلي حاد) • سامي النجعي (تأهيل طبي)', style: TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                      ],
+                    ),
                   ),
                 ],
               ),
