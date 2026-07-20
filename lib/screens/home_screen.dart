@@ -18,6 +18,7 @@ class HomeScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // 1️⃣ الهيدر العلوي الاحترافي المضيء لـ NF SPORTS بحروف ضخمة وحادة جداً
               Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: Row(
@@ -30,7 +31,7 @@ class HomeScreen extends StatelessWidget {
                           'NF',
                           style: TextStyle(
                             color: AppTheme.neonBlue,
-                            fontSize: 42,
+                            fontSize: 42, // الحرف الملكي الضخم الواضح
                             fontWeight: FontWeight.bold,
                             shadows: [
                               Shadow(
@@ -59,10 +60,11 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
               const SectionTitle(title: 'مباريات اليوم'),
+              // 2️⃣ كارد مباراة اليوم الملكي الكبير والمضيء بالنيون والمؤثرات البصرية وحروف ضخمة
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                 child: GlassCard(
-                  borderRadius: 28,
+                  borderRadius: 28, 
                   child: Column(
                     children: [
                       const SizedBox(height: 10),
@@ -75,30 +77,39 @@ class HomeScreen extends StatelessWidget {
                                 Container(
                                   padding: const EdgeInsets.all(12),
                                   decoration: BoxDecoration(
-                                    color: const Color(0x0AFFFFFF),
-                                    shape: BoxShape.circle,
-                                    border: Border.all(color: const Color(0x3300B4FF), width: 1.5),
+                                    color: const Color(0x0AFFFFFF), 
+                                    shape: BoxShape.circle, 
+                                    border: Border.all(color: const Color(0x3300B4FF), width: 1.5)
                                   ),
-                                  child: const Icon(Icons.shield, color: Colors.white, size: 36),
+                                  child: const Icon(Icons.shield, color: Colors.white, size: 36), 
                                 ),
                                 const SizedBox(height: 10),
-                                const Text('الهلال', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                                const Text(
+                                  'الهلال', 
+                                  style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold, fontFamily: 'Cairo') 
+                                ),
                                 const SizedBox(height: 8),
                                 Container(
                                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                                   decoration: BoxDecoration(
-                                    color: const Color(0x2600B4FF),
+                                    color: const Color(0x2600B4FF), 
                                     borderRadius: BorderRadius.circular(10),
-                                    border: Border.all(color: AppTheme.neonBlue, width: 1),
+                                    border: Border.all(color: AppTheme.neonBlue, width: 1)
                                   ),
-                                  child: const Text('المركز: 1', style: TextStyle(color: Color(0xFF00B4FF), fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                                  child: const Text(
+                                    'المركز: 1', 
+                                    style: TextStyle(color: Color(0xFF00B4FF), fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo')
+                                  ),
                                 ),
                               ],
                             ),
                           ),
                           Column(
                             children: [
-                              const Text('09:45 م', style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                              const Text(
+                                '09:45 م', 
+                                style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold, fontFamily: 'Cairo')
+                              ),
                               const SizedBox(height: 8),
                               Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -107,10 +118,16 @@ class HomeScreen extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(12),
                                   border: Border.all(color: AppTheme.neonBlue, width: 1.8),
                                 ),
-                                child: const Text('03:59:59', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                                child: const Text(
+                                  '03:59:59',
+                                  style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold, letterSpacing: 1, fontFamily: 'Cairo'),
+                                ),
                               ),
                               const SizedBox(height: 6),
-                              const Text('لم تبدأ', style: TextStyle(color: Colors.white38, fontSize: 12, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                              const Text(
+                                'لم تبدأ', 
+                                style: TextStyle(color: Colors.white38, fontSize: 12, fontWeight: FontWeight.bold, fontFamily: 'Cairo')
+                              ),
                             ],
                           ),
                           Expanded(
@@ -119,23 +136,29 @@ class HomeScreen extends StatelessWidget {
                                 Container(
                                   padding: const EdgeInsets.all(12),
                                   decoration: BoxDecoration(
-                                    color: const Color(0x0AFFFFFF),
-                                    shape: BoxShape.circle,
-                                    border: Border.all(color: const Color(0x3300B4FF), width: 1.5),
+                                    color: const Color(0x0AFFFFFF), 
+                                    shape: BoxShape.circle, 
+                                    border: Border.all(color: const Color(0x3300B4FF), width: 1.5)
                                   ),
                                   child: const Icon(Icons.shield, color: Colors.white, size: 36),
                                 ),
                                 const SizedBox(height: 10),
-                                const Text('النصر', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                                const Text(
+                                  'النصر', 
+                                  style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold, fontFamily: 'Cairo')
+                                ),
                                 const SizedBox(height: 8),
                                 Container(
                                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                                   decoration: BoxDecoration(
-                                    color: const Color(0x2600B4FF),
+                                    color: const Color(0x2600B4FF), 
                                     borderRadius: BorderRadius.circular(10),
-                                    border: Border.all(color: AppTheme.neonBlue, width: 1),
+                                    border: Border.all(color: AppTheme.neonBlue, width: 1)
                                   ),
-                                  child: const Text('المركز: 2', style: TextStyle(color: Color(0xFF00B4FF), fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                                  child: const Text(
+                                    'المركز: 2', 
+                                    style: TextStyle(color: Color(0xFF00B4FF), fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo')
+                                  ),
                                 ),
                               ],
                             ),
@@ -147,7 +170,10 @@ class HomeScreen extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text('W W W', style: TextStyle(color: Colors.green, fontSize: 13, fontWeight: FontWeight.bold, letterSpacing: 1.5)),
-                          Text('النتائج الأخيرة وفخامة الأداء الملكي', style: TextStyle(color: Colors.white38, fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                          Text(
+                            'النتائج الأخيرة وفخامة الأداء الملكي', 
+                            style: TextStyle(color: Colors.white38, fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo')
+                          ),
                           Text('W D L', style: TextStyle(color: Colors.amber, fontSize: 13, fontWeight: FontWeight.bold, letterSpacing: 1.5)),
                         ],
                       ),
