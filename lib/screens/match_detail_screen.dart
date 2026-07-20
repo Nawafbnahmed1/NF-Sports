@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
-import '../widgets/glass_card.dart';
+import 'tabs/lineup_tab.dart';
+import 'tabs/details_tab.dart';
+import 'tabs/stats_tab.dart';
 
-class MatchDetailScreen extends StatelessWidget {
+class MatchDetailScreen extends StatefulWidget {
   final String team1;
   final String team2;
 
@@ -13,6 +15,25 @@ class MatchDetailScreen extends StatelessWidget {
   });
 
   @override
+  State<MatchDetailScreen> createState() => _MatchDetailScreenState();
+}
+
+class _MatchDetailScreenState extends State<MatchDetailScreen> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 3, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final double screenHeight = MediaQuery.of(context).size.height;
 
@@ -20,53 +41,109 @@ class MatchDetailScreen extends StatelessWidget {
       backgroundColor: AppTheme.backgroundColor,
       appBar: AppBar(
         backgroundColor: AppTheme.surfaceColor,
-        title: Text('تفاصيل مباراة $team1 ضد $team2', style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+        elevation: 0,
+        centerTitle: true,
+        title: Text(
+          'تفاصيل المباراة',
+          style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold, fontFamily: 'Cairo'),
+        ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios, color: AppTheme.neonBlue, size: 20),
           onPressed: () => Navigator.pop(context),
         ),
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          child: Column(
-            children: [
-              const SizedBox(height: 20),
-              // كارد الإحصاءات الضخم والتشكيلة المتوقعة
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: GlassCard(
-                  child: Column(
+        child: Column(
+          children: [
+            // 🌟 الرأس الملكي العلوي لعرض مواجهة الفرق الكبرى والنتيجة الفخمة
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+              color: AppTheme.surfaceColor.withValues(alpha: 0.5),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  _buildHeaderTeam(widget.team1, Icons.shield),
+                  Column(
                     children: [
-                      const Text('إحصائيات المباراة الضخمة', style: TextStyle(color: AppTheme.neonBlue, fontWeight: FontWeight.bold, fontSize: 16)),
-                      const Divider(color: Colors.white10, height: 30),
-                      _buildStatRow('الاستحواذ', '60%', '40%'),
-                      _buildStatRow('التسديدات', '14', '8'),
-                      _buildStatRow('الأخطاء', '5', '11'),
-                      const Divider(color: Colors.white10, height: 30),
-                      const Text('التشكيلة المتوقعة للفريقين (4-3-3)', style: TextStyle(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.w500)),
+                      const Text(
+                        '٣ - ١',
+                        style: TextStyle(color: Colors.white, fontSize: 26, fontWeight: FontWeight.bold, letterSpacing: 2),
+                      ),
+                      const SizedBox(height: 4),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                        decoration: BoxDecoration(color: Colors.green.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(6)),
+                        child: const Text('انتهت', style: TextStyle(color: Colors.green, fontSize: 10, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                      ),
                     ],
                   ),
+                  _buildHeaderTeam(widget.team2, Icons.shield),
+                ],
+              ),
+            ),
+            const SizedBox(height: 10),
+            // 🌟 2. شريط التبويبات الزجاجي المضيء بالنيون المتوهج (نفس تخطيط صورك بالملي)
+            Directionality(
+              textDirection: TextDirection.rtl,
+              child: Container(
+                margin: const EdgeInsets.symmetric(horizontal: 20),
+                decoration: BoxDecoration(
+                  color: AppTheme.surfaceColor,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: Colors.white10),
+                ),
+                child: TabBar(
+                  controller: _tabController,
+                  indicatorColor: AppTheme.neonBlue,
+                  indicatorSize: TabBarIndicatorSize.tab,
+                  labelColor: AppTheme.neonBlue,
+                  unselectedLabelColor: Colors.white38,
+                  labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, fontFamily: 'Cairo'),
+                  unselectedLabelStyle: const TextStyle(fontSize: 13, fontFamily: 'Cairo'),
+                  indicator: BoxDecoration(
+                    color: AppTheme.neonBlue.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: AppTheme.neonBlue, width: 1.2),
+                  ),
+                  tabs: const [
+                    Tab(text: 'التفاصيل'),
+                    Tab(text: 'التشكيلات'),
+                    Tab(text: 'الإحصائيات'),
+                  ],
                 ),
               ),
-            ],
-          ),
+            ),
+            // 🌟 3. مساحة عرض محتويات الملفات الثلاثة المستقلة والمخففة
+            Expanded(
+              child: TabBarView(
+                controller: _tabController,
+                children: const [
+                  DetailsTab(),  // استدعاء ملف الأحداث والمجريات بالدقائق
+                  LineupTab(),   // استدعاء ملف عشب الملعب وشعار تطبيقك المضيء
+                  StatsTab(),    // استدعاء ملف المقارنات الرقمية ومؤشرات التفوق
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildStatRow(String label, String stat1, String stat2) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(stat1, style: const TextStyle(color: AppTheme.neonBlue, fontWeight: FontWeight.bold)),
-          Text(label, style: const TextStyle(color: Colors.white70, fontSize: 13)),
-          Text(stat2, style: const TextStyle(color: Colors.white38)),
-        ],
-      ),
+  Widget _buildHeaderTeam(String name, IconData icon) {
+    return Column(
+      children: [
+        CircleAvatar(
+          radius: 24,
+          backgroundColor: Colors.white.withValues(alpha: 0.04),
+          child: Icon(icon, color: Colors.white70, size: 24),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          name,
+          style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold, fontFamily: 'Cairo'),
+        ),
+      ],
     );
   }
 }
