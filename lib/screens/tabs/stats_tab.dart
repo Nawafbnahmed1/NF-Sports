@@ -12,99 +12,96 @@ class StatsTab extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 📊 كارد إحصائيات الهجوم والتسديدات المضيء
-            _buildStatGroupCard(
-              title: 'أبرز الإحصائيات الهجومية',
-              stats: [
-                _buildStatRow('الاستحواذ', '65%', '35%', true, false),
-                _buildStatRow('إجمالي التسديدات', '18', '9', true, false),
-                _buildStatRow('تسديدات على المرمى', '7', '2', true, false),
-              ],
+            const Text(
+              'المقارنة الرقمية المتقدمة',
+              style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold, fontFamily: 'Cairo'),
             ),
             const SizedBox(height: 15),
             
-            // 🛡️ كارد إحصائيات التمرير والدفاع
-            _buildStatGroupCard(
-              title: 'التمريرات والدفاع',
-              stats: [
-                _buildStatRow('دقة التمرير', '89%', '76%', true, false),
-                _buildStatRow('الكرات الركنية', '6', '4', true, false),
-                _buildStatRow('التصديات للحارس', '2', '6', false, true),
-              ],
+            // 🌟 كارد الإحصائيات الضخم المشحون بمؤشرات التفوق النبضي التلقائي والأرقام الإنجليزية الموحدة
+            GlassCard(
+              padding: const EdgeInsets.all(18),
+              borderRadius: 24,
+              child: Column(
+                children: [
+                  _buildStatItem('الاستحواذ على الكرة', '58%', '42%', true),
+                  _buildStatItem('إجمالي التسديدات', '16', '9', true),
+                  _buildStatItem('التسديدات على المرمى', '7', '3', true),
+                  _buildStatItem('التمريرات المفتاحية', '12', '5', true),
+                  _buildStatItem('التدخلات الناجحة', '14', '18', false), // النصر أعلى (أحمر نيون)
+                  _buildStatItem('حالات التسلل', '1', '4', false), // النصر أعلى في التسلل
+                  _buildStatItem('الأخطاء المرتكبة', '9', '15', false),
+                ],
+              ),
             ),
-            const SizedBox(height: 40),
+            const SizedBox(height: 30),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildStatGroupCard({required String title, required List<Widget> stats}) {
-    return GlassCard(
-      borderRadius: 24,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: const TextStyle(color: AppTheme.neonBlue, fontSize: 13, fontWeight: FontWeight.bold, fontFamily: 'Cairo'),
-          ),
-          const Padding(
-            padding: EdgeInsets.symmetric(vertical: 8.0),
-            child: Divider(color: Colors.white10, height: 1),
-          ),
-          ...stats,
-        ],
-      ),
-    );
-  }
-
-  // ودجيت بناء صف المقارنة الرقمية مع حقن مؤشر التفوق النيوني المتوهج حول الرقم الأعلى
-  Widget _buildStatRow(String label, String homeStat, String awayStat, bool isHomeWinner, bool isAwayWinner) {
+  // 🎨 دالة بناء الإحصاءات بمؤشرات التفوق النيوني والخطوط الكبيرة الواضحة
+  Widget _buildStatItem(String label, String homeValue, String awayValue, bool isHomeBetter) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Column(
         children: [
-          // رقم الفريق الأول مع وميض نيون أزرق دافئ إذا كان متفوقاً
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color: isHomeWinner ? const Color(0x2600B4FF) : Colors.transparent,
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: isHomeWinner ? AppTheme.neonBlue : Colors.transparent, width: 1),
-            ),
-            child: Text(
-              homeStat,
-              style: TextStyle(
-                color: isHomeWinner ? AppTheme.neonBlue : Colors.white70,
-                fontSize: 13,
-                fontWeight: isHomeWinner ? FontWeight.bold : FontWeight.normal,
-                fontFamily: 'Cairo',
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              // رقم فريقك الهلال (محاط بدائرة نيون زرقاء متوهجة إذا كان هو الأعلى)
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: isHomeBetter 
+                  ? BoxDecoration(color: const Color(0x2600B4FF), borderRadius: BorderRadius.circular(8), border: Border.all(color: AppTheme.neonBlue, width: 1.2))
+                  : null,
+                child: Text(
+                  homeValue,
+                  style: TextStyle(color: isHomeBetter ? AppTheme.neonBlue : Colors.white70, fontSize: 15, fontWeight: FontWeight.bold),
+                ),
               ),
-            ),
+              
+              // اسم الإحصائية بخط Cairo العريض الواضح جداً للمستخدم
+              Text(
+                label,
+                style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold, fontFamily: 'Cairo'),
+              ),
+              
+              // رقم الفريق المنافس النصر (محاط بدائرة نيون حمراء متوهجة إذا كان هو الأعلى)
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: !isHomeBetter 
+                  ? BoxDecoration(color: const Color(0x26FF3B30), borderRadius: BorderRadius.circular(8), border: Border.all(color: Colors.redAccent, width: 1.2))
+                  : null,
+                child: Text(
+                  awayValue,
+                  style: TextStyle(color: !isHomeBetter ? Colors.redAccent : Colors.white70, fontSize: 15, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ],
           ),
-          // اسم الإحصائية بالمنتصف
-          Text(
-            label,
-            style: const TextStyle(color: Colors.white38, fontSize: 12, fontFamily: 'Cairo'),
-          ),
-          // رقم الفريق الثاني مع وميض نيون أحمر متوهج إذا كان متفوقاً
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color: isAwayWinner ? const Color(0x26FF3B30) : Colors.transparent,
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: isAwayWinner ? const Color(0xFFFF3B30) : Colors.transparent, width: 1),
-            ),
-            child: Text(
-              awayStat,
-              style: TextStyle(
-                color: isAwayWinner ? const Color(0xFFFF3B30) : Colors.white70,
-                fontSize: 13,
-                fontWeight: isAwayWinner ? FontWeight.bold : FontWeight.normal,
-                fontFamily: 'Cairo',
+          const SizedBox(height: 6),
+          // شريط النيون التوضيحي المنقسم المضيء بالخلفية
+          ClipRRect(
+            borderRadius: BorderRadius.circular(4),
+            child: Container(
+              height: 5,
+              width: double.infinity,
+              color: Colors.white10,
+              child: Row(
+                children: [
+                  Expanded(
+                    flex: int.parse(homeValue.replaceAll('%', '')),
+                    child: Container(color: AppTheme.neonBlue),
+                  ),
+                  Expanded(
+                    flex: int.parse(awayValue.replaceAll('%', '')),
+                    child: Container(color: Colors.redAccent.withValues(alpha: 0.5)),
+                  ),
+                ],
               ),
             ),
           ),
