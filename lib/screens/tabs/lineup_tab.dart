@@ -254,9 +254,9 @@ class _SoccerFieldPainter extends CustomPainter {
 
     // الخط الخارجي للملعب
     canvas.drawRect(Rect.fromLTWH(10, 10, size.width - 20, size.height - 20), paint);
-    // خط المنتصف
+    // line خط المنتصف
     canvas.drawLine(Offset(10, size.height / 2), Offset(size.width - 10, size.height / 2), paint);
-    // دائرة المنتصف
+    // circle دائرة المنتصف
     canvas.drawCircle(Offset(size.width / 2, size.height / 2), 55, paint);
     // منطقة الجزاء العلوية
     canvas.drawRect(Rect.fromLTWH(size.width * 0.2, 10, size.width * 0.6, 60), paint);

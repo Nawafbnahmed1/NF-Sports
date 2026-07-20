@@ -89,11 +89,7 @@ class HomeScreen extends StatelessWidget {
                               children: [
                                 Container(
                                   padding: const EdgeInsets.all(12),
-                                  decoration: BoxDecoration(
-                                    color: const Color(0x0AFFFFFF), 
-                                    shape: BoxShape.circle, 
-                                    border: Border.all(color: const Color(0x3300B4FF), width: 1.5)
-                                  ),
+                                  decoration: BoxDecoration(color: const Color(0x0AFFFFFF), shape: BoxShape.circle, border: Border.all(color: const Color(0x3300B4FF), width: 1.5)),
                                   child: const Icon(Icons.shield, color: Colors.white, size: 36),
                                 ),
                                 const SizedBox(height: 10),
@@ -109,16 +105,17 @@ class HomeScreen extends StatelessWidget {
                           ),
                           Column(
                             children: [
-                              const Text('09:45 م', style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                              const Text('09:45 PM', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
                               const SizedBox(height: 8),
+                              // العداد التنازلي المصغر والناعم جداً والمتناسق هندسياً لطلب نواف
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                                 decoration: BoxDecoration(
                                   color: const Color(0x4D00B4FF),
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(color: AppTheme.neonBlue, width: 1.8),
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(color: AppTheme.neonBlue, width: 1.2),
                                 ),
-                                child: const Text('03:59:59', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold, letterSpacing: 1, fontFamily: 'Cairo')),
+                                child: const Text('03:59:59', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
                               ),
                               const SizedBox(height: 6),
                               const Text('لم تبدأ', style: TextStyle(color: Colors.white38, fontSize: 12, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
@@ -129,11 +126,7 @@ class HomeScreen extends StatelessWidget {
                               children: [
                                 Container(
                                   padding: const EdgeInsets.all(12),
-                                  decoration: BoxDecoration(
-                                    color: const Color(0x0AFFFFFF), 
-                                    shape: BoxShape.circle, 
-                                    border: Border.all(color: const Color(0x3300B4FF), width: 1.5)
-                                  ),
+                                  decoration: BoxDecoration(color: const Color(0x0AFFFFFF), shape: BoxShape.circle, border: Border.all(color: const Color(0x3300B4FF), width: 1.5)),
                                   child: const Icon(Icons.shield, color: Colors.white, size: 36),
                                 ),
                                 const SizedBox(height: 10),

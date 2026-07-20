@@ -19,7 +19,6 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with SingleTicker
   @override
   void initState() {
     super.initState();
-    // 🌟 تعديل نواف: التبويبات صارت 2 فقط (تفاصيل المباراة والتشكيلات) بعد دمج الإحصائيات
     _tabController = TabController(length: 2, vsync: this);
   }
 
@@ -48,7 +47,6 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with SingleTicker
       ),
       body: Column(
         children: [
-          // 🏆 هيدر كارد النتيجة العلوي الثابت الفخم بحروف ضخمة
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             child: Row(
@@ -61,7 +59,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with SingleTicker
                     const SizedBox(height: 4),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                      decoration: BoxDecoration(color: const Color(0x1AGREEN), borderRadius: BorderRadius.circular(8)),
+                      decoration: BoxDecoration(color: const Color(0x1A00FF00), borderRadius: BorderRadius.circular(8)),
                       child: const Text('انتهت', style: TextStyle(color: Colors.green, fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
                     ),
                   ],
@@ -71,50 +69,6 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with SingleTicker
             ),
           ),
           const SizedBox(height: 15),
-
-          // 📊 شريط التبويبات العلوي الزجاجي المحدث لطلب نواف العبقري (RTL)
-          Directionality(
-            textDirection: TextDirection.rtl,
-            child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 20),
-              decoration: BoxDecoration(
-                color: const Color(0x1AFFFFFF),
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: Colors.white10, width: 1),
-              ),
-              child: TabBar(
-                controller: _tabController,
-                indicator: BoxDecoration(
-                  color: const Color(0x2600B4FF),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppTheme.neonBlue, width: 1.5),
-                ),
-                labelColor: AppTheme.neonBlue,
-                unselectedLabelColor: Colors.white38,
-                labelStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, fontFamily: 'Cairo'),
-                tabs: const [
-                  Tab(text: 'تفاصيل المباراة'), // تعديل اسم التبويب الفخم لطلب نواف
-                  Tab(text: 'التشكيلات'),
-                ],
-              ),
-            ),
-          ),
-
-          // 🔄 عرض الصفحات الفرعية التفاعلية المستقلة المربوطة بالتبويب المزدوج الجديد
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: const [
-                DetailsTab(), // صفحة تفاصيل المباراة المدمجة بالمجريات والإحصائيات والغيابات
-                LineupTab(),  // صفحة التشكيلات وعشب الملعب التفاعلي الخارق
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
 
           // 📊 شريط التبويبات العلوي الزجاجي المحدث لطلب نواف العبقري (RTL)
           Directionality(

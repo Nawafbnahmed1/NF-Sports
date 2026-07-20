@@ -68,7 +68,7 @@ class DetailsTab extends StatelessWidget {
             ),
             const SizedBox(height: 12),
 
-            // 📊 2. المستطيل الضخم المنقسم هندسياً إلى قسمين (اليمين للهلال واليسار للنصر) مع تفعيل حرف "د" والترتيب التصاعدي
+            // 📊 2. المستطيل الضخم المنقسم هندسياً إلى قسمين مع تفعيل حرف "د" والترتيب التصاعدي
             GlassCard(
               padding: const EdgeInsets.all(16),
               borderRadius: 24,
