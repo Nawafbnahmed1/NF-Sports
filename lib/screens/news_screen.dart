@@ -34,19 +34,19 @@ class _NewsScreenState extends State<NewsScreen> {
                           onTap: () { setState(() { _isHighlightsTab = false; }); },
                           borderRadius: BorderRadius.circular(14),
                           child: Container(
-                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            padding: const EdgeInsets.symmetric(vertical: 14),
                             decoration: BoxDecoration(
                               color: !_isHighlightsTab ? const Color(0x3300B4FF) : const Color(0x990A1220),
                               borderRadius: BorderRadius.circular(14),
-                              border: Border.all(color: !_isHighlightsTab ? AppTheme.neonBlue : Colors.white10, width: 1.5),
-                              boxShadow: !_isHighlightsTab ? [const BoxShadow(color: Color(0x4D00B4FF), blurRadius: 10)] : null,
+                              border: Border.all(color: !_isHighlightsTab ? AppTheme.neonBlue : Colors.white10, width: 2),
+                              boxShadow: !_isHighlightsTab ? [const BoxShadow(color: Color(0x4D00B4FF), blurRadius: 12)] : null,
                             ),
                             child: const Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.newspaper_outlined, color: AppTheme.neonBlue, size: 18),
-                                const SizedBox(width: 8),
-                                Text('الأخبار', style: TextStyle(color: AppTheme.neonBlue, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                                Icon(Icons.newspaper, color: Colors.white, size: 20),
+                                const SizedBox(width: 10),
+                                Text('الأخبار', style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
                               ],
                             ),
                           ),
@@ -58,19 +58,19 @@ class _NewsScreenState extends State<NewsScreen> {
                           onTap: () { setState(() { _isHighlightsTab = true; }); },
                           borderRadius: BorderRadius.circular(14),
                           child: Container(
-                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            padding: const EdgeInsets.symmetric(vertical: 14),
                             decoration: BoxDecoration(
                               color: _isHighlightsTab ? const Color(0x3300B4FF) : const Color(0x990A1220),
                               borderRadius: BorderRadius.circular(14),
-                              border: Border.all(color: _isHighlightsTab ? AppTheme.neonBlue : Colors.white10, width: 1.5),
-                              boxShadow: _isHighlightsTab ? [const BoxShadow(color: Color(0x4D00B4FF), blurRadius: 10)] : null,
+                              border: Border.all(color: _isHighlightsTab ? AppTheme.neonBlue : Colors.white10, width: 2),
+                              boxShadow: _isHighlightsTab ? [const BoxShadow(color: Color(0x4D00B4FF), blurRadius: 12)] : null,
                             ),
                             child: const Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.play_circle_outline, color: AppTheme.neonBlue, size: 18),
-                                const SizedBox(width: 8),
-                                Text('الملخصات', style: TextStyle(color: AppTheme.neonBlue, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                                Icon(Icons.play_circle_fill, color: Colors.white, size: 20),
+                                const SizedBox(width: 10),
+                                Text('الملخصات', style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
                               ],
                             ),
                           ),
@@ -80,28 +80,25 @@ class _NewsScreenState extends State<NewsScreen> {
                   ),
                 ),
               ),
-              // 🏆 عرض المحتوى ديناميكياً بناءً على اختيار التبويب العلوي (الأخبار أو الملخصات)
               if (!_isHighlightsTab) ...[
-                // 📰 أولاً: قسم الأخبار
                 _buildFeaturedBigCard(
-                  title: 'الهلال يحسم ديربي الرياض المثير بثلاثية مدوية وينفرد بالصدارة',
+                  title: 'الزعيم يحسم ديربي العاصمة المثير بثلاثية مدوية وينفرد بصدارة الترتيب',
                   buttonText: 'اقرأ المزيد',
                   isVideo: false,
                 ),
                 const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 6),
                   child: Row(
                     children: [
-                      Icon(Icons.style, color: AppTheme.neonBlue, size: 14),
-                      SizedBox(width: 6),
-                      Text('آخر الأخبار', style: TextStyle(color: Colors.white70, fontWeight: FontWeight.bold, fontSize: 13, fontFamily: 'Cairo')),
+                      Icon(Icons.style, color: AppTheme.neonBlue, size: 16),
+                      const SizedBox(width: 8),
+                      Text('آخر الأخبار الرياضية', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
                     ],
                   ),
                 ),
-                _buildSmallListItem(title: 'الاتحاد يستعيد نغمة الانتصارات بهدف قاتل في شباك الأهلي', buttonText: 'اقرأ المزيد', isVideo: false, timeOrDuration: 'قبل ١٠ د'),
-                _buildSmallListItem(title: 'مدرب النصر يرفض الأعذار ويعد الجماهير بتصحيح المسار في المباريات القادمة', buttonText: 'اقرأ المزيد', isVideo: false, timeOrDuration: 'قبل ساعتين'),
+                _buildSmallListItem(title: 'الاتحاد يستعيد نغمة الانتصارات بهدف قاتل وثمين في شباك الأهلي', buttonText: 'اقرأ المزيد', isVideo: false, timeOrDuration: 'قبل ١٠ د'),
+                _buildSmallListItem(title: 'مدرب العالمي يرفض الأعذار ويعد الجماهير بتصحيح المسار في المواجهات القادمة', buttonText: 'اقرأ المزيد', isVideo: false, timeOrDuration: 'قبل ساعتين'),
               ] else ...[
-                // 🎬 ثانياً: قسم الملخصات
                 _buildFeaturedBigCard(
                   title: 'ملخص مباراة القمة المثيرة: الهلال ٣ - ١ النصر | الأهداف الكاملة واللقطات الحماسية',
                   buttonText: 'شاهد الملخص',
@@ -109,19 +106,19 @@ class _NewsScreenState extends State<NewsScreen> {
                   duration: '14:25',
                 ),
                 const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 6),
                   child: Row(
                     children: [
-                      Icon(Icons.video_library, color: AppTheme.neonBlue, size: 14),
-                      SizedBox(width: 6),
-                      Text('قائمة الملخصات', style: TextStyle(color: Colors.white70, fontWeight: FontWeight.bold, fontSize: 13, fontFamily: 'Cairo')),
+                      Icon(Icons.video_library, color: AppTheme.neonBlue, size: 16),
+                      const SizedBox(width: 8),
+                      Text('قائمة الملخصات والأهداف', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
                     ],
                   ),
                 ),
-                _buildSmallListItem(title: 'أهداف وملخص مباراة الاتحاد والأهلي (٠ - ٢) بصوت المعلق الحماسي الدوري السعودي', buttonText: 'شاهد الملخص', isVideo: true, timeOrDuration: '08:40'),
+                _buildSmallListItem(title: 'أهداف وملخص مباراة الاتحاد والأهلي (٠ - ٢) بصوت المعلق الحماسي للدوري', buttonText: 'شاهد الملخص', isVideo: true, timeOrDuration: '08:40'),
                 _buildSmallListItem(title: 'ملخص مواجهة الشباب والاتفاق النارية المليئة بالبطاقات الملونة والإثارة الكاملة', buttonText: 'شاهد الملخص', isVideo: true, timeOrDuration: '10:15'),
               ],
-              const SizedBox(height: 100), // مساحة للشريط السفلي الموحد
+              const SizedBox(height: 120),
             ],
           ),
         ),
@@ -129,32 +126,31 @@ class _NewsScreenState extends State<NewsScreen> {
     );
   }
 
-  // 🌟 المربع الكبير الفخم في أعلى الصفحة (لأهم خبر أو أقوى ملخص لليوم)
   Widget _buildFeaturedBigCard({required String title, required String buttonText, required bool isVideo, String? duration}) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       child: GlassCard(
-        borderRadius: 24,
+        borderRadius: 28,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              height: 180,
+              height: 190,
               width: double.infinity,
               decoration: BoxDecoration(
                 color: const Color(0x0AFFFFFF),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: const Color(0x1A00B4FF)),
+                borderRadius: BorderRadius.circular(18),
+                border: Border.all(color: const Color(0x2600B4FF), width: 1.2),
               ),
               child: Center(
                 child: Icon(
-                  isVideo ? Icons.play_circle_filled : Icons.image_outlined,
+                  isVideo ? Icons.play_circle_filled : Icons.image,
                   color: const Color(0x6600B4FF),
-                  size: 54,
+                  size: 58,
                 ),
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 14),
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -163,36 +159,29 @@ class _NewsScreenState extends State<NewsScreen> {
                     title,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold, height: 1.4, fontFamily: 'Cairo'),
+                    style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold, height: 1.4, fontFamily: 'Cairo'),
                   ),
                 ),
                 if (isVideo && duration != null) ...[
-                  const SizedBox(width: 10),
-                  // 🌟 مربع التوقيت المضيء الفخم للملخص الكبير
+                  const SizedBox(width: 12),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(color: const Color(0x1A00B4FF), borderRadius: BorderRadius.circular(8), border: Border.all(color: const Color(0x3300B4FF))),
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    decoration: BoxDecoration(color: const Color(0x3300B4FF), borderRadius: BorderRadius.circular(10), border: Border.all(color: AppTheme.neonBlue, width: 1.2)),
                     child: Text(
                       duration,
-                      style: const TextStyle(color: Color(0xFF00B4FF), fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo'),
+                      style: const TextStyle(color: AppTheme.neonBlue, fontSize: 13, fontWeight: FontWeight.bold, fontFamily: 'Cairo'),
                     ),
                   ),
                 ],
               ],
             ),
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 12.0),
-              child: Divider(color: Colors.white10, height: 1),
-            ),
+            const Padding(padding: EdgeInsets.symmetric(vertical: 14.0), child: Divider(color: Colors.white10, height: 1)),
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 SizedBox(
-                  width: 125,
-                  child: NeonButton(
-                    text: buttonText,
-                    onPressed: () {},
-                  ),
+                  width: 130,
+                  child: NeonButton(text: buttonText, onPressed: () {}),
                 ),
               ],
             ),
@@ -202,34 +191,27 @@ class _NewsScreenState extends State<NewsScreen> {
     );
   }
 
-  // 🌟 المربعات المصغرة المحدثة بتوقيت مضيء ومؤثرات البصر
   Widget _buildSmallListItem({required String title, required String buttonText, required bool isVideo, required String timeOrDuration}) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       child: GlassCard(
-        borderRadius: 18,
-        padding: const EdgeInsets.all(12),
+        borderRadius: 20,
+        padding: const EdgeInsets.all(14),
         child: Row(
           children: [
-            // جهة الصورة مع وميض إطار نيون أزرق خفيف
             Container(
-              width: 95,
-              height: 80,
+              width: 105,
+              height: 85,
               decoration: BoxDecoration(
                 color: const Color(0x05FFFFFF),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: const Color(0x2600B4FF), width: 1.2),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: const Color(0x3300B4FF), width: 1.2),
               ),
               child: Center(
-                child: Icon(
-                  isVideo ? Icons.play_circle_outline : Icons.newspaper,
-                  color: Colors.white24,
-                  size: 26,
-                ),
+                child: Icon(isVideo ? Icons.play_circle_outline : Icons.newspaper, color: Colors.white38, size: 30),
               ),
             ),
-            const SizedBox(width: 12),
-            // جهة النصوص والبيانات والـ الأزرار المصغرة بالاتجاه المظبوط
+            const SizedBox(width: 14),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -238,34 +220,32 @@ class _NewsScreenState extends State<NewsScreen> {
                     title,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(color: Color(0xFFEEEEEE), fontSize: 12, fontWeight: FontWeight.w600, height: 1.3, fontFamily: 'Cairo'),
+                    style: const TextStyle(color: Color(0xFFEEEEEE), fontSize: 13, fontWeight: FontWeight.bold, height: 1.4, fontFamily: 'Cairo'),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 12),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       SizedBox(
-                        width: 100,
-                        child: NeonButton(
-                          text: buttonText,
-                          onPressed: () {},
-                        ),
+                        width: 105,
+                        child: NeonButton(text: buttonText, onPressed: () {}),
                       ),
-                      // 🌟 مربع التوقيت الصغير المضيء للفخامة (نفس طلبك بالملي)
+                      // 🌟 طلب نواف الملكي: مربع توقيت كبير مستقل ومضيء بنيون فخم ومستقر
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                         decoration: BoxDecoration(
-                          color: const Color(0x1A00B4FF),
-                          borderRadius: BorderRadius.circular(6),
-                          border: Border.all(color: const Color(0x2600B4FF)),
+                          color: const Color(0x2600B4FF),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: AppTheme.neonBlue, width: 1.2),
+                          boxShadow: [const BoxShadow(color: Color(0x1F00B4FF), blurRadius: 6)],
                         ),
                         child: Row(
                           children: [
-                            Icon(isVideo ? Icons.access_time : Icons.access_time_filled, color: AppTheme.neonBlue, size: 11),
-                            const SizedBox(width: 4),
+                            Icon(isVideo ? Icons.access_time : Icons.access_time_filled, color: AppTheme.neonBlue, size: 12),
+                            const SizedBox(width: 5),
                             Text(
                               timeOrDuration,
-                              style: const TextStyle(color: Color(0xFF00B4FF), fontSize: 10, fontWeight: FontWeight.bold, fontFamily: 'Cairo'),
+                              style: const TextStyle(color: Color(0xFF00B4FF), fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo'),
                             ),
                           ],
                         ),
