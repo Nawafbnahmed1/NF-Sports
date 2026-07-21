@@ -4,7 +4,6 @@ import '../widgets/glass_card.dart';
 import '../widgets/neon_button.dart';
 import 'match_detail_screen.dart';
 
-// 🧱 كلاس بروفيسور مجهز ومفتوح لاستقبال بيانات اللقاء الحية تلقائياً من روابط المواقع لاحقاً (API Model)
 class MatchModel {
   final String team1;
   final String team2;
@@ -36,7 +35,7 @@ class MatchesScreen extends StatefulWidget {
 
 class _MatchesScreenState extends State<MatchesScreen> {
   bool _isResultsTab = false;
-  int _selectedDateIndex = 2; // مؤشر ذكي لرصد دقة اليوم والتحويل التلقائي فور الربط
+  int _selectedDateIndex = 2;
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +47,6 @@ class _MatchesScreenState extends State<MatchesScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // التبويبات العلوية المزدوجة الثابتة والمحمية للتنقل بين المباريات والنتائج
               Directionality(
                 textDirection: TextDirection.rtl,
                 child: Padding(
@@ -105,22 +103,18 @@ class _MatchesScreenState extends State<MatchesScreen> {
                 ),
               ),
 
-              // 📅 شريط التقويم التفاعلي الذكي لطلب نواف: مستعد وعار لسحب التواريخ والأيام الحية فوراً من الروابط
               SizedBox(
                 height: 80,
                 child: ListView.builder(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   scrollDirection: Axis.horizontal,
                   physics: const BouncingScrollPhysics(),
-                  itemCount: 5, // مجهز لاستيعاب الأيام الخمسة الحية المحدثة سحابياً تلقائياً
+                  itemCount: 5,
                   itemBuilder: (context, index) {
                     bool isSelected = index == _selectedDateIndex;
                     return InkWell(
                       onTap: () {
-                        setState(() { 
-                          _selectedDateIndex = index;
-                          // 🔄 هنا يتم إطلاق دالة جذب وتحديث جدول مباريات التاريخ المختار تلقائياً فور الربط بالـ API
-                        });
+                        setState(() { _selectedDateIndex = index; });
                       },
                       borderRadius: BorderRadius.circular(18),
                       child: Container(
@@ -157,25 +151,23 @@ class _MatchesScreenState extends State<MatchesScreen> {
               ),
               const SizedBox(height: 10),
               
-              // 🔄 معالجة وعرض كروت اللقاءات ديناميكياً 100% بناءً على البيانات القادمة من الروابط سحابياً
               ListView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
-                itemCount: 2, // مجهز لاستقبال عدد المباريات الحقيقي آلياً من السيرفر
+                itemCount: 2, 
                 itemBuilder: (context, index) {
-                  // كتل فنية فارغة ومفتوحة ومحصنة تماماً لاستقبال ضخ الروابط الحية فوراً
                   final match = MatchModel(
-                    team1: index == 0 ? 'الهلال' : 'الاتحاد',
-                    team2: index == 0 ? 'النصر' : 'الأهلي',
-                    time: index == 0 ? '09:45 PM' : '07:30 PM',
-                    r1: index == 0 ? 'المركز: 1' : 'المركز: 3',
-                    r2: index == 0 ? 'المركز: 2' : 'المركز: 5',
-                    f1: index == 0 ? ['W', 'W', 'W'] : ['W', 'L', 'W'],
-                    f2: index == 0 ? ['W', 'D', 'L'] : ['D', 'W', 'L'],
-                    scorer1: index == 0 ? 'ميتروفيتش (18 هدف)' : 'بنزيما (12 هدف)',
-                    scorer2: index == 0 ? 'رونالدو (20 هدف)' : 'محرز (9 أهداف)',
-                    countdown: index == 0 ? '03:59:59' : '01:45:12',
-                    score: index == 0 ? '3 - 1' : '0 - 2',
+                    team1: index == 0 ? '' : '',
+                    team2: index == 0 ? '' : '',
+                    time: index == 0 ? '' : '',
+                    r1: index == 0 ? '' : '',
+                    r2: index == 0 ? '' : '',
+                    f1: index == 0 ? ['', '', ''] : ['', '', ''],
+                    f2: index == 0 ? ['', '', ''] : ['', '', ''],
+                    scorer1: index == 0 ? '' : '',
+                    scorer2: index == 0 ? '' : '',
+                    countdown: index == 0 ? '' : '',
+                    score: index == 0 ? '' : '',
                     isEnded: _isResultsTab,
                   );
 
@@ -192,7 +184,6 @@ class _MatchesScreenState extends State<MatchesScreen> {
     );
   }
 
-  // 🏟️ دالة كارت المباريات الديناميكية المستقرة والملمومة لطلب نواف العالمي
   Widget _buildLiveCard(BuildContext context, MatchModel match) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
@@ -223,9 +214,9 @@ class _MatchesScreenState extends State<MatchesScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(children: match.f1.map((f) => Container(width: 15, height: 15, margin: const EdgeInsets.symmetric(horizontal: 2), decoration: BoxDecoration(color: f == 'W' ? Colors.green.withValues(alpha: 0.2) : Colors.redAccent.withValues(alpha: 0.2), shape: BoxShape.circle, border: Border.all(color: f == 'W' ? Colors.green : Colors.redAccent, width: 1.2)), child: Center(child: Text(f, style: TextStyle(color: f == 'W' ? Colors.green : Colors.redAccent, fontSize: 9, fontWeight: FontWeight.bold))))).toList()),
+                Row(children: match.f1.map((f) => Container(width: 15, height: 15, margin: const EdgeInsets.symmetric(horizontal: 2), decoration: BoxDecoration(color: const Color(0x1AFFFFFF), shape: BoxShape.circle, border: Border.all(color: Colors.white24, width: 1.2)), child: Center(child: Text(f, style: const TextStyle(color: Colors.white38, fontSize: 9, fontWeight: FontWeight.bold))))).toList()),
                 const Text('مؤشرات الأداء الأخيرة', style: TextStyle(color: Colors.white38, fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
-                Row(children: match.f2.map((f) => Container(width: 15, height: 15, margin: const EdgeInsets.symmetric(horizontal: 2), decoration: BoxDecoration(color: f == 'W' ? Colors.green.withValues(alpha: 0.2) : Colors.redAccent.withValues(alpha: 0.2), shape: BoxShape.circle, border: Border.all(color: f == 'W' ? Colors.green : Colors.redAccent, width: 1.2)), child: Center(child: Text(f, style: TextStyle(color: f == 'W' ? Colors.green : Colors.redAccent, fontSize: 9, fontWeight: FontWeight.bold))))).toList()),
+                Row(children: match.f2.map((f) => Container(width: 15, height: 15, margin: const EdgeInsets.symmetric(horizontal: 2), decoration: BoxDecoration(color: const Color(0x1AFFFFFF), shape: BoxShape.circle, border: Border.all(color: Colors.white24, width: 1.2)), child: Center(child: Text(f, style: const TextStyle(color: Colors.white38, fontSize: 9, fontWeight: FontWeight.bold))))).toList()),
               ],
             ),
             const Padding(padding: EdgeInsets.symmetric(vertical: 8.0), child: Divider(color: Colors.white10)),
@@ -240,7 +231,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
                       children: [
                         const Icon(Icons.sports_soccer, color: Colors.white38, size: 14),
                         const SizedBox(width: 6),
-                        Expanded(child: Text('هداف الفريق: ${match.scorer1}', maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold, fontFamily: 'Cairo'))),
+                        Expanded(child: Text(match.scorer1, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold, fontFamily: 'Cairo'))),
                       ],
                     ),
                   ),
@@ -249,7 +240,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        Expanded(child: Text('هداف الفريق: ${match.scorer2}', maxLines: 1, overflow: TextOverflow.ellipsis, textAlign: TextAlign.left, style: const TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold, fontFamily: 'Cairo'))),
+                        Expanded(child: Text(match.scorer2, maxLines: 1, overflow: TextOverflow.ellipsis, textAlign: TextAlign.left, style: const TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold, fontFamily: 'Cairo'))),
                         const SizedBox(width: 6),
                         const Icon(Icons.sports_soccer, color: Colors.white38, size: 14),
                       ],
@@ -266,7 +257,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
     );
   }
 
-  // 📊 دالة كارت النتائج والأحداث التصاعدية بحرف د والأرقام الإنجليزية الموحدة لطلب نواف الاستثنائي
+  // 📊 دالة كارت النتائج والأحداث مفرغة كلياً ومحمية من تداخل النصوص لطلب نواف العبقري
   Widget _buildCustomResultCard(BuildContext context, MatchModel match) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
@@ -278,7 +269,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(child: Column(children: [const Icon(Icons.shield, color: Colors.white, size: 36), const SizedBox(height: 10), Text(match.team1, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold, fontFamily: 'Cairo')), const SizedBox(height: 8), Container(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6), decoration: BoxDecoration(color: const Color(0x2600B4FF), borderRadius: BorderRadius.circular(10)), child: Text(match.r1, style: const TextStyle(color: Color(0xFF00B4FF), fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo')))])) ,
-                Column(children: [Text(match.score, style: const TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold, fontFamily: 'Cairo')), const SizedBox(height: 6), const Text('انتهت', style: TextStyle(color: Colors.green, fontSize: 12, fontWeight: FontWeight.bold, fontFamily: 'Cairo'))]),
+                Column(children: [Text(match.score, style: const TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold, fontFamily: 'Cairo')), const SizedBox(height: 6), const Text('', style: TextStyle(color: Colors.green, fontSize: 12, fontWeight: FontWeight.bold, fontFamily: 'Cairo'))]),
                 Expanded(child: Column(children: [const Icon(Icons.shield, color: Colors.white, size: 36), const SizedBox(height: 10), Text(match.team2, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold, fontFamily: 'Cairo')), const SizedBox(height: 8), Container(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6), decoration: BoxDecoration(color: const Color(0x2600B4FF), borderRadius: BorderRadius.circular(10)), child: Text(match.r2, style: const TextStyle(color: Color(0xFF00B4FF), fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo')))])) ,
               ],
             ),
@@ -287,49 +278,9 @@ class _MatchesScreenState extends State<MatchesScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                if (match.team1 == 'الهلال') ...[
-                  const Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(children: [Icon(Icons.style, color: Colors.amber, size: 13), SizedBox(width: 6), Text('مالكوم  د 81 (🟨)', style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold, fontFamily: 'Cairo'))]),
-                      SizedBox(height: 8),
-                      Row(children: [Icon(Icons.sports_soccer, color: Colors.green, size: 13), SizedBox(width: 6), Text('سالم الدوسري  د 68', style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold, fontFamily: 'Cairo'))]),
-                      SizedBox(height: 8),
-                      Row(children: [Icon(Icons.sports_soccer, color: Colors.green, size: 13), SizedBox(width: 6), Text('ميتروفيتش  د 42', style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold, fontFamily: 'Cairo'))]),
-                    ],
-                  ),
-                  const Text('الأحداث والبطاقات', style: TextStyle(color: Colors.white24, fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
-                  const Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Row(children: [Text('لابورت  د 89 (🟥)', style: TextStyle(color: Colors.redAccent, fontSize: 13, fontWeight: FontWeight.bold, fontFamily: 'Cairo')), SizedBox(width: 6), Icon(Icons.style, color: Colors.red, size: 13)]),
-                      SizedBox(height: 8),
-                      Row(children: [Text('رونالدو   د 55', style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold, fontFamily: 'Cairo')), SizedBox(width: 6), Icon(Icons.sports_soccer, color: Colors.green, size: 13)]),
-                      SizedBox(height: 8),
-                      Row(children: [Text('أوتافيو  د 30 (🟨)', style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold, fontFamily: 'Cairo')), SizedBox(width: 6), Icon(Icons.style, color: Colors.amber, size: 13)]),
-                    ],
-                  ),
-                ] else ...[
-                  const Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(children: [Icon(Icons.style, color: Colors.amber, size: 13), SizedBox(width: 6), Text('بنزيما  د 76 (🟨)', style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold, fontFamily: 'Cairo'))]),
-                      SizedBox(height: 8),
-                      Row(children: [Icon(Icons.sports_soccer, color: Colors.green, size: 13), SizedBox(width: 6), Text('كانتي  د 22', style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold, fontFamily: 'Cairo'))]),
-                    ],
-                  ),
-                  const Text('الأحداث والبطاقات', style: TextStyle(color: Colors.white24, fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
-                  const Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Row(children: [Text('توني  د 88 (🟨)', style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold, fontFamily: 'Cairo')), SizedBox(width: 6), Icon(Icons.style, color: Colors.amber, size: 13)]),
-                      SizedBox(height: 8),
-                      Row(children: [Text('فرانك كيسي  د 61', style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold, fontFamily: 'Cairo')), SizedBox(width: 6), Icon(Icons.sports_soccer, color: Colors.green, size: 13)]),
-                      SizedBox(height: 8),
-                      Row(children: [Text('محرز  د 14 (🟨)', style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold, fontFamily: 'Cairo')), SizedBox(width: 6), Icon(Icons.style, color: Colors.amber, size: 13)]),
-                    ],
-                  ),
-                ],
+                const Column(crossAxisAlignment: CrossAxisAlignment.start, children: []),
+                const Text('', style: TextStyle(color: Colors.white24, fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                const Column(crossAxisAlignment: CrossAxisAlignment.end, children: []),
               ],
             ),
             const Padding(padding: EdgeInsets.symmetric(vertical: 14.0), child: Divider(color: Colors.white10)),

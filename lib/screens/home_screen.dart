@@ -5,7 +5,6 @@ import '../widgets/section_title.dart';
 import '../widgets/neon_button.dart';
 import 'match_detail_screen.dart';
 
-// 🧱 نموذج بروفيسور حر وخالٍ تماماً من أي نصوص ثابتة ومستعد لاستقبال بيانات السيرفر
 class HomeMatchModel {
   final String team1;
   final String team2;
@@ -22,6 +21,19 @@ class HomeMatchModel {
     required this.team1, required this.team2, required this.status,
     required this.time, required this.p1, required this.p2,
     required this.h1, required this.h2, required this.f1, required this.f2,
+  });
+}
+
+// 🧱 نموذج بروفيسور مطهر ومجهز لاستقبال عناوين الأخبار والملخصات الحقيقية من روابط المواقع (API News Model)
+class HomeMediaModel {
+  final String title;
+  final String imageUrl;
+  final String videoUrl;
+
+  const HomeMediaModel({
+    required this.title,
+    required this.imageUrl,
+    required this.videoUrl,
   });
 }
 
@@ -70,16 +82,14 @@ class HomeScreen extends StatelessWidget {
               ),
               const SectionTitle(title: 'مباريات اليوم'),
               
-              // 🏟️ شريط المباريات التمريري الأفقي (Horizontal Carousel) المطور والمفرغ تماماً من نصوص التجارب لربط الروابط الحية
               SizedBox(
-                height: 355, // تحديد ارتفاع مثالي ملموم ونحيف لمنع أي منظر سلبي
+                height: 355,
                 child: ListView.builder(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   scrollDirection: Axis.horizontal,
                   physics: const BouncingScrollPhysics(),
-                  itemCount: 3, // مجهز ليعرض قمم اليوم جنب بعضها أفقياً تلقائياً من الروابط
+                  itemCount: 3,
                   itemBuilder: (context, index) {
-                    // 🔄 خلايا انتظار وتمرير ذكية وحرة ومفرغة كلياً من النصوص الثابتة القديمة لطلب نواف
                     final match = HomeMatchModel(
                       team1: index == 0 ? '' : (index == 1 ? '' : ''),
                       team2: index == 0 ? '' : (index == 1 ? '' : ''),
@@ -94,10 +104,10 @@ class HomeScreen extends StatelessWidget {
                     );
 
                     return Container(
-                      width: 325, // رشق وتصغير العرض بالملي لكي يظهر طرف المربع الثاني جنبه ويسحبه المستخدم فورا
+                      width: 325,
                       margin: const EdgeInsets.only(right: 16),
                       child: GlassCard(
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12), // تقليص وحلق المسافات الداخلية ليكون ملموماً ونحيفاً
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                         borderRadius: 24,
                         child: Column(
                           children: [
@@ -118,7 +128,7 @@ class HomeScreen extends StatelessWidget {
                                   child: Column(
                                     children: [
                                       Container(
-                                        padding: const EdgeInsets.all(8), // تصغير وتلميم الأيقونات
+                                        padding: const EdgeInsets.all(8),
                                         decoration: BoxDecoration(color: const Color(0x0AFFFFFF), shape: BoxShape.circle, border: Border.all(color: const Color(0x3300B4FF), width: 1)),
                                         child: Icon(Icons.shield, color: Colors.white, size: 28),
                                       ),
@@ -238,6 +248,7 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
+  // 🔄 دالة بناء شريط السحب الأفقي للأخبار واللقطات مفرغة كلياً ومحمية وجاهزة للروابط والـ API لطلب نواف
   Widget _buildHorizontalList({required bool isNews}) {
     return SizedBox(
       height: isNews ? 140 : 110,
@@ -245,8 +256,14 @@ class HomeScreen extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 20),
         scrollDirection: Axis.horizontal,
         physics: const BouncingScrollPhysics(),
-        itemCount: 3,
+        itemCount: 3, 
         itemBuilder: (context, index) {
+          final media = HomeMediaModel(
+            title: '',
+            imageUrl: '',
+            videoUrl: '',
+          );
+
           return Container(
             width: isNews ? 150 : 220,
             margin: const EdgeInsets.only(right: 15),
@@ -261,7 +278,7 @@ class HomeScreen extends StatelessWidget {
                     right: 12,
                     left: 12,
                     child: Text(
-                      '',
+                      media.title,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold, fontFamily: 'Cairo'),
