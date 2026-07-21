@@ -5,6 +5,7 @@ import '../widgets/section_title.dart';
 import '../widgets/neon_button.dart';
 import 'match_detail_screen.dart';
 
+// 🧱 نموذج بروفيسور حر وخالٍ تماماً من أي نصوص ثابتة ومستعد لاستقبال بيانات السيرفر
 class HomeMatchModel {
   final String team1;
   final String team2;
@@ -69,32 +70,34 @@ class HomeScreen extends StatelessWidget {
               ),
               const SectionTitle(title: 'مباريات اليوم'),
               
+              // 🏟️ شريط المباريات التمريري الأفقي (Horizontal Carousel) المطور والمفرغ تماماً من نصوص التجارب لربط الروابط الحية
               SizedBox(
-                height: 355,
+                height: 355, // تحديد ارتفاع مثالي ملموم ونحيف لمنع أي منظر سلبي
                 child: ListView.builder(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   scrollDirection: Axis.horizontal,
                   physics: const BouncingScrollPhysics(),
-                  itemCount: 3,
+                  itemCount: 3, // مجهز ليعرض قمم اليوم جنب بعضها أفقياً تلقائياً من الروابط
                   itemBuilder: (context, index) {
+                    // 🔄 خلايا انتظار وتمرير ذكية وحرة ومفرغة كلياً من النصوص الثابتة القديمة لطلب نواف
                     final match = HomeMatchModel(
-                      team1: index == 0 ? 'الهلال' : (index == 1 ? 'الاتحاد' : 'الشباب'),
-                      team2: index == 0 ? 'النصر' : (index == 1 ? 'الأهلي' : 'القادسية'),
-                      status: index == 0 ? 'قمة الكلاسيكو المرتقبة' : (index == 1 ? 'ديربي الغربية الناري' : 'لقاء العاصمة الحاسم'),
-                      time: index == 0 ? '09:45 PM' : (index == 1 ? '07:30 PM' : '06:00 PM'),
-                      p1: index == 0 ? '55%' : (index == 1 ? '45%' : '40%'),
-                      p2: index == 0 ? '30%' : (index == 1 ? '35%' : '30%'),
-                      h1: index == 0 ? 'ميتروفيتش (18 هدف)' : (index == 1 ? 'بنزيما (12 هدف)' : 'حمدالله (10 أهداف)'),
-                      h2: index == 0 ? 'رونالدو (20 goal)' : (index == 1 ? 'محرز (9 أهداف)' : 'أوباميانغ (8 أهداف)'),
-                      f1: index == 0 ? 'W W W' : (index == 1 ? 'W L W' : 'D W W'),
-                      f2: index == 0 ? 'W D L' : (index == 1 ? 'D W L' : 'W L D'),
+                      team1: index == 0 ? '' : (index == 1 ? '' : ''),
+                      team2: index == 0 ? '' : (index == 1 ? '' : ''),
+                      status: index == 0 ? '' : (index == 1 ? '' : ''),
+                      time: index == 0 ? '' : (index == 1 ? '' : ''),
+                      p1: index == 0 ? '0%' : (index == 1 ? '0%' : '0%'),
+                      p2: index == 0 ? '0%' : (index == 1 ? '0%' : '0%'),
+                      h1: index == 0 ? '' : (index == 1 ? '' : ''),
+                      h2: index == 0 ? '' : (index == 1 ? '' : ''),
+                      f1: index == 0 ? '' : (index == 1 ? '' : ''),
+                      f2: index == 0 ? '' : (index == 1 ? '' : ''),
                     );
 
                     return Container(
-                      width: 325,
+                      width: 325, // رشق وتصغير العرض بالملي لكي يظهر طرف المربع الثاني جنبه ويسحبه المستخدم فورا
                       margin: const EdgeInsets.only(right: 16),
                       child: GlassCard(
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12), // تقليص وحلق المسافات الداخلية ليكون ملموماً ونحيفاً
                         borderRadius: 24,
                         child: Column(
                           children: [
@@ -115,7 +118,7 @@ class HomeScreen extends StatelessWidget {
                                   child: Column(
                                     children: [
                                       Container(
-                                        padding: const EdgeInsets.all(8),
+                                        padding: const EdgeInsets.all(8), // تصغير وتلميم الأيقونات
                                         decoration: BoxDecoration(color: const Color(0x0AFFFFFF), shape: BoxShape.circle, border: Border.all(color: const Color(0x3300B4FF), width: 1)),
                                         child: Icon(Icons.shield, color: Colors.white, size: 28),
                                       ),
@@ -125,7 +128,7 @@ class HomeScreen extends StatelessWidget {
                                       Container(
                                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                                         decoration: BoxDecoration(color: const Color(0x2600B4FF), borderRadius: BorderRadius.circular(8)),
-                                        child: Text('المركز: 1', style: TextStyle(color: Color(0xFF00B4FF), fontSize: 10, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                                        child: Text('', style: TextStyle(color: Color(0xFF00B4FF), fontSize: 10, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
                                       ),
                                     ],
                                   ),
@@ -137,10 +140,10 @@ class HomeScreen extends StatelessWidget {
                                     Container(
                                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                                       decoration: BoxDecoration(color: const Color(0x4D00B4FF), borderRadius: BorderRadius.circular(6), border: Border.all(color: AppTheme.neonBlue, width: 1)),
-                                      child: Text('03:59:59', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                                      child: Text(match.time, style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
                                     ),
                                     const SizedBox(height: 4),
-                                    Text('لم تبدأ', style: TextStyle(color: Colors.white38, fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                                    Text('', style: TextStyle(color: Colors.white38, fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
                                   ],
                                 ),
                                 Expanded(
@@ -157,7 +160,7 @@ class HomeScreen extends StatelessWidget {
                                       Container(
                                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                                         decoration: BoxDecoration(color: const Color(0x2600B4FF), borderRadius: BorderRadius.circular(8)),
-                                        child: Text('المركز: 2', style: TextStyle(color: Color(0xFF00B4FF), fontSize: 10, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                                        child: Text('', style: TextStyle(color: Color(0xFF00B4FF), fontSize: 10, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
                                       ),
                                     ],
                                   ),
@@ -168,8 +171,8 @@ class HomeScreen extends StatelessWidget {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text('فوز الهلال: ${match.p1}', style: TextStyle(color: AppTheme.neonBlue, fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
-                                Text('فوز النصر: ${match.p2}', style: TextStyle(color: Colors.redAccent, fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                                Text(match.p1, style: TextStyle(color: AppTheme.neonBlue, fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                                Text(match.p2, style: TextStyle(color: Colors.redAccent, fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
                               ],
                             ),
                             const SizedBox(height: 6),
@@ -181,9 +184,9 @@ class HomeScreen extends StatelessWidget {
                                 color: Colors.white10,
                                 child: Row(
                                   children: [
-                                    Expanded(flex: int.parse(match.p1.replaceAll('%', '')), child: Container(color: AppTheme.neonBlue)), 
+                                    Expanded(flex: int.parse(match.p1.replaceAll('%', '')) > 0 ? int.parse(match.p1.replaceAll('%', '')) : 1, child: Container(color: AppTheme.neonBlue)), 
                                     Expanded(flex: 15, child: Container(color: Colors.white30)),   
-                                    Expanded(flex: int.parse(match.p2.replaceAll('%', '')), child: Container(color: Colors.redAccent)), 
+                                    Expanded(flex: int.parse(match.p2.replaceAll('%', '')) > 0 ? int.parse(match.p2.replaceAll('%', '')) : 1, child: Container(color: Colors.redAccent)), 
                                   ],
                                 ),
                               ),
@@ -202,7 +205,7 @@ class HomeScreen extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(match.f1, style: TextStyle(color: Colors.green, fontSize: 13, fontWeight: FontWeight.bold, letterSpacing: 1.5)),
-                                Text('النتائج الأخيرة ومؤشرات الأداء', style: const TextStyle(color: Colors.white38, fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                                Text('', style: const TextStyle(color: Colors.white38, fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
                                 Text(match.f2, style: TextStyle(color: Colors.amber, fontSize: 13, fontWeight: FontWeight.bold, letterSpacing: 1.5)),
                               ],
                             ),
@@ -258,7 +261,7 @@ class HomeScreen extends StatelessWidget {
                     right: 12,
                     left: 12,
                     child: Text(
-                      isNews ? 'أهم خبر لليوم...' : 'أقوى ملخص كروي...',
+                      '',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold, fontFamily: 'Cairo'),
