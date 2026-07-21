@@ -12,10 +12,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
       title: 'NF Sports',
       theme: AppTheme.darkTheme,
-      home: const NavigationScreen(), // الانطلاق المباشر من شاشة الإدارة والشريط الموحد المتناسق
+      home: NavigationScreen(),
     );
   }
 }

@@ -15,7 +15,7 @@ class NavigationScreen extends StatefulWidget {
 class _NavigationScreenState extends State<NavigationScreen> {
   int _selectedIndex = 0;
 
-  // 🌟 طهرنا المصفوفة تماماً ومسحنا كلمة const من أمام HomeScreen لتشتغل السحبة الأفقية بدون تعارض
+  // 🌟 طهرنا المصفوفة ومسحنا كلمة const من أمام HomeScreen لتشتغل السحبة الأفقية بدون أي تعارض
   final List<Widget> _screens = [
     HomeScreen(), 
     const MatchesScreen(),

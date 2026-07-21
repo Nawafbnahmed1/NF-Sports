@@ -15,7 +15,7 @@ class ResultsScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // 🏆 1. الهيدر البانورامي العلوي الكاسح مع كأس دوري الأبطال النيوني
+              // 🏆 1. الهيدر البانورامي العلوي الكاسح مع كأس أبطال أوروبا المتوهج
               Container(
                 width: double.infinity,
                 height: 180,
@@ -57,7 +57,7 @@ class ResultsScreen extends StatelessWidget {
                 ),
               ),
 
-              // عنوان الصفحة الحاد والمحاذي لليمين
+              // عنوان التبويب المحاذي لليمين
               const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20),
                 child: Align(
@@ -74,7 +74,7 @@ class ResultsScreen extends StatelessWidget {
               ),
               const SizedBox(height: 15),
 
-              // 👤 2. كارد الترحيب والتسجيل الزجاجي المضيء
+              // 👤 2. كارد الترحيب والتسجيل المطور والمحاذي بالملي من اليمين لليوم لطلبك الذكي
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: GlassCard(
@@ -91,91 +91,105 @@ class ResultsScreen extends StatelessWidget {
                       ),
                       const SizedBox(width: 15),
                       Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Align(alignment: Alignment.centerRight, child: Text('مرحباً بك في NF Sports 👋', style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold, fontFamily: 'Cairo'))),
-                            const SizedBox(height: 4),
-                            const Align(alignment: Alignment.centerRight, child: Text('ساعدنا في تقديم تجربة رياضية مخصصة لك.', style: TextStyle(color: Colors.white38, fontSize: 11, fontFamily: 'Cairo'))),
-                            const SizedBox(height: 12),
-                            InkWell(
-                              onTap: () {},
-                              borderRadius: BorderRadius.circular(12),
-                              child: Container(
-                                width: double.infinity,
-                                padding: const EdgeInsets.symmetric(vertical: 10),
-                                decoration: BoxDecoration(
-                                  color: const Color(0x3300B4FF),
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(color: AppTheme.neonBlue, width: 1.5),
-                                  boxShadow: const [BoxShadow(color: Color(0x3200B4FF), blurRadius: 8)],
-                                ),
-                                child: const Center(child: Text('تسجيل الدخول أو إنشاء حساب', style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold, fontFamily: 'Cairo'))),
-                              ),
-                            ),
-                          ],
+                        child: const Directionality(
+                          textDirection: TextDirection.rtl,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('مرحباً بك في NF Sports', style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                              SizedBox(height: 4),
+                              Text('ساعدنا في تقديم تجربة رياضية مخصصة لك', style: TextStyle(color: Colors.white38, fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                            ],
+                          ),
                         ),
                       ),
                     ],
                   ),
                 ),
               ),
-              const SizedBox(height: 15),
-
-              // 🧑‍💻 3. كارد المطور الأسطوري نواف بن أحمد المصلح والثابت
+              const SizedBox(height: 12),
+              // زر تسجيل الدخول المنفصل ليعطي فخامة وترتيب انسيابي للكارد العلوية
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: GlassCard(
-                  padding: const EdgeInsets.all(16),
-                  borderRadius: 22,
-                  child: Row(
-                    textDirection: TextDirection.rtl,
-                    children: [
-                      Container(
-                        width: 90,
-                        height: 100,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(16),
-                          image: const DecorationImage(
-                            image: NetworkImage('https://unsplash.com'),
-                            fit: BoxFit.cover,
-                          ),
-                          border: Border.all(color: Colors.white10, width: 1),
-                        ),
-                        child: Stack(
-                          children: [
-                            Positioned(
-                              bottom: 6,
-                              left: 6,
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                decoration: BoxDecoration(color: const Color(0xCC060B14), borderRadius: BorderRadius.circular(6)),
-                                child: const Text('NF', style: TextStyle(color: AppTheme.neonBlue, fontSize: 10, fontWeight: FontWeight.bold)),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 15),
-                      const Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Align(alignment: Alignment.centerRight, child: Text('المطور 🥷', style: TextStyle(color: Colors.white60, fontSize: 12, fontWeight: FontWeight.bold, fontFamily: 'Cairo'))),
-                            Align(alignment: Alignment.centerRight, child: Text('نواف بن أحمد', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold, fontFamily: 'Cairo'))),
-                            Align(alignment: Alignment.centerRight, child: Text('مؤسس ومطور تطبيق NF Sports', style: TextStyle(color: AppTheme.neonBlue, fontSize: 12, fontWeight: FontWeight.bold, fontFamily: 'Cairo'))),
-                            SizedBox(height: 6),
-                            Align(alignment: Alignment.centerRight, child: Text('شكراً لاستخدامك NF Sports. نعمل باستمرار على تطوير التطبيق لتقديم أفضل تجربة رياضية ممكنة.', textAlign: TextAlign.right, style: TextStyle(color: Colors.white38, fontSize: 11, fontFamily: 'Cairo'))),
-                          ],
-                        ),
-                      ),
-                    ],
+                child: InkWell(
+                  onTap: () {},
+                  borderRadius: BorderRadius.circular(14),
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    decoration: BoxDecoration(
+                      color: const Color(0x3300B4FF),
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(color: AppTheme.neonBlue, width: 1.5),
+                      boxShadow: const [BoxShadow(color: Color(0x3200B4FF), blurRadius: 8)],
+                    ),
+                    child: const Center(child: Text('تسجيل الدخول أو إنشاء حساب', style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold, fontFamily: 'Cairo'))),
                   ),
                 ),
               ),
               const SizedBox(height: 20),
 
-              // ⚙️ 4. قائمة الخيارات والإعدادات الـ 10 النيونية المنسقة بالملي (RTL)
+              // 🧑‍💻 3. كارد لوحة المصمم المحدثة والمحاذية كلياً بالملي لـ نواف بن أحمد وشعاره المضيء
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: GlassCard(
+                  padding: const EdgeInsets.all(16),
+                  borderRadius: 22,
+                  child: Column(
+                    children: [
+                      Row(
+                        textDirection: TextDirection.rtl,
+                        children: [
+                          Container(
+                            width: 80,
+                            height: 85,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(16),
+                              image: const DecorationImage(
+                                image: NetworkImage('https://unsplash.com'),
+                                fit: BoxFit.cover,
+                              ),
+                              border: Border.all(color: Colors.white10, width: 1),
+                            ),
+                          ),
+                          const SizedBox(width: 15),
+                          Expanded(
+                            child: const Directionality(
+                              textDirection: TextDirection.rtl,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('المطور', style: TextStyle(color: Colors.white60, fontSize: 12, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                                  SizedBox(height: 2),
+                                  Text('نواف بن أحمد', style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                                  SizedBox(height: 2),
+                                  Text('مؤسس ومطور تطبيق NF Sports', style: TextStyle(color: AppTheme.neonBlue, fontSize: 12, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const Padding(padding: EdgeInsets.symmetric(vertical: 10.0), child: Divider(color: Colors.white10, height: 1)),
+                      // رسالة الشكر والتطوير مصفوفة ومحاذية بالترتيب النصي الفخم لطلبك
+                      const Directionality(
+                        textDirection: TextDirection.rtl,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('شكراً لاستخدامك NF Sports.', style: TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                            SizedBox(height: 4),
+                            Text('نعمل باستمرار على تطوير التطبيق لنقدم أفضل تجربة رياضية ممكنة.', style: TextStyle(color: Colors.white38, fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 25),
+
+              // ⚙️ 4. قائمة الخيارات والإعدادات الـ 10 النيونية المنسقة بالملي (RTL) لطلب نواف الاستثنائي
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: GlassCard(
