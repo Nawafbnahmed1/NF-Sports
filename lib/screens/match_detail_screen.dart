@@ -53,24 +53,27 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with SingleTicker
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(child: Column(children: [const Icon(Icons.shield, color: Colors.white38, size: 42), const SizedBox(height: 8), Text(widget.team1, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold, fontFamily: 'Cairo'))])),
+                
+                // 🔄 هنا تم تفريغ وتطهير النتيجة وكلمة انتهت تماماً لطلب نواف لتصبح مستعدة لضخ الروابط الحقيقية (APIs)
                 Column(
                   children: [
-                    const Text('3 - 1', style: TextStyle(color: Colors.white, fontSize: 36, fontWeight: FontWeight.bold)),
+                    const Text('- : -', style: TextStyle(color: Colors.white24, fontSize: 36, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 4),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                      decoration: BoxDecoration(color: const Color(0x1A00FF00), borderRadius: BorderRadius.circular(8)),
-                      child: const Text('انتهت', style: TextStyle(color: Colors.green, fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                      decoration: BoxDecoration(color: const Color(0x0AFFFFFF), borderRadius: BorderRadius.circular(8)),
+                      child: const Text('في انتظار البداية', style: TextStyle(color: Colors.white38, fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
                     ),
                   ],
                 ),
+                
                 Expanded(child: Column(children: [const Icon(Icons.shield, color: Colors.white38, size: 42), const SizedBox(height: 8), Text(widget.team2, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold, fontFamily: 'Cairo'))])),
               ],
             ),
           ),
           const SizedBox(height: 15),
 
-          // شريط التبويبات المزدوج
+          // شريط التبويبات المزدوج المطور لطلب نواف الاستثنائي لربط شاشات الـ API
           Directionality(
             textDirection: TextDirection.rtl,
             child: Container(
@@ -98,7 +101,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with SingleTicker
             ),
           ),
 
-          // عرض الصفحات الفرعية التفاعلية المستقلة
+          // عرض الصفحات الفرعية التفاعلية المستقلة والمفرغة تماماً للـ API
           Expanded(
             child: TabBarView(
               controller: _tabController,
