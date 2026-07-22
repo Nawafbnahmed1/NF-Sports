@@ -4,7 +4,9 @@ import '../widgets/glass_card.dart';
 import '../widgets/neon_button.dart';
 import 'match_detail_screen.dart';
 
+// 🧱 نموذج بروفيسور مضاف إليه خانة اسم البطولة ديناميكياً لطلب نواف الاستثنائي (leagueName)
 class MatchModel {
+  final String leagueName;
   final String team1;
   final String team2;
   final String time;
@@ -19,7 +21,7 @@ class MatchModel {
   final bool isEnded;
 
   const MatchModel({
-    required this.team1, required this.team2, required this.time,
+    required this.leagueName, required this.team1, required this.team2, required this.time,
     required this.r1, required this.r2, required this.f1, required this.f2,
     required this.scorer1, required this.scorer2, required this.countdown,
     required this.score, required this.isEnded,
@@ -139,24 +141,16 @@ class _MatchesScreenState extends State<MatchesScreen> {
                 ),
               ),
               const SizedBox(height: 25),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                child: Row(
-                  children: [
-                    Icon(Icons.emoji_events, color: Colors.amber, size: 18),
-                    SizedBox(width: 8),
-                    Text('الدوري السعودي للمحترفين', style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 10),
               
+              // 🔄 معالجة وعرض كروت اللقاءات ديناميكياً 100% مفرغة ومستعدة لضخ الروابط الحية فوراً
               ListView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 itemCount: 2, 
                 itemBuilder: (context, index) {
+                  // خلايا فارغة بالملي واسم البطولة مرن ومتغير تماماً لتهيئة استقبال الروابط الحقيقية (APIs) لطلب نواف
                   final match = MatchModel(
+                    leagueName: '', // هنا تصبح خانة اسم البطولة حرة ومستعدة لاستقبال اسم أي دوري عالمي من الروابط آلياً
                     team1: index == 0 ? '' : '',
                     team2: index == 0 ? '' : '',
                     time: index == 0 ? '' : '',
@@ -171,9 +165,29 @@ class _MatchesScreenState extends State<MatchesScreen> {
                     isEnded: _isResultsTab,
                   );
 
-                  return _isResultsTab 
-                      ? _buildCustomResultCard(context, match)
-                      : _buildLiveCard(context, match);
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                        child: Row(
+                          textDirection: TextDirection.rtl,
+                          children: [
+                            const Icon(Icons.emoji_events, color: Colors.amber, size: 18),
+                            const SizedBox(width: 8),
+                            Text(
+                              match.leagueName.isEmpty ? 'في انتظار اسم البطولة الحية للـ API...' : match.leagueName, 
+                              style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold, fontFamily: 'Cairo'),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      _isResultsTab 
+                          ? _buildCustomResultCard(context, match)
+                          : _buildLiveCard(context, match),
+                    ],
+                  );
                 },
               ),
               const SizedBox(height: 120),
@@ -184,6 +198,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
     );
   }
 
+  // 🏟️ دالة كارت المباريات الديناميكية المستقرة والملمومة مفرغة ومستعدة لاستقبال الروابط
   Widget _buildLiveCard(BuildContext context, MatchModel match) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
