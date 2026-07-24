@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../theme/app_theme.dart';
 import '../widgets/glass_card.dart';
 import '../widgets/neon_button.dart';
 import 'match_detail_screen.dart';
 
-// 🧱 نموذج بروفيسور مضاف إليه خانة اسم البطولة ديناميكياً لطلب نواف الاستثنائي (leagueName)
 class MatchModel {
   final String leagueName;
   final String team1;
@@ -19,13 +19,43 @@ class MatchModel {
   final String countdown;
   final String score;
   final bool isEnded;
+  final String streamUrl;
 
   const MatchModel({
-    required this.leagueName, required this.team1, required this.team2, required this.time,
-    required this.r1, required this.r2, required this.f1, required this.f2,
-    required this.scorer1, required this.scorer2, required this.countdown,
-    required this.score, required this.isEnded,
+    required this.leagueName,
+    required this.team1,
+    required this.team2,
+    required this.time,
+    required this.r1,
+    required this.r2,
+    required this.f1,
+    required this.f2,
+    required this.scorer1,
+    required this.scorer2,
+    required this.countdown,
+    required this.score,
+    required this.isEnded,
+    required this.streamUrl,
   });
+
+  factory MatchModel.fromMap(Map<String, dynamic> map, {required bool isEnded}) {
+    return MatchModel(
+      leagueName: (map['league_name'] ?? '').toString(),
+      team1: (map['home_team_name'] ?? '').toString(),
+      team2: (map['away_team_name'] ?? '').toString(),
+      time: (map['match_time'] ?? '').toString(),
+      r1: (map['home_rank'] ?? '').toString(),
+      r2: (map['away_rank'] ?? '').toString(),
+      f1: const ['', '', ''],
+      f2: const ['', '', ''],
+      scorer1: (map['home_scorers'] ?? '').toString(),
+      scorer2: (map['away_scorers'] ?? '').toString(),
+      countdown: (map['countdown'] ?? '').toString(),
+      score: (map['score'] ?? '').toString(),
+      isEnded: isEnded,
+      streamUrl: (map['stream_url'] ?? '').toString(),
+    );
+  }
 }
 
 class MatchesScreen extends StatefulWidget {
@@ -36,8 +66,21 @@ class MatchesScreen extends StatefulWidget {
 }
 
 class _MatchesScreenState extends State<MatchesScreen> {
+  final supabase = Supabase.instance.client;
   bool _isResultsTab = false;
   int _selectedDateIndex = 2;
+  late Future<List<Map<String, dynamic>>> matchesFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    matchesFuture = fetchMatches();
+  }
+
+  Future<List<Map<String, dynamic>>> fetchMatches() async {
+    final data = await supabase.from('matches').select().order('match_date');
+    return List<Map<String, dynamic>>.from(data);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,21 +100,40 @@ class _MatchesScreenState extends State<MatchesScreen> {
                     children: [
                       Expanded(
                         child: InkWell(
-                          onTap: () { setState(() { _isResultsTab = false; }); },
+                          onTap: () {
+                            setState(() {
+                              _isResultsTab = false;
+                            });
+                          },
                           borderRadius: BorderRadius.circular(14),
                           child: Container(
                             padding: const EdgeInsets.symmetric(vertical: 14),
                             decoration: BoxDecoration(
                               color: !_isResultsTab ? const Color(0x3300B4FF) : const Color(0xCC0A1220),
                               borderRadius: BorderRadius.circular(14),
-                              border: Border.all(color: !_isResultsTab ? AppTheme.neonBlue : Colors.white10, width: 2),
+                              border: Border.all(
+                                color: !_isResultsTab ? AppTheme.neonBlue : Colors.white10,
+                                width: 2,
+                              ),
                             ),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.calendar_today, color: !_isResultsTab ? AppTheme.neonBlue : Colors.white38, size: 20),
+                                Icon(
+                                  Icons.calendar_today,
+                                  color: !_isResultsTab ? AppTheme.neonBlue : Colors.white38,
+                                  size: 20,
+                                ),
                                 const SizedBox(width: 10),
-                                Text('المباريات', style: TextStyle(color: !_isResultsTab ? AppTheme.neonBlue : Colors.white38, fontSize: 15, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                                Text(
+                                  'المباريات',
+                                  style: TextStyle(
+                                    color: !_isResultsTab ? AppTheme.neonBlue : Colors.white38,
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: 'Cairo',
+                                  ),
+                                ),
                               ],
                             ),
                           ),
@@ -80,21 +142,40 @@ class _MatchesScreenState extends State<MatchesScreen> {
                       const SizedBox(width: 15),
                       Expanded(
                         child: InkWell(
-                          onTap: () { setState(() { _isResultsTab = true; }); },
+                          onTap: () {
+                            setState(() {
+                              _isResultsTab = true;
+                            });
+                          },
                           borderRadius: BorderRadius.circular(14),
                           child: Container(
                             padding: const EdgeInsets.symmetric(vertical: 14),
                             decoration: BoxDecoration(
                               color: _isResultsTab ? const Color(0x3300B4FF) : const Color(0xCC0A1220),
                               borderRadius: BorderRadius.circular(14),
-                              border: Border.all(color: _isResultsTab ? AppTheme.neonBlue : Colors.white10, width: 2),
+                              border: Border.all(
+                                color: _isResultsTab ? AppTheme.neonBlue : Colors.white10,
+                                width: 2,
+                              ),
                             ),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.check_circle, color: _isResultsTab ? AppTheme.neonBlue : Colors.white38, size: 20),
+                                Icon(
+                                  Icons.check_circle,
+                                  color: _isResultsTab ? AppTheme.neonBlue : Colors.white38,
+                                  size: 20,
+                                ),
                                 const SizedBox(width: 10),
-                                Text('النتائج', style: TextStyle(color: _isResultsTab ? AppTheme.neonBlue : Colors.white38, fontSize: 15, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                                Text(
+                                  'النتائج',
+                                  style: TextStyle(
+                                    color: _isResultsTab ? AppTheme.neonBlue : Colors.white38,
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: 'Cairo',
+                                  ),
+                                ),
                               ],
                             ),
                           ),
@@ -104,7 +185,6 @@ class _MatchesScreenState extends State<MatchesScreen> {
                   ),
                 ),
               ),
-
               SizedBox(
                 height: 80,
                 child: ListView.builder(
@@ -113,10 +193,12 @@ class _MatchesScreenState extends State<MatchesScreen> {
                   physics: const BouncingScrollPhysics(),
                   itemCount: 5,
                   itemBuilder: (context, index) {
-                    bool isSelected = index == _selectedDateIndex;
+                    final isSelected = index == _selectedDateIndex;
                     return InkWell(
                       onTap: () {
-                        setState(() { _selectedDateIndex = index; });
+                        setState(() {
+                          _selectedDateIndex = index;
+                        });
                       },
                       borderRadius: BorderRadius.circular(18),
                       child: Container(
@@ -125,14 +207,28 @@ class _MatchesScreenState extends State<MatchesScreen> {
                         decoration: BoxDecoration(
                           color: isSelected ? const Color(0x2600B4FF) : AppTheme.surfaceColor,
                           borderRadius: BorderRadius.circular(18),
-                          border: Border.all(color: isSelected ? AppTheme.neonBlue : Colors.white10, width: 1.5),
+                          border: Border.all(
+                            color: isSelected ? AppTheme.neonBlue : Colors.white10,
+                            width: 1.5,
+                          ),
                         ),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.calendar_month, color: isSelected ? AppTheme.neonBlue : Colors.white38, size: 22),
+                            Icon(
+                              Icons.calendar_month,
+                              color: isSelected ? AppTheme.neonBlue : Colors.white38,
+                              size: 22,
+                            ),
                             const SizedBox(height: 6),
-                            Container(width: 20, height: 4, decoration: BoxDecoration(color: isSelected ? AppTheme.neonBlue : Colors.transparent, borderRadius: BorderRadius.circular(2))),
+                            Container(
+                              width: 20,
+                              height: 4,
+                              decoration: BoxDecoration(
+                                color: isSelected ? AppTheme.neonBlue : Colors.transparent,
+                                borderRadius: BorderRadius.circular(2),
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -141,52 +237,68 @@ class _MatchesScreenState extends State<MatchesScreen> {
                 ),
               ),
               const SizedBox(height: 25),
-              
-              // 🔄 معالجة وعرض كروت اللقاءات ديناميكياً 100% مفرغة ومستعدة لضخ الروابط الحية فوراً
-              ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: 2, 
-                itemBuilder: (context, index) {
-                  // خلايا فارغة بالملي واسم البطولة مرن ومتغير تماماً لتهيئة استقبال الروابط الحقيقية (APIs) لطلب نواف
-                  final match = MatchModel(
-                    leagueName: '', // هنا تصبح خانة اسم البطولة حرة ومستعدة لاستقبال اسم أي دوري عالمي من الروابط آلياً
-                    team1: index == 0 ? '' : '',
-                    team2: index == 0 ? '' : '',
-                    time: index == 0 ? '' : '',
-                    r1: index == 0 ? '' : '',
-                    r2: index == 0 ? '' : '',
-                    f1: index == 0 ? ['', '', ''] : ['', '', ''],
-                    f2: index == 0 ? ['', '', ''] : ['', '', ''],
-                    scorer1: index == 0 ? '' : '',
-                    scorer2: index == 0 ? '' : '',
-                    countdown: index == 0 ? '' : '',
-                    score: index == 0 ? '' : '',
-                    isEnded: _isResultsTab,
-                  );
+              FutureBuilder<List<Map<String, dynamic>>>(
+                future: matchesFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Padding(
+                      padding: EdgeInsets.all(40),
+                      child: Center(child: CircularProgressIndicator()),
+                    );
+                  }
 
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                        child: Row(
-                          textDirection: TextDirection.rtl,
-                          children: [
-                            const Icon(Icons.emoji_events, color: Colors.amber, size: 18),
-                            const SizedBox(width: 8),
-                            Text(
-                              match.leagueName.isEmpty ? 'في انتظار اسم البطولة الحية للـ API...' : match.leagueName, 
-                              style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold, fontFamily: 'Cairo'),
+                  if (snapshot.hasError) {
+                    return Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Center(child: Text('Error: ${snapshot.error}')),
+                    );
+                  }
+
+                  final matchesData = snapshot.data ?? [];
+                  final matches = matchesData
+                      .map((e) => MatchModel.fromMap(e, isEnded: _isResultsTab))
+                      .toList();
+
+                  if (matches.isEmpty) {
+                    return const Padding(
+                      padding: EdgeInsets.all(20),
+                      child: Center(child: Text('No matches found')),
+                    );
+                  }
+
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: matches.length,
+                    itemBuilder: (context, index) {
+                      final match = matches[index];
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                            child: Row(
+                              textDirection: TextDirection.rtl,
+                              children: [
+                                const Icon(Icons.emoji_events, color: Colors.amber, size: 18),
+                                const SizedBox(width: 8),
+                                Text(
+                                  match.leagueName.isEmpty ? 'في انتظار اسم البطولة الحية للـ API...' : match.leagueName,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: 'Cairo',
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      _isResultsTab 
-                          ? _buildCustomResultCard(context, match)
-                          : _buildLiveCard(context, match),
-                    ],
+                          ),
+                          const SizedBox(height: 10),
+                          _isResultsTab ? _buildCustomResultCard(context, match) : _buildLiveCard(context, match),
+                        ],
+                      );
+                    },
                   );
                 },
               ),
@@ -198,7 +310,6 @@ class _MatchesScreenState extends State<MatchesScreen> {
     );
   }
 
-  // 🏟️ دالة كارت المباريات الديناميكية المستقرة والملمومة مفرغة ومستعدة لاستقبال الروابط
   Widget _buildLiveCard(BuildContext context, MatchModel match) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
@@ -209,33 +320,113 @@ class _MatchesScreenState extends State<MatchesScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Expanded(child: Column(children: [const Icon(Icons.shield, color: Colors.white, size: 36), const SizedBox(height: 10), Text(match.team1, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold, fontFamily: 'Cairo')), const SizedBox(height: 8), Container(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6), decoration: BoxDecoration(color: const Color(0x2600B4FF), borderRadius: BorderRadius.circular(10), border: Border.all(color: AppTheme.neonBlue)), child: Text(match.r1, style: const TextStyle(color: Color(0xFF00B4FF), fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo')))])) ,
+                Expanded(
+                  child: Column(
+                    children: [
+                      const Icon(Icons.shield, color: Colors.white, size: 36),
+                      const SizedBox(height: 10),
+                      Text(match.team1, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                      const SizedBox(height: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: const Color(0x2600B4FF),
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: AppTheme.neonBlue),
+                        ),
+                        child: Text(match.r1, style: const TextStyle(color: Color(0xFF00B4FF), fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                      ),
+                    ],
+                  ),
+                ),
                 Column(
                   children: [
                     Text(match.time, style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
                     const SizedBox(height: 8),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                      decoration: BoxDecoration(color: const Color(0x4D00B4FF), borderRadius: BorderRadius.circular(8), border: Border.all(color: AppTheme.neonBlue, width: 1.2)),
+                      decoration: BoxDecoration(
+                        color: const Color(0x4D00B4FF),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: AppTheme.neonBlue, width: 1.2),
+                      ),
                       child: Text(match.countdown, style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
                     ),
                   ],
                 ),
-                Expanded(child: Column(children: [const Icon(Icons.shield, color: Colors.white, size: 36), const SizedBox(height: 10), Text(match.team2, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold, fontFamily: 'Cairo')), const SizedBox(height: 8), Container(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6), decoration: BoxDecoration(color: const Color(0x2600B4FF), borderRadius: BorderRadius.circular(10), border: Border.all(color: AppTheme.neonBlue)), child: Text(match.r2, style: const TextStyle(color: Color(0xFF00B4FF), fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo')))])) ,
+                Expanded(
+                  child: Column(
+                    children: [
+                      const Icon(Icons.shield, color: Colors.white, size: 36),
+                      const SizedBox(height: 10),
+                      Text(match.team2, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                      const SizedBox(height: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: const Color(0x2600B4FF),
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: AppTheme.neonBlue),
+                        ),
+                        child: Text(match.r2, style: const TextStyle(color: Color(0xFF00B4FF), fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
-            const Padding(padding: EdgeInsets.symmetric(vertical: 14.0), child: Divider(color: Colors.white10)),
-            
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 14.0),
+              child: Divider(color: Colors.white10),
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(children: match.f1.map((f) => Container(width: 15, height: 15, margin: const EdgeInsets.symmetric(horizontal: 2), decoration: BoxDecoration(color: const Color(0x1AFFFFFF), shape: BoxShape.circle, border: Border.all(color: Colors.white24, width: 1.2)), child: Center(child: Text(f, style: const TextStyle(color: Colors.white38, fontSize: 9, fontWeight: FontWeight.bold))))).toList()),
+                Row(
+                  children: match.f1
+                      .map(
+                        (f) => Container(
+                          width: 15,
+                          height: 15,
+                          margin: const EdgeInsets.symmetric(horizontal: 2),
+                          decoration: BoxDecoration(
+                            color: const Color(0x1AFFFFFF),
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.white24, width: 1.2),
+                          ),
+                          child: Center(
+                            child: Text(f, style: const TextStyle(color: Colors.white38, fontSize: 9, fontWeight: FontWeight.bold)),
+                          ),
+                        ),
+                      )
+                      .toList(),
+                ),
                 const Text('مؤشرات الأداء الأخيرة', style: TextStyle(color: Colors.white38, fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
-                Row(children: match.f2.map((f) => Container(width: 15, height: 15, margin: const EdgeInsets.symmetric(horizontal: 2), decoration: BoxDecoration(color: const Color(0x1AFFFFFF), shape: BoxShape.circle, border: Border.all(color: Colors.white24, width: 1.2)), child: Center(child: Text(f, style: const TextStyle(color: Colors.white38, fontSize: 9, fontWeight: FontWeight.bold))))).toList()),
+                Row(
+                  children: match.f2
+                      .map(
+                        (f) => Container(
+                          width: 15,
+                          height: 15,
+                          margin: const EdgeInsets.symmetric(horizontal: 2),
+                          decoration: BoxDecoration(
+                            color: const Color(0x1AFFFFFF),
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.white24, width: 1.2),
+                          ),
+                          child: Center(
+                            child: Text(f, style: const TextStyle(color: Colors.white38, fontSize: 9, fontWeight: FontWeight.bold)),
+                          ),
+                        ),
+                      )
+                      .toList(),
+                ),
               ],
             ),
-            const Padding(padding: EdgeInsets.symmetric(vertical: 8.0), child: Divider(color: Colors.white10)),
-            
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 8.0),
+              child: Divider(color: Colors.white10),
+            ),
             Directionality(
               textDirection: TextDirection.rtl,
               child: Row(
@@ -246,7 +437,14 @@ class _MatchesScreenState extends State<MatchesScreen> {
                       children: [
                         const Icon(Icons.sports_soccer, color: Colors.white38, size: 14),
                         const SizedBox(width: 6),
-                        Expanded(child: Text(match.scorer1, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold, fontFamily: 'Cairo'))),
+                        Expanded(
+                          child: Text(
+                            match.scorer1,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold, fontFamily: 'Cairo'),
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -255,7 +453,15 @@ class _MatchesScreenState extends State<MatchesScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        Expanded(child: Text(match.scorer2, maxLines: 1, overflow: TextOverflow.ellipsis, textAlign: TextAlign.left, style: const TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold, fontFamily: 'Cairo'))),
+                        Expanded(
+                          child: Text(
+                            match.scorer2,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.left,
+                            style: const TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold, fontFamily: 'Cairo'),
+                          ),
+                        ),
                         const SizedBox(width: 6),
                         const Icon(Icons.sports_soccer, color: Colors.white38, size: 14),
                       ],
@@ -264,15 +470,27 @@ class _MatchesScreenState extends State<MatchesScreen> {
                 ],
               ),
             ),
-            const Padding(padding: EdgeInsets.symmetric(vertical: 12.0), child: Divider(color: Colors.white10)),
-            NeonButton(text: 'تفاصيل المباراة', onPressed: () { Navigator.push(context, MaterialPageRoute(builder: (_) => MatchDetailScreen(team1: match.team1, team2: match.team2))); }),
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 12.0),
+              child: Divider(color: Colors.white10),
+            ),
+            NeonButton(
+              text: 'تفاصيل المباراة',
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => MatchDetailScreen(team1: match.team1, team2: match.team2),
+                  ),
+                );
+              },
+            ),
           ],
         ),
       ),
     );
   }
 
-  // 📊 دالة كارت النتائج والأحداث مفرغة كلياً ومحمية من تداخل النصوص لطلب نواف العبقري
   Widget _buildCustomResultCard(BuildContext context, MatchModel match) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
@@ -283,30 +501,79 @@ class _MatchesScreenState extends State<MatchesScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Expanded(child: Column(children: [const Icon(Icons.shield, color: Colors.white, size: 36), const SizedBox(height: 10), Text(match.team1, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold, fontFamily: 'Cairo')), const SizedBox(height: 8), Container(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6), decoration: BoxDecoration(color: const Color(0x2600B4FF), borderRadius: BorderRadius.circular(10)), child: Text(match.r1, style: const TextStyle(color: Color(0xFF00B4FF), fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo')))])) ,
-                Column(children: [Text(match.score, style: const TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold, fontFamily: 'Cairo')), const SizedBox(height: 6), const Text('', style: TextStyle(color: Colors.green, fontSize: 12, fontWeight: FontWeight.bold, fontFamily: 'Cairo'))]),
-                Expanded(child: Column(children: [const Icon(Icons.shield, color: Colors.white, size: 36), const SizedBox(height: 10), Text(match.team2, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold, fontFamily: 'Cairo')), const SizedBox(height: 8), Container(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6), decoration: BoxDecoration(color: const Color(0x2600B4FF), borderRadius: BorderRadius.circular(10)), child: Text(match.r2, style: const TextStyle(color: Color(0xFF00B4FF), fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo')))])) ,
+                Expanded(
+                  child: Column(
+                    children: [
+                      const Icon(Icons.shield, color: Colors.white, size: 36),
+                      const SizedBox(height: 10),
+                      Text(match.team1, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                      const SizedBox(height: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: const Color(0x2600B4FF),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Text(match.r1, style: const TextStyle(color: Color(0xFF00B4FF), fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                      ),
+                    ],
+                  ),
+                ),
+                Column(
+                  children: [
+                    Text(match.score, style: const TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                    const SizedBox(height: 6),
+                    const Text('', style: TextStyle(color: Colors.green, fontSize: 12, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                  ],
+                ),
+                Expanded(
+                  child: Column(
+                    children: [
+                      const Icon(Icons.shield, color: Colors.white, size: 36),
+                      const SizedBox(height: 10),
+                      Text(match.team2, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                      const SizedBox(height: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: const Color(0x2600B4FF),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Text(match.r2, style: const TextStyle(color: Color(0xFF00B4FF), fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
-            const Padding(padding: EdgeInsets.symmetric(vertical: 16.0), child: Divider(color: Colors.white10)),
-            
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 16.0),
+              child: Divider(color: Colors.white10),
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Column(crossAxisAlignment: CrossAxisAlignment.start, children: []),
-                const Text('', style: TextStyle(color: Colors.white24, fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
-                const Column(crossAxisAlignment: CrossAxisAlignment.end, children: []),
+              children: const [
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: []),
+                Text('', style: TextStyle(color: Colors.white24, fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                Column(crossAxisAlignment: CrossAxisAlignment.end, children: []),
               ],
             ),
-            const Padding(padding: EdgeInsets.symmetric(vertical: 14.0), child: Divider(color: Colors.white10)),
-            
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 14.0),
+              child: Divider(color: Colors.white10),
+            ),
             Row(
               children: [
                 Expanded(
                   child: NeonButton(
                     text: 'تفاصيل المباراة',
                     onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => MatchDetailScreen(team1: match.team1, team2: match.team2)));
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => MatchDetailScreen(team1: match.team1, team2: match.team2),
+                        ),
+                      );
                     },
                   ),
                 ),
