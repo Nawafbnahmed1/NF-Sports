@@ -10,50 +10,33 @@ class MatchModel {
   final String team1;
   final String team2;
   final String time;
-  final String r1;
-  final String r2;
-  final List<String> f1;
-  final List<String> f2;
-  final String scorer1;
-  final String scorer2;
-  final String countdown;
   final String score;
   final bool isEnded;
-  final String streamUrl;
+  final DateTime matchDate;
 
   const MatchModel({
     required this.leagueName,
     required this.team1,
     required this.team2,
     required this.time,
-    required this.r1,
-    required this.r2,
-    required this.f1,
-    required this.f2,
-    required this.scorer1,
-    required this.scorer2,
-    required this.countdown,
     required this.score,
     required this.isEnded,
-    required this.streamUrl,
+    required this.matchDate,
   });
 
-  factory MatchModel.fromMap(Map<String, dynamic> map, {required bool isEnded}) {
+  factory MatchModel.fromMap(Map<String, dynamic> map) {
+    final dt = DateTime.tryParse((map['match_date'] ?? '').toString())?.toLocal() ?? DateTime.now();
+    final hh = dt.hour.toString().padLeft(2, '0');
+    final mm = dt.minute.toString().padLeft(2, '0');
+
     return MatchModel(
-      leagueName: (map['league_name'] ?? '').toString(),
+      leagueName: '',
       team1: (map['home_team_name'] ?? '').toString(),
       team2: (map['away_team_name'] ?? '').toString(),
-      time: (map['match_time'] ?? '').toString(),
-      r1: (map['home_rank'] ?? '').toString(),
-      r2: (map['away_rank'] ?? '').toString(),
-      f1: const ['', '', ''],
-      f2: const ['', '', ''],
-      scorer1: (map['home_scorers'] ?? '').toString(),
-      scorer2: (map['away_scorers'] ?? '').toString(),
-      countdown: (map['countdown'] ?? '').toString(),
-      score: (map['score'] ?? '').toString(),
-      isEnded: isEnded,
-      streamUrl: (map['stream_url'] ?? '').toString(),
+      time: '$hh:$mm',
+      score: '${map['home_score'] ?? ''} - ${map['away_score'] ?? ''}',
+      isEnded: (map['status'] ?? '').toString().toLowerCase() == 'finished',
+      matchDate: dt,
     );
   }
 }
@@ -69,17 +52,37 @@ class _MatchesScreenState extends State<MatchesScreen> {
   final supabase = Supabase.instance.client;
   bool _isResultsTab = false;
   int _selectedDateIndex = 2;
+  late List<DateTime> _days;
   late Future<List<Map<String, dynamic>>> matchesFuture;
 
   @override
   void initState() {
     super.initState();
-    matchesFuture = fetchMatches();
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    _days = List.generate(5, (i) => today.add(Duration(days: i - 2)));
+    matchesFuture = fetchMatchesForDay(_days[_selectedDateIndex]);
   }
 
-  Future<List<Map<String, dynamic>>> fetchMatches() async {
-    final data = await supabase.from('matches').select().order('match_date');
+  Future<List<Map<String, dynamic>>> fetchMatchesForDay(DateTime day) async {
+    final start = DateTime(day.year, day.month, day.day);
+    final end = start.add(const Duration(days: 1));
+
+    final data = await supabase
+        .from('matches')
+        .select()
+        .gte('match_date', start.toUtc().toIso8601String())
+        .lt('match_date', end.toUtc().toIso8601String())
+        .order('match_date');
+
     return List<Map<String, dynamic>>.from(data);
+  }
+
+  Future<void> _loadDay(int index) async {
+    setState(() {
+      _selectedDateIndex = index;
+      matchesFuture = fetchMatchesForDay(_days[index]);
+    });
   }
 
   @override
@@ -100,11 +103,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
                     children: [
                       Expanded(
                         child: InkWell(
-                          onTap: () {
-                            setState(() {
-                              _isResultsTab = false;
-                            });
-                          },
+                          onTap: () => setState(() => _isResultsTab = false),
                           borderRadius: BorderRadius.circular(14),
                           child: Container(
                             padding: const EdgeInsets.symmetric(vertical: 14),
@@ -119,11 +118,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(
-                                  Icons.calendar_today,
-                                  color: !_isResultsTab ? AppTheme.neonBlue : Colors.white38,
-                                  size: 20,
-                                ),
+                                Icon(Icons.calendar_today, color: !_isResultsTab ? AppTheme.neonBlue : Colors.white38, size: 20),
                                 const SizedBox(width: 10),
                                 Text(
                                   'المباريات',
@@ -142,11 +137,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
                       const SizedBox(width: 15),
                       Expanded(
                         child: InkWell(
-                          onTap: () {
-                            setState(() {
-                              _isResultsTab = true;
-                            });
-                          },
+                          onTap: () => setState(() => _isResultsTab = true),
                           borderRadius: BorderRadius.circular(14),
                           child: Container(
                             padding: const EdgeInsets.symmetric(vertical: 14),
@@ -161,11 +152,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(
-                                  Icons.check_circle,
-                                  color: _isResultsTab ? AppTheme.neonBlue : Colors.white38,
-                                  size: 20,
-                                ),
+                                Icon(Icons.check_circle, color: _isResultsTab ? AppTheme.neonBlue : Colors.white38, size: 20),
                                 const SizedBox(width: 10),
                                 Text(
                                   'النتائج',
@@ -191,15 +178,12 @@ class _MatchesScreenState extends State<MatchesScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   scrollDirection: Axis.horizontal,
                   physics: const BouncingScrollPhysics(),
-                  itemCount: 5,
+                  itemCount: _days.length,
                   itemBuilder: (context, index) {
                     final isSelected = index == _selectedDateIndex;
+                    final d = _days[index];
                     return InkWell(
-                      onTap: () {
-                        setState(() {
-                          _selectedDateIndex = index;
-                        });
-                      },
+                      onTap: () => _loadDay(index),
                       borderRadius: BorderRadius.circular(18),
                       child: Container(
                         width: 70,
@@ -215,18 +199,15 @@ class _MatchesScreenState extends State<MatchesScreen> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(
-                              Icons.calendar_month,
-                              color: isSelected ? AppTheme.neonBlue : Colors.white38,
-                              size: 22,
-                            ),
+                            Icon(Icons.calendar_month, color: isSelected ? AppTheme.neonBlue : Colors.white38, size: 22),
                             const SizedBox(height: 6),
-                            Container(
-                              width: 20,
-                              height: 4,
-                              decoration: BoxDecoration(
-                                color: isSelected ? AppTheme.neonBlue : Colors.transparent,
-                                borderRadius: BorderRadius.circular(2),
+                            Text(
+                              '${d.day}',
+                              style: TextStyle(
+                                color: isSelected ? AppTheme.neonBlue : Colors.white54,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'Cairo',
                               ),
                             ),
                           ],
@@ -255,9 +236,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
                   }
 
                   final matchesData = snapshot.data ?? [];
-                  final matches = matchesData
-                      .map((e) => MatchModel.fromMap(e, isEnded: _isResultsTab))
-                      .toList();
+                  final matches = matchesData.map((e) => MatchModel.fromMap(e)).toList();
 
                   if (matches.isEmpty) {
                     return const Padding(
@@ -283,7 +262,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
                                 const Icon(Icons.emoji_events, color: Colors.amber, size: 18),
                                 const SizedBox(width: 8),
                                 Text(
-                                  match.leagueName.isEmpty ? 'في انتظار اسم البطولة الحية للـ API...' : match.leagueName,
+                                  'مباريات اليوم',
                                   style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 15,
@@ -320,155 +299,10 @@ class _MatchesScreenState extends State<MatchesScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Expanded(
-                  child: Column(
-                    children: [
-                      const Icon(Icons.shield, color: Colors.white, size: 36),
-                      const SizedBox(height: 10),
-                      Text(match.team1, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
-                      const SizedBox(height: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: const Color(0x2600B4FF),
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: AppTheme.neonBlue),
-                        ),
-                        child: Text(match.r1, style: const TextStyle(color: Color(0xFF00B4FF), fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
-                      ),
-                    ],
-                  ),
-                ),
-                Column(
-                  children: [
-                    Text(match.time, style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
-                    const SizedBox(height: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: const Color(0x4D00B4FF),
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: AppTheme.neonBlue, width: 1.2),
-                      ),
-                      child: Text(match.countdown, style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
-                    ),
-                  ],
-                ),
-                Expanded(
-                  child: Column(
-                    children: [
-                      const Icon(Icons.shield, color: Colors.white, size: 36),
-                      const SizedBox(height: 10),
-                      Text(match.team2, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
-                      const SizedBox(height: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: const Color(0x2600B4FF),
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: AppTheme.neonBlue),
-                        ),
-                        child: Text(match.r2, style: const TextStyle(color: Color(0xFF00B4FF), fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
-                      ),
-                    ],
-                  ),
-                ),
+                Expanded(child: Column(children: [const Icon(Icons.shield, color: Colors.white, size: 36), const SizedBox(height: 10), Text(match.team1, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold, fontFamily: 'Cairo'))])),
+                Column(children: [Text(match.time, style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold, fontFamily: 'Cairo'))]),
+                Expanded(child: Column(children: [const Icon(Icons.shield, color: Colors.white, size: 36), const SizedBox(height: 10), Text(match.team2, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold, fontFamily: 'Cairo'))])),
               ],
-            ),
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 14.0),
-              child: Divider(color: Colors.white10),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: match.f1
-                      .map(
-                        (f) => Container(
-                          width: 15,
-                          height: 15,
-                          margin: const EdgeInsets.symmetric(horizontal: 2),
-                          decoration: BoxDecoration(
-                            color: const Color(0x1AFFFFFF),
-                            shape: BoxShape.circle,
-                            border: Border.all(color: Colors.white24, width: 1.2),
-                          ),
-                          child: Center(
-                            child: Text(f, style: const TextStyle(color: Colors.white38, fontSize: 9, fontWeight: FontWeight.bold)),
-                          ),
-                        ),
-                      )
-                      .toList(),
-                ),
-                const Text('مؤشرات الأداء الأخيرة', style: TextStyle(color: Colors.white38, fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
-                Row(
-                  children: match.f2
-                      .map(
-                        (f) => Container(
-                          width: 15,
-                          height: 15,
-                          margin: const EdgeInsets.symmetric(horizontal: 2),
-                          decoration: BoxDecoration(
-                            color: const Color(0x1AFFFFFF),
-                            shape: BoxShape.circle,
-                            border: Border.all(color: Colors.white24, width: 1.2),
-                          ),
-                          child: Center(
-                            child: Text(f, style: const TextStyle(color: Colors.white38, fontSize: 9, fontWeight: FontWeight.bold)),
-                          ),
-                        ),
-                      )
-                      .toList(),
-                ),
-              ],
-            ),
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 8.0),
-              child: Divider(color: Colors.white10),
-            ),
-            Directionality(
-              textDirection: TextDirection.rtl,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Row(
-                      children: [
-                        const Icon(Icons.sports_soccer, color: Colors.white38, size: 14),
-                        const SizedBox(width: 6),
-                        Expanded(
-                          child: Text(
-                            match.scorer1,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold, fontFamily: 'Cairo'),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 15),
-                  Expanded(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            match.scorer2,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            textAlign: TextAlign.left,
-                            style: const TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold, fontFamily: 'Cairo'),
-                          ),
-                        ),
-                        const SizedBox(width: 6),
-                        const Icon(Icons.sports_soccer, color: Colors.white38, size: 14),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
             ),
             const Padding(
               padding: EdgeInsets.symmetric(vertical: 12.0),
@@ -501,61 +335,9 @@ class _MatchesScreenState extends State<MatchesScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Expanded(
-                  child: Column(
-                    children: [
-                      const Icon(Icons.shield, color: Colors.white, size: 36),
-                      const SizedBox(height: 10),
-                      Text(match.team1, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
-                      const SizedBox(height: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: const Color(0x2600B4FF),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Text(match.r1, style: const TextStyle(color: Color(0xFF00B4FF), fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
-                      ),
-                    ],
-                  ),
-                ),
-                Column(
-                  children: [
-                    Text(match.score, style: const TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
-                    const SizedBox(height: 6),
-                    const Text('', style: TextStyle(color: Colors.green, fontSize: 12, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
-                  ],
-                ),
-                Expanded(
-                  child: Column(
-                    children: [
-                      const Icon(Icons.shield, color: Colors.white, size: 36),
-                      const SizedBox(height: 10),
-                      Text(match.team2, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
-                      const SizedBox(height: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: const Color(0x2600B4FF),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Text(match.r2, style: const TextStyle(color: Color(0xFF00B4FF), fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 16.0),
-              child: Divider(color: Colors.white10),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: const [
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: []),
-                Text('', style: TextStyle(color: Colors.white24, fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
-                Column(crossAxisAlignment: CrossAxisAlignment.end, children: []),
+                Expanded(child: Column(children: [const Icon(Icons.shield, color: Colors.white, size: 36), const SizedBox(height: 10), Text(match.team1, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold, fontFamily: 'Cairo'))])),
+                Column(children: [Text(match.score, style: const TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold, fontFamily: 'Cairo'))]),
+                Expanded(child: Column(children: [const Icon(Icons.shield, color: Colors.white, size: 36), const SizedBox(height: 10), Text(match.team2, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold, fontFamily: 'Cairo'))])),
               ],
             ),
             const Padding(
@@ -575,27 +357,6 @@ class _MatchesScreenState extends State<MatchesScreen> {
                         ),
                       );
                     },
-                  ),
-                ),
-                const SizedBox(width: 15),
-                Expanded(
-                  child: Container(
-                    height: 48,
-                    decoration: BoxDecoration(
-                      color: const Color(0x1FFF3B30),
-                      borderRadius: BorderRadius.circular(14),
-                      border: Border.all(color: const Color(0xFFFF3B30), width: 1.5),
-                    ),
-                    child: InkWell(
-                      onTap: () {},
-                      borderRadius: BorderRadius.circular(14),
-                      child: const Center(
-                        child: Text(
-                          'شاهد الملخص',
-                          style: TextStyle(color: Color(0xFFFF3B30), fontSize: 13, fontWeight: FontWeight.bold, fontFamily: 'Cairo'),
-                        ),
-                      ),
-                    ),
                   ),
                 ),
               ],
