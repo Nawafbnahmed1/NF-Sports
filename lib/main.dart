@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'theme/app_theme.dart';
-import 'screens/navigation_screen.dart';
+import 'screens/matches_screen.dart'; // تم ربط ملف المباريات الجديد هنا
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  // تم وضع روابط مشروعك الحقيقية والخاصة بـ Supabase بنجاح
   await Supabase.initialize(
-    url: 'YOUR_SUPABASE_URL',
-    publishableKey: 'YOUR_SUPABASE_ANON_KEY',
+    url: 'https://njdeduovwamcbcucmull.supabase.co',
+    publishableKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qZGVkdW92d2FtY2JjdWNtdWxsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxODM3NDgsImV4cCI6MjA5OTc1OTc0OH0.AeQM-jGZOQrufBMmav7SxPK93LUi2DqEeSi2O95esq0',
   );
+  
   runApp(const MyApp());
 }
 
@@ -20,7 +23,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'NF Sports',
       theme: AppTheme.darkTheme,
-      home: NavigationScreen(),
+      home: const MatchesScreen(), // سيتوجه التطبيق فوراً لصفحة المباريات المحدثة
     );
   }
 }
