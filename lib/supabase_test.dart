@@ -1,19 +1,46 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-class SupabaseTest {
-  static final supabase = Supabase.instance.client;
+class SupabaseTest extends StatefulWidget {
+  const SupabaseTest({super.key});
 
-  // دالة الفحص والطباعة المؤقتة التي طلبها المطور لاختبار جلب الـ 17 مباراة
-  static Future<void> runDebugCheck() async {
+  @override
+  State<SupabaseTest> createState() => _SupabaseTestState();
+}
+
+class _SupabaseTestState extends State<SupabaseTest> {
+  String result = "Loading...";
+
+  @override
+  void initState() {
+    super.initState();
+    test();
+  }
+
+  Future<void> test() async {
     try {
-      final data = await supabase.from('matches').select();
-      
-      print('DATA FROM SUPABASE:');
-      print(data);
-      print('Matches count total: ${data.length}');
+      final data = await Supabase.instance.client
+          .from('matches')
+          .select();
+
+      setState(() {
+        result = "Rows: ${data.length}\n\n$data";
+      });
     } catch (e) {
-      print('ERROR DURING FETCH: $e');
+      setState(() {
+        result = "ERROR:\n$e";
+      });
     }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("Supabase Test")),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: SelectableText(result),
+      ),
+    );
   }
 }
