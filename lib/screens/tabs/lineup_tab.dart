@@ -191,7 +191,7 @@ class LineupTab extends StatelessWidget {
         const SizedBox(height: 4),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-          decoration: BoxDecoration(color: Colors.blackDE, borderRadius: BorderRadius.circular(4)),
+          decoration: BoxDecoration(color: Colors.black, borderRadius: BorderRadius.circular(4)),
           child: Text(name, style: const TextStyle(color: Colors.white, fontSize: 10, fontFamily: 'Cairo'), maxLines: 1, overflow: TextOverflow.ellipsis),
         ),
       ],
