@@ -25,17 +25,19 @@ class MatchModel {
   });
 
   factory MatchModel.fromMap(Map<String, dynamic> map) {
-    final dt = DateTime.tryParse((map['match_date'] ?? '').toString())?.toLocal() ?? DateTime.now();
+    final rawDate = (map['match_date'] ?? '').toString();
+    final dt = DateTime.tryParse(rawDate)?.toLocal() ?? DateTime.now();
     final hh = dt.hour.toString().padLeft(2, '0');
     final mm = dt.minute.toString().padLeft(2, '0');
+    final status = (map['status'] ?? '').toString().toLowerCase();
 
     return MatchModel(
-      leagueName: '',
+      leagueName: (map['league_name'] ?? '').toString(),
       team1: (map['home_team_name'] ?? '').toString(),
       team2: (map['away_team_name'] ?? '').toString(),
       time: '$hh:$mm',
       score: '${map['home_score'] ?? ''} - ${map['away_score'] ?? ''}',
-      isEnded: (map['status'] ?? '').toString().toLowerCase() == 'finished',
+      isEnded: status == 'finished' || status == 'ended' || status == 'final',
       matchDate: dt,
     );
   }
@@ -65,16 +67,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
   }
 
   Future<List<Map<String, dynamic>>> fetchMatchesForDay(DateTime day) async {
-    final start = DateTime(day.year, day.month, day.day);
-    final end = start.add(const Duration(days: 1));
-
-    final data = await supabase
-        .from('matches')
-        .select()
-        .gte('match_date', start.toUtc().toIso8601String())
-        .lt('match_date', end.toUtc().toIso8601String())
-        .order('match_date');
-
+    final data = await supabase.from('matches').select().order('match_date');
     return List<Map<String, dynamic>>.from(data);
   }
 
@@ -108,22 +101,34 @@ class _MatchesScreenState extends State<MatchesScreen> {
                           child: Container(
                             padding: const EdgeInsets.symmetric(vertical: 14),
                             decoration: BoxDecoration(
-                              color: !_isResultsTab ? const Color(0x3300B4FF) : const Color(0xCC0A1220),
+                              color: !_isResultsTab
+                                  ? const Color(0x3300B4FF)
+                                  : const Color(0xCC0A1220),
                               borderRadius: BorderRadius.circular(14),
                               border: Border.all(
-                                color: !_isResultsTab ? AppTheme.neonBlue : Colors.white10,
+                                color: !_isResultsTab
+                                    ? AppTheme.neonBlue
+                                    : Colors.white10,
                                 width: 2,
                               ),
                             ),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.calendar_today, color: !_isResultsTab ? AppTheme.neonBlue : Colors.white38, size: 20),
+                                Icon(
+                                  Icons.calendar_today,
+                                  color: !_isResultsTab
+                                      ? AppTheme.neonBlue
+                                      : Colors.white38,
+                                  size: 20,
+                                ),
                                 const SizedBox(width: 10),
                                 Text(
                                   'المباريات',
                                   style: TextStyle(
-                                    color: !_isResultsTab ? AppTheme.neonBlue : Colors.white38,
+                                    color: !_isResultsTab
+                                        ? AppTheme.neonBlue
+                                        : Colors.white38,
                                     fontSize: 15,
                                     fontWeight: FontWeight.bold,
                                     fontFamily: 'Cairo',
@@ -142,22 +147,34 @@ class _MatchesScreenState extends State<MatchesScreen> {
                           child: Container(
                             padding: const EdgeInsets.symmetric(vertical: 14),
                             decoration: BoxDecoration(
-                              color: _isResultsTab ? const Color(0x3300B4FF) : const Color(0xCC0A1220),
+                              color: _isResultsTab
+                                  ? const Color(0x3300B4FF)
+                                  : const Color(0xCC0A1220),
                               borderRadius: BorderRadius.circular(14),
                               border: Border.all(
-                                color: _isResultsTab ? AppTheme.neonBlue : Colors.white10,
+                                color: _isResultsTab
+                                    ? AppTheme.neonBlue
+                                    : Colors.white10,
                                 width: 2,
                               ),
                             ),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.check_circle, color: _isResultsTab ? AppTheme.neonBlue : Colors.white38, size: 20),
+                                Icon(
+                                  Icons.check_circle,
+                                  color: _isResultsTab
+                                      ? AppTheme.neonBlue
+                                      : Colors.white38,
+                                  size: 20,
+                                ),
                                 const SizedBox(width: 10),
                                 Text(
                                   'النتائج',
                                   style: TextStyle(
-                                    color: _isResultsTab ? AppTheme.neonBlue : Colors.white38,
+                                    color: _isResultsTab
+                                        ? AppTheme.neonBlue
+                                        : Colors.white38,
                                     fontSize: 15,
                                     fontWeight: FontWeight.bold,
                                     fontFamily: 'Cairo',
@@ -189,22 +206,34 @@ class _MatchesScreenState extends State<MatchesScreen> {
                         width: 70,
                         margin: const EdgeInsets.only(right: 12),
                         decoration: BoxDecoration(
-                          color: isSelected ? const Color(0x2600B4FF) : AppTheme.surfaceColor,
+                          color: isSelected
+                              ? const Color(0x2600B4FF)
+                              : AppTheme.surfaceColor,
                           borderRadius: BorderRadius.circular(18),
                           border: Border.all(
-                            color: isSelected ? AppTheme.neonBlue : Colors.white10,
+                            color: isSelected
+                                ? AppTheme.neonBlue
+                                : Colors.white10,
                             width: 1.5,
                           ),
                         ),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.calendar_month, color: isSelected ? AppTheme.neonBlue : Colors.white38, size: 22),
+                            Icon(
+                              Icons.calendar_month,
+                              color: isSelected
+                                  ? AppTheme.neonBlue
+                                  : Colors.white38,
+                              size: 22,
+                            ),
                             const SizedBox(height: 6),
                             Text(
                               '${d.day}',
                               style: TextStyle(
-                                color: isSelected ? AppTheme.neonBlue : Colors.white54,
+                                color: isSelected
+                                    ? AppTheme.neonBlue
+                                    : Colors.white54,
                                 fontSize: 12,
                                 fontWeight: FontWeight.bold,
                                 fontFamily: 'Cairo',
@@ -274,7 +303,9 @@ class _MatchesScreenState extends State<MatchesScreen> {
                             ),
                           ),
                           const SizedBox(height: 10),
-                          _isResultsTab ? _buildCustomResultCard(context, match) : _buildLiveCard(context, match),
+                          _isResultsTab
+                              ? buildCustomResultCard(context, match)
+                              : buildLiveCard(context, match),
                         ],
                       );
                     },
@@ -289,7 +320,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
     );
   }
 
-  Widget _buildLiveCard(BuildContext context, MatchModel match) {
+  Widget buildLiveCard(BuildContext context, MatchModel match) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       child: GlassCard(
@@ -299,9 +330,55 @@ class _MatchesScreenState extends State<MatchesScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Expanded(child: Column(children: [const Icon(Icons.shield, color: Colors.white, size: 36), const SizedBox(height: 10), Text(match.team1, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold, fontFamily: 'Cairo'))])),
-                Column(children: [Text(match.time, style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold, fontFamily: 'Cairo'))]),
-                Expanded(child: Column(children: [const Icon(Icons.shield, color: Colors.white, size: 36), const SizedBox(height: 10), Text(match.team2, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold, fontFamily: 'Cairo'))])),
+                Expanded(
+                  child: Column(
+                    children: [
+                      const Icon(Icons.shield, color: Colors.white, size: 36),
+                      const SizedBox(height: 10),
+                      Text(
+                        match.team1,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Cairo',
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Column(
+                  children: [
+                    Text(
+                      match.time,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'Cairo',
+                      ),
+                    ),
+                  ],
+                ),
+                Expanded(
+                  child: Column(
+                    children: [
+                      const Icon(Icons.shield, color: Colors.white, size: 36),
+                      const SizedBox(height: 10),
+                      Text(
+                        match.team2,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Cairo',
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
             const Padding(
@@ -314,7 +391,10 @@ class _MatchesScreenState extends State<MatchesScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => MatchDetailScreen(team1: match.team1, team2: match.team2),
+                    builder: (_) => MatchDetailScreen(
+                      team1: match.team1,
+                      team2: match.team2,
+                    ),
                   ),
                 );
               },
@@ -325,7 +405,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
     );
   }
 
-  Widget _buildCustomResultCard(BuildContext context, MatchModel match) {
+  Widget buildCustomResultCard(BuildContext context, MatchModel match) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       child: GlassCard(
@@ -335,9 +415,55 @@ class _MatchesScreenState extends State<MatchesScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Expanded(child: Column(children: [const Icon(Icons.shield, color: Colors.white, size: 36), const SizedBox(height: 10), Text(match.team1, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold, fontFamily: 'Cairo'))])),
-                Column(children: [Text(match.score, style: const TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold, fontFamily: 'Cairo'))]),
-                Expanded(child: Column(children: [const Icon(Icons.shield, color: Colors.white, size: 36), const SizedBox(height: 10), Text(match.team2, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold, fontFamily: 'Cairo'))])),
+                Expanded(
+                  child: Column(
+                    children: [
+                      const Icon(Icons.shield, color: Colors.white, size: 36),
+                      const SizedBox(height: 10),
+                      Text(
+                        match.team1,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Cairo',
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Column(
+                  children: [
+                    Text(
+                      match.score,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'Cairo',
+                      ),
+                    ),
+                  ],
+                ),
+                Expanded(
+                  child: Column(
+                    children: [
+                      const Icon(Icons.shield, color: Colors.white, size: 36),
+                      const SizedBox(height: 10),
+                      Text(
+                        match.team2,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Cairo',
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
             const Padding(
@@ -353,7 +479,10 @@ class _MatchesScreenState extends State<MatchesScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => MatchDetailScreen(team1: match.team1, team2: match.team2),
+                          builder: (_) => MatchDetailScreen(
+                            team1: match.team1,
+                            team2: match.team2,
+                          ),
                         ),
                       );
                     },
