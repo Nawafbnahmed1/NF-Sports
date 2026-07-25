@@ -42,7 +42,6 @@ class MatchModel {
     );
   }
 }
-
 class MatchesScreen extends StatefulWidget {
   const MatchesScreen({super.key});
 
@@ -66,8 +65,10 @@ class _MatchesScreenState extends State<MatchesScreen> {
     matchesFuture = fetchMatchesForDay(_days[_selectedDateIndex]);
   }
 
+  // الدالة الفاحصة التي طلبها المطور بدون قيود زمنية لاختبار جلب البيانات بنجاح
   Future<List<Map<String, dynamic>>> fetchMatchesForDay(DateTime day) async {
-    final data = await supabase.from('matches').select().order('match_date');
+    final data = await supabase.from('matches').select();
+    debugPrint('Matches count: ${data.length}');
     return List<Map<String, dynamic>>.from(data);
   }
 
@@ -77,8 +78,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
       matchesFuture = fetchMatchesForDay(_days[index]);
     });
   }
-
-  @override
+    @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
@@ -246,7 +246,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
                   },
                 ),
               ),
-              const SizedBox(height: 25),
+                            const SizedBox(height: 25),
               FutureBuilder<List<Map<String, dynamic>>>(
                 future: matchesFuture,
                 builder: (context, snapshot) {
@@ -265,14 +265,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
                   }
 
                   final matchesData = snapshot.data ?? [];
-                  final targetDay = _days[_selectedDateIndex];
-                  final matches = matchesData
-                      .map((e) => MatchModel.fromMap(e))
-                      .where((m) =>
-                          m.matchDate.year == targetDay.year &&
-                          m.matchDate.month == targetDay.month &&
-                          m.matchDate.day == targetDay.day)
-                      .toList();
+                  final matches = matchesData.map((e) => MatchModel.fromMap(e)).toList();
 
                   if (matches.isEmpty) {
                     return const Padding(
@@ -280,10 +273,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
                       child: Center(
                         child: Text(
                           'No matches found',
-                          style: TextStyle(
-                            color: Colors.white70,
-                            fontFamily: 'Cairo',
-                          ),
+                          style: TextStyle(color: Colors.white70, fontFamily: 'Cairo'),
                         ),
                       ),
                     );
@@ -299,18 +289,11 @@ class _MatchesScreenState extends State<MatchesScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 20,
-                              vertical: 8,
-                            ),
+                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                             child: Row(
                               textDirection: TextDirection.rtl,
                               children: [
-                                const Icon(
-                                  Icons.emoji_events,
-                                  color: Colors.amber,
-                                  size: 18,
-                                ),
+                                const Icon(Icons.emoji_events, color: Colors.amber, size: 18),
                                 const SizedBox(width: 8),
                                 Text(
                                   'مباريات اليوم',
