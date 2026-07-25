@@ -32,7 +32,6 @@ class DetailsTab extends StatelessWidget {
     return FutureBuilder<List<Map<String, dynamic>>>(
       future: Supabase.instance.client.from('match_details').select(),
       builder: (context, snapshot) {
-        // خلايا انتظار وتأمين برمجية في حالة عدم توفر صفوف حية بجدول الإحصائيات بالسيرفر بعد
         var possession1 = '50%';
         var possession2 = '50%';
         var shots1 = '0';
@@ -100,63 +99,63 @@ class DetailsTab extends StatelessWidget {
                   ),
                 ),
               ),
-          const Padding(
-            padding: EdgeInsets.only(right: 20, top: 25, bottom: 10),
-            child: Align(
-              alignment: Alignment.centerRight,
-              child: Text('العيادة الطبية والغيابات', style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: GlassCard(
-              padding: const EdgeInsets.all(16),
-              borderRadius: 22,
-              child: Directionality(
-                textDirection: TextDirection.rtl,
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // غيابات الفريق الأول الحية المستدعاة تلقائياً من السيرفر لطلبك الفخم
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (details.injuries1.isEmpty)
-                            const Text('لا توجد غيابات حية', style: TextStyle(color: Colors.white24, fontSize: 12, fontFamily: 'Cairo'))
-                          else
-                            ...details.injuries1.map((player) => Padding(
-                              padding: const EdgeInsets.only(bottom: 6),
-                              child: Text('• $player', style: const TextStyle(color: Colors.white70, fontSize: 13, fontFamily: 'Cairo')),
-                            )),
-                        ],
-                      ),
-                    ),
-                    Container(width: 1, height: 80, color: Colors.white10),
-                    const SizedBox(width: 15),
-                    // غيابات الفريق الثاني المستدعاة حية ومباشرة بدون نصوص تجريبية
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (details.injuries2.isEmpty)
-                            const Text('لا توجد غيابات حية', style: TextStyle(color: Colors.white24, fontSize: 12, fontFamily: 'Cairo'))
-                          else
-                            ...details.injuries2.map((player) => Padding(
-                              padding: const EdgeInsets.only(bottom: 6),
-                              child: Text('• $player', style: const TextStyle(color: Colors.white70, fontSize: 13, fontFamily: 'Cairo')),
-                            )),
-                        ],
-                      ),
-                    ),
-                  ],
+                            const Padding(
+                padding: EdgeInsets.only(right: 20, top: 25, bottom: 10),
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: Text('العيادة الطبية والغيابات', style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
                 ),
               ),
-            ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: GlassCard(
+                  padding: const EdgeInsets.all(16),
+                  borderRadius: 22,
+                  child: Directionality(
+                    textDirection: TextDirection.rtl,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (details.injuries1.isEmpty)
+                                const Text('لا توجد غيابات حية', style: TextStyle(color: Colors.white24, fontSize: 12, fontFamily: 'Cairo'))
+                              else
+                                ...details.injuries1.map((player) => Padding(
+                                  padding: const EdgeInsets.only(bottom: 6),
+                                  child: Text('• $player', style: const TextStyle(color: Colors.white70, fontSize: 13, fontFamily: 'Cairo')),
+                                )),
+                            ],
+                          ),
+                        ),
+                        Container(width: 1, height: 80, color: Colors.white10),
+                        const SizedBox(width: 15),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (details.injuries2.isEmpty)
+                                const Text('لا توجد غيابات حية', style: TextStyle(color: Colors.white24, fontSize: 12, fontFamily: 'Cairo'))
+                              else
+                                ...details.injuries2.map((player) => Padding(
+                                  padding: const EdgeInsets.only(bottom: 6),
+                                  child: Text('• $player', style: const TextStyle(color: Colors.white70, fontSize: 13, fontFamily: 'Cairo')),
+                                )),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 120),
+            ],
           ),
-          const SizedBox(height: 120),
-        ],
-      ),
+        );
+      },
     );
   }
 
