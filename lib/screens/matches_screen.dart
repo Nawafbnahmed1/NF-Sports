@@ -44,7 +44,7 @@ class MatchModel {
   factory MatchModel.fromMap(Map<String, dynamic> map) {
     final rawDate = (map['match_date'] ?? '').toString();
     final dt = DateTime.tryParse(rawDate)?.toLocal() ?? DateTime.now();
-    
+
     final hour12 = dt.hour > 12 ? dt.hour - 12 : (dt.hour == 0 ? 12 : dt.hour);
     final amPm = dt.hour >= 12 ? 'PM' : 'AM';
     final mm = dt.minute.toString().padLeft(2, '0');
@@ -54,8 +54,16 @@ class MatchModel {
     final isLiveMatch = status == 'live' || status == 'playing' || status == 'in_play';
     final isFinished = status == 'finished' || status == 'ended' || status == 'final';
 
-    final t1Form = List<String>.from(map['team1_form'] ?? ['W', 'D', 'W']);
-    final t2Form = List<String>.from(map['team2_form'] ?? ['L', 'W', 'D']);
+    final t1FormRaw = map['team1_form'];
+    final t2FormRaw = map['team2_form'];
+
+    final t1Form = t1FormRaw is List
+        ? t1FormRaw.map((e) => e.toString()).toList()
+        : <String>['W', 'D', 'W'];
+
+    final t2Form = t2FormRaw is List
+        ? t2FormRaw.map((e) => e.toString()).toList()
+        : <String>['L', 'W', 'D'];
 
     return MatchModel(
       id: (map['id'] ?? '').toString(),
@@ -90,7 +98,7 @@ class _MatchesScreenState extends State<MatchesScreen> with SingleTickerProvider
   int _selectedDateIndex = 2;
   late List<DateTime> _days;
   late Future<List<Map<String, dynamic>>> matchesFuture;
-  
+
   late AnimationController _blinkController;
   late Animation<double> _blinkAnimation;
   late Timer _countdownTimer;
@@ -100,7 +108,7 @@ class _MatchesScreenState extends State<MatchesScreen> with SingleTickerProvider
     super.initState();
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
-    
+
     _days = List.generate(6, (i) => today.add(Duration(days: i - 2)));
     matchesFuture = fetchMatchesForDay(_days[_selectedDateIndex]);
 
@@ -108,7 +116,7 @@ class _MatchesScreenState extends State<MatchesScreen> with SingleTickerProvider
       duration: const Duration(milliseconds: 800),
       vsync: this,
     )..repeat(reverse: true);
-    
+
     _blinkAnimation = Tween<double>(begin: 0.3, end: 1.0).animate(_blinkController);
 
     _countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
@@ -159,14 +167,10 @@ class _MatchesScreenState extends State<MatchesScreen> with SingleTickerProvider
                           child: Container(
                             padding: const EdgeInsets.symmetric(vertical: 14),
                             decoration: BoxDecoration(
-                              color: !_isResultsTab
-                                  ? const Color(0x3300B4FF)
-                                  : const Color(0xCC0A1220),
+                              color: !_isResultsTab ? const Color(0x3300B4FF) : const Color(0xCC0A1220),
                               borderRadius: BorderRadius.circular(14),
                               border: Border.all(
-                                color: !_isResultsTab
-                                    ? AppTheme.neonBlue
-                                    : Colors.white10,
+                                color: !_isResultsTab ? AppTheme.neonBlue : Colors.white10,
                                 width: 2,
                               ),
                             ),
@@ -175,18 +179,14 @@ class _MatchesScreenState extends State<MatchesScreen> with SingleTickerProvider
                               children: [
                                 Icon(
                                   Icons.calendar_today,
-                                  color: !_isResultsTab
-                                      ? AppTheme.neonBlue
-                                      : Colors.white38,
+                                  color: !_isResultsTab ? AppTheme.neonBlue : Colors.white38,
                                   size: 20,
                                 ),
                                 const SizedBox(width: 10),
                                 Text(
                                   'المباريات',
                                   style: TextStyle(
-                                    color: !_isResultsTab
-                                        ? AppTheme.neonBlue
-                                        : Colors.white38,
+                                    color: !_isResultsTab ? AppTheme.neonBlue : Colors.white38,
                                     fontSize: 15,
                                     fontWeight: FontWeight.bold,
                                     fontFamily: 'Cairo',
@@ -205,14 +205,10 @@ class _MatchesScreenState extends State<MatchesScreen> with SingleTickerProvider
                           child: Container(
                             padding: const EdgeInsets.symmetric(vertical: 14),
                             decoration: BoxDecoration(
-                              color: _isResultsTab
-                                  ? const Color(0x3300B4FF)
-                                  : const Color(0xCC0A1220),
+                              color: _isResultsTab ? const Color(0x3300B4FF) : const Color(0xCC0A1220),
                               borderRadius: BorderRadius.circular(14),
                               border: Border.all(
-                                color: _isResultsTab
-                                    ? AppTheme.neonBlue
-                                    : Colors.white10,
+                                color: _isResultsTab ? AppTheme.neonBlue : Colors.white10,
                                 width: 2,
                               ),
                             ),
@@ -221,18 +217,14 @@ class _MatchesScreenState extends State<MatchesScreen> with SingleTickerProvider
                               children: [
                                 Icon(
                                   Icons.check_circle,
-                                  color: _isResultsTab
-                                      ? AppTheme.neonBlue
-                                      : Colors.white38,
+                                  color: _isResultsTab ? AppTheme.neonBlue : Colors.white38,
                                   size: 20,
                                 ),
                                 const SizedBox(width: 10),
                                 Text(
                                   'النتائج',
                                   style: TextStyle(
-                                    color: _isResultsTab
-                                        ? AppTheme.neonBlue
-                                        : Colors.white38,
+                                    color: _isResultsTab ? AppTheme.neonBlue : Colors.white38,
                                     fontSize: 15,
                                     fontWeight: FontWeight.bold,
                                     fontFamily: 'Cairo',
@@ -264,14 +256,10 @@ class _MatchesScreenState extends State<MatchesScreen> with SingleTickerProvider
                         width: 70,
                         margin: const EdgeInsets.only(right: 12),
                         decoration: BoxDecoration(
-                          color: isSelected
-                              ? const Color(0x2600B4FF)
-                              : AppTheme.surfaceColor,
+                          color: isSelected ? const Color(0x2600B4FF) : AppTheme.surfaceColor,
                           borderRadius: BorderRadius.circular(18),
                           border: Border.all(
-                            color: isSelected
-                                ? AppTheme.neonBlue
-                                : Colors.white10,
+                            color: isSelected ? AppTheme.neonBlue : Colors.white10,
                             width: 1.5,
                           ),
                         ),
@@ -280,18 +268,14 @@ class _MatchesScreenState extends State<MatchesScreen> with SingleTickerProvider
                           children: [
                             Icon(
                               Icons.calendar_month,
-                              color: isSelected
-                                  ? AppTheme.neonBlue
-                                  : Colors.white38,
+                              color: isSelected ? AppTheme.neonBlue : Colors.white38,
                               size: 22,
                             ),
                             const SizedBox(height: 6),
                             Text(
                               '${d.day}',
                               style: TextStyle(
-                                color: isSelected
-                                    ? AppTheme.neonBlue
-                                    : Colors.white54,
+                                color: isSelected ? AppTheme.neonBlue : Colors.white54,
                                 fontSize: 12,
                                 fontWeight: FontWeight.bold,
                                 fontFamily: 'Cairo',
@@ -328,8 +312,8 @@ class _MatchesScreenState extends State<MatchesScreen> with SingleTickerProvider
                   final selectedDate = _days[_selectedDateIndex];
                   matches = matches.where((m) {
                     final isSameDay = m.matchDate.year == selectedDate.year &&
-                                      m.matchDate.month == selectedDate.month &&
-                                      m.matchDate.day == selectedDate.day;
+                        m.matchDate.month == selectedDate.month &&
+                        m.matchDate.day == selectedDate.day;
                     if (!isSameDay) return false;
                     return _isResultsTab ? m.isEnded : !m.isEnded;
                   }).toList();
@@ -346,7 +330,11 @@ class _MatchesScreenState extends State<MatchesScreen> with SingleTickerProvider
                       child: Center(
                         child: Text(
                           'لا توجد مباريات متاحة لهذا اليوم',
-                          style: TextStyle(color: Colors.white70, fontSize: 15, fontFamily: 'Cairo'),
+                          style: TextStyle(
+                            color: Colors.white70,
+                            fontSize: 15,
+                            fontFamily: 'Cairo',
+                          ),
                         ),
                       ),
                     );
@@ -381,9 +369,7 @@ class _MatchesScreenState extends State<MatchesScreen> with SingleTickerProvider
                             ),
                           ),
                           const SizedBox(height: 4),
-                          _isResultsTab
-                              ? buildCustomResultCard(context, match)
-                              : buildLiveCard(context, match),
+                          _isResultsTab ? buildCustomResultCard(context, match) : buildLiveCard(context, match),
                         ],
                       );
                     },
@@ -396,6 +382,10 @@ class _MatchesScreenState extends State<MatchesScreen> with SingleTickerProvider
         ),
       ),
     );
+  }
+
+  Widget buildLiveCard(BuildContext context, MatchModel match) {
+    return buildLiveCardActual(context, match);
   }
 
   Widget buildLiveCardActual(BuildContext context, MatchModel match) {
@@ -426,12 +416,20 @@ class _MatchesScreenState extends State<MatchesScreen> with SingleTickerProvider
                       color: const Color(0xFFFF0033),
                       borderRadius: BorderRadius.circular(8),
                       boxShadow: const [
-                        BoxShadow(color: Color(0xFFFF0033), blurRadius: 10, spreadRadius: 1)
+                        BoxShadow(
+                          color: Color(0xFFFF0033),
+                          blurRadius: 10,
+                          spreadRadius: 1,
+                        )
                       ],
                     ),
                     child: const Text(
                       'LIVE',
-                      style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),
@@ -443,13 +441,23 @@ class _MatchesScreenState extends State<MatchesScreen> with SingleTickerProvider
                   child: Column(
                     children: [
                       match.team1Logo.isNotEmpty && match.team1Logo.startsWith('http')
-                          ? Image.network(match.team1Logo, width: 44, height: 44, errorBuilder: (_, __, ___) => const Icon(Icons.shield, color: Colors.white, size: 36))
+                          ? Image.network(
+                              match.team1Logo,
+                              width: 44,
+                              height: 44,
+                              errorBuilder: (_, __, ___) => const Icon(Icons.shield, color: Colors.white, size: 36),
+                            )
                           : const Icon(Icons.shield, color: Colors.white, size: 36),
                       const SizedBox(height: 10),
                       Text(
                         match.team1,
                         textAlign: TextAlign.center,
-                        style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold, fontFamily: 'Cairo'),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Cairo',
+                        ),
                       ),
                     ],
                   ),
@@ -458,16 +466,27 @@ class _MatchesScreenState extends State<MatchesScreen> with SingleTickerProvider
                   children: [
                     Text(
                       match.time12Hour,
-                      style: const TextStyle(color: Color(0xFF00B4FF), fontSize: 15, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                        color: Color(0xFF00B4FF),
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     const SizedBox(height: 6),
                     if (!match.isLive)
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                        decoration: BoxDecoration(color: Colors.white10, borderRadius: BorderRadius.circular(6)),
+                        decoration: BoxDecoration(
+                          color: Colors.white10,
+                          borderRadius: BorderRadius.circular(6),
+                        ),
                         child: Text(
                           countdownText,
-                          style: const TextStyle(color: Colors.amber, fontSize: 12, fontWeight: FontWeight.bold),
+                          style: const TextStyle(
+                            color: Colors.amber,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                   ],
@@ -476,49 +495,107 @@ class _MatchesScreenState extends State<MatchesScreen> with SingleTickerProvider
                   child: Column(
                     children: [
                       match.team2Logo.isNotEmpty && match.team2Logo.startsWith('http')
-                          ? Image.network(match.team2Logo, width: 44, height: 44, errorBuilder: (_, __, ___) => const Icon(Icons.shield, color: Colors.white, size: 36))
+                          ? Image.network(
+                              match.team2Logo,
+                              width: 44,
+                              height: 44,
+                              errorBuilder: (_, __, ___) => const Icon(Icons.shield, color: Colors.white, size: 36),
+                            )
                           : const Icon(Icons.shield, color: Colors.white, size: 36),
                       const SizedBox(height: 10),
                       Text(
                         match.team2,
                         textAlign: TextAlign.center,
-                        style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold, fontFamily: 'Cairo'),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Cairo',
+                        ),
                       ),
                     ],
                   ),
                 ),
               ],
             ),
-            const Padding(padding: EdgeInsets.symmetric(vertical: 8.0), child: Divider(color: Colors.white10)),
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 8.0),
+              child: Divider(color: Colors.white10),
+            ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Row(
-                    children: match.team1Form.map((f) => Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 2),
-                      width: 18, height: 18,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: f == 'W' ? Colors.green.withOpacity(0.3) : (f == 'D' ? Colors.grey.withOpacity(0.3) : Colors.red.withOpacity(0.3)),
-                        border: Border.all(color: f == 'W' ? Colors.green : (f == 'D' ? Colors.grey : Colors.red), width: 1),
-                      ),
-                      child: Center(child: Text(f, style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold))),
-                    )).toList(),
+                    children: match.team1Form
+                        .map(
+                          (f) => Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 2),
+                            width: 18,
+                            height: 18,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: f == 'W'
+                                  ? Colors.green.withOpacity(0.3)
+                                  : (f == 'D' ? Colors.grey.withOpacity(0.3) : Colors.red.withOpacity(0.3)),
+                              border: Border.all(
+                                color: f == 'W' ? Colors.green : (f == 'D' ? Colors.grey : Colors.red),
+                                width: 1,
+                              ),
+                            ),
+                            child: Center(
+                              child: Text(
+                                f,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        )
+                        .toList(),
                   ),
-                  const Text('مؤشرات الأداء الأخيرة', style: TextStyle(color: Colors.white38, fontSize: 11, fontFamily: 'Cairo')),
+                  const Text(
+                    'مؤشرات الأداء الأخيرة',
+                    style: TextStyle(
+                      color: Colors.white38,
+                      fontSize: 11,
+                      fontFamily: 'Cairo',
+                    ),
+                  ),
                   Row(
-                    children: match.team2Form.map((f) => Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 2),
-                      width: 18, height: 18,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: f == 'W' ? Colors.green.withOpacity(0.3) : (f == 'D' ? Colors.grey.withOpacity(0.3) : Colors.red.withOpacity(0.3)),
-                        border: Border.all(color: f == 'W' ? Colors.green : (f == 'D' ? Colors.grey : Colors.red), width: 1),
-                      ),
-                      child: Center(child: Text(f, style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold))),
-                    )).toList(),
+                    children: match.team2Form
+                        .map(
+                          (f) => Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 2),
+                            width: 18,
+                            height: 18,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: f == 'W'
+                                  ? Colors.green.withOpacity(0.3)
+                                  : (f == 'D' ? Colors.grey.withOpacity(0.3) : Colors.red.withOpacity(0.3)),
+                              border: Border.all(
+                                color: f == 'W' ? Colors.green : (f == 'D' ? Colors.grey : Colors.red),
+                                width: 1,
+                              ),
+                            ),
+                            child: Center(
+                              child: Text(
+                                f,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        )
+                        .toList(),
                   ),
                 ],
               ),
@@ -528,9 +605,30 @@ class _MatchesScreenState extends State<MatchesScreen> with SingleTickerProvider
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(match.team1Scorer, style: const TextStyle(color: Colors.white54, fontSize: 11, fontFamily: 'Cairo')),
-                  const Text('هداف الفريق', style: TextStyle(color: Colors.white24, fontSize: 11, fontFamily: 'Cairo')),
-                  Text(match.team2Scorer, style: const TextStyle(color: Colors.white54, fontSize: 11, fontFamily: 'Cairo')),
+                  Text(
+                    match.team1Scorer,
+                    style: const TextStyle(
+                      color: Colors.white54,
+                      fontSize: 11,
+                      fontFamily: 'Cairo',
+                    ),
+                  ),
+                  const Text(
+                    'هداف الفريق',
+                    style: TextStyle(
+                      color: Colors.white24,
+                      fontSize: 11,
+                      fontFamily: 'Cairo',
+                    ),
+                  ),
+                  Text(
+                    match.team2Scorer,
+                    style: const TextStyle(
+                      color: Colors.white54,
+                      fontSize: 11,
+                      fontFamily: 'Cairo',
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -541,7 +639,10 @@ class _MatchesScreenState extends State<MatchesScreen> with SingleTickerProvider
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => MatchDetailScreen(team1: match.team1, team2: match.team2),
+                    builder: (_) => MatchDetailScreen(
+                      team1: match.team1,
+                      team2: match.team2,
+                    ),
                   ),
                 );
               },
@@ -566,13 +667,23 @@ class _MatchesScreenState extends State<MatchesScreen> with SingleTickerProvider
                   child: Column(
                     children: [
                       match.team1Logo.isNotEmpty && match.team1Logo.startsWith('http')
-                          ? Image.network(match.team1Logo, width: 44, height: 44, errorBuilder: (_, __, ___) => const Icon(Icons.shield, color: Colors.white, size: 36))
+                          ? Image.network(
+                              match.team1Logo,
+                              width: 44,
+                              height: 44,
+                              errorBuilder: (_, __, ___) => const Icon(Icons.shield, color: Colors.white, size: 36),
+                            )
                           : const Icon(Icons.shield, color: Colors.white, size: 36),
                       const SizedBox(height: 10),
                       Text(
                         match.team1,
                         textAlign: TextAlign.center,
-                        style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold, fontFamily: 'Cairo'),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Cairo',
+                        ),
                       ),
                     ],
                   ),
@@ -581,36 +692,64 @@ class _MatchesScreenState extends State<MatchesScreen> with SingleTickerProvider
                   children: [
                     Text(
                       match.score,
-                      style: const TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold, fontFamily: 'Cairo'),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'Cairo',
+                      ),
                     ),
-                    const Text('انتهت', style: TextStyle(color: Colors.white38, fontSize: 11, fontFamily: 'Cairo')),
+                    const Text(
+                      'انتهت',
+                      style: TextStyle(
+                        color: Colors.white38,
+                        fontSize: 11,
+                        fontFamily: 'Cairo',
+                      ),
+                    ),
                   ],
                 ),
                 Expanded(
                   child: Column(
                     children: [
                       match.team2Logo.isNotEmpty && match.team2Logo.startsWith('http')
-                          ? Image.network(match.team2Logo, width: 44, height: 44, errorBuilder: (_, __, ___) => const Icon(Icons.shield, color: Colors.white, size: 36))
+                          ? Image.network(
+                              match.team2Logo,
+                              width: 44,
+                              height: 44,
+                              errorBuilder: (_, __, ___) => const Icon(Icons.shield, color: Colors.white, size: 36),
+                            )
                           : const Icon(Icons.shield, color: Colors.white, size: 36),
                       const SizedBox(height: 10),
                       Text(
                         match.team2,
                         textAlign: TextAlign.center,
-                        style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold, fontFamily: 'Cairo'),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Cairo',
+                        ),
                       ),
                     ],
                   ),
                 ),
               ],
             ),
-            const Padding(padding: EdgeInsets.symmetric(vertical: 8.0), child: Divider(color: Colors.white10)),
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 8.0),
+              child: Divider(color: Colors.white10),
+            ),
             NeonButton(
               text: 'تفاصيل المباراة',
               onPressed: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => MatchDetailScreen(team1: match.team1, team2: match.team2),
+                    builder: (_) => MatchDetailScreen(
+                      team1: match.team1,
+                      team2: match.team2,
+                    ),
                   ),
                 );
               },
@@ -619,9 +758,5 @@ class _MatchesScreenState extends State<MatchesScreen> with SingleTickerProvider
         ),
       ),
     );
-  }
-
-  Widget buildLiveCard(BuildContext context, MatchModel match) {
-    return buildLiveCardActual(context, match);
   }
 }
