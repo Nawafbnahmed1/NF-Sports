@@ -265,12 +265,27 @@ class _MatchesScreenState extends State<MatchesScreen> {
                   }
 
                   final matchesData = snapshot.data ?? [];
-                  final matches = matchesData.map((e) => MatchModel.fromMap(e)).toList();
+                  final targetDay = _days[_selectedDateIndex];
+                  final matches = matchesData
+                      .map((e) => MatchModel.fromMap(e))
+                      .where((m) =>
+                          m.matchDate.year == targetDay.year &&
+                          m.matchDate.month == targetDay.month &&
+                          m.matchDate.day == targetDay.day)
+                      .toList();
 
                   if (matches.isEmpty) {
                     return const Padding(
                       padding: EdgeInsets.all(20),
-                      child: Center(child: Text('No matches found')),
+                      child: Center(
+                        child: Text(
+                          'No matches found',
+                          style: TextStyle(
+                            color: Colors.white70,
+                            fontFamily: 'Cairo',
+                          ),
+                        ),
+                      ),
                     );
                   }
 
@@ -284,11 +299,18 @@ class _MatchesScreenState extends State<MatchesScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 20,
+                              vertical: 8,
+                            ),
                             child: Row(
                               textDirection: TextDirection.rtl,
                               children: [
-                                const Icon(Icons.emoji_events, color: Colors.amber, size: 18),
+                                const Icon(
+                                  Icons.emoji_events,
+                                  color: Colors.amber,
+                                  size: 18,
+                                ),
                                 const SizedBox(width: 8),
                                 Text(
                                   'مباريات اليوم',
