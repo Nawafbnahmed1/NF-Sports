@@ -45,7 +45,6 @@ class MatchModel {
     final rawDate = (map['match_date'] ?? '').toString();
     final dt = DateTime.tryParse(rawDate)?.toLocal() ?? DateTime.now();
     
-    // تحويل التوقيت لنظام 12 ساعة باللغة الإنجليزية الفخمة (AM/PM)
     final hour12 = dt.hour > 12 ? dt.hour - 12 : (dt.hour == 0 ? 12 : dt.hour);
     final amPm = dt.hour >= 12 ? 'PM' : 'AM';
     final mm = dt.minute.toString().padLeft(2, '0');
@@ -55,7 +54,6 @@ class MatchModel {
     final isLiveMatch = status == 'live' || status == 'playing' || status == 'in_play';
     final isFinished = status == 'finished' || status == 'ended' || status == 'final';
 
-    // قراءة مؤشرات الأداء والبيانات الفخمة من السيرفر أو وضع قيم افتراضية متناسقة
     final t1Form = List<String>.from(map['team1_form'] ?? ['W', 'D', 'W']);
     final t2Form = List<String>.from(map['team2_form'] ?? ['L', 'W', 'D']);
 
@@ -78,6 +76,7 @@ class MatchModel {
     );
   }
 }
+
 class MatchesScreen extends StatefulWidget {
   const MatchesScreen({super.key});
 
@@ -92,7 +91,6 @@ class _MatchesScreenState extends State<MatchesScreen> with SingleTickerProvider
   late List<DateTime> _days;
   late Future<List<Map<String, dynamic>>> matchesFuture;
   
-  // تحكم الوميض اللامع لكلمة مباشر الأحمر
   late AnimationController _blinkController;
   late Animation<double> _blinkAnimation;
   late Timer _countdownTimer;
@@ -103,11 +101,9 @@ class _MatchesScreenState extends State<MatchesScreen> with SingleTickerProvider
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     
-    // توليد شريط الـ 6 مربعات للأيام بالتتالي المنسق لتصميمك
     _days = List.generate(6, (i) => today.add(Duration(days: i - 2)));
     matchesFuture = fetchMatchesForDay(_days[_selectedDateIndex]);
 
-    // إعداد حركة الوميض واللمعان النيوني الأحمر للمباشر
     _blinkController = AnimationController(
       duration: const Duration(milliseconds: 800),
       vsync: this,
@@ -115,7 +111,6 @@ class _MatchesScreenState extends State<MatchesScreen> with SingleTickerProvider
     
     _blinkAnimation = Tween<double>(begin: 0.3, end: 1.0).animate(_blinkController);
 
-    // تحديث العدادات التنازلية بداخل الكروت كل ثانية تلقائياً
     _countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (mounted) setState(() {});
     });
@@ -128,7 +123,6 @@ class _MatchesScreenState extends State<MatchesScreen> with SingleTickerProvider
     super.dispose();
   }
 
-  // دالة جلب البيانات المرتبة لترتيب المباريات المباشرة أولاً (LIVE FIRST)
   Future<List<Map<String, dynamic>>> fetchMatchesForDay(DateTime day) async {
     final data = await supabase.from('matches').select();
     debugPrint('Matches fetched for design: ${data.length}');
@@ -141,6 +135,7 @@ class _MatchesScreenState extends State<MatchesScreen> with SingleTickerProvider
       matchesFuture = fetchMatchesForDay(_days[index]);
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -330,7 +325,6 @@ class _MatchesScreenState extends State<MatchesScreen> with SingleTickerProvider
                   final matchesData = snapshot.data ?? [];
                   var matches = matchesData.map((e) => MatchModel.fromMap(e)).toList();
 
-                  // تصفية ذكية للأيام والتبويبات بناءً على شريط التواريخ الـ 6 لتصميمك الفخم
                   final selectedDate = _days[_selectedDateIndex];
                   matches = matches.where((m) {
                     final isSameDay = m.matchDate.year == selectedDate.year &&
@@ -340,7 +334,6 @@ class _MatchesScreenState extends State<MatchesScreen> with SingleTickerProvider
                     return _isResultsTab ? m.isEnded : !m.isEnded;
                   }).toList();
 
-                  // فرز المباريات المباشرة والحية لتظهر في الأعلى أولاً (LIVE FIRST)
                   matches.sort((a, b) {
                     if (a.isLive && !b.isLive) return -1;
                     if (!a.isLive && b.isLive) return 1;
@@ -368,7 +361,6 @@ class _MatchesScreenState extends State<MatchesScreen> with SingleTickerProvider
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // شريط البطولة والمسابقات الزجاجي المبتكر المضاف فوق كرتك الأصلي
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                             child: Row(
@@ -405,13 +397,8 @@ class _MatchesScreenState extends State<MatchesScreen> with SingleTickerProvider
       ),
     );
   }
-  Widget buildLiveCard(BuildContext context) {
-    // كود وهمي لتفادي خطأ بناء المرحلة المنفصلة وسيتم ربطه بالمتغير الفعلي في الجزء الأخير
-    return const SizedBox.shrink();
-  }
 
   Widget buildLiveCardActual(BuildContext context, MatchModel match) {
-    // حساب العداد التنازلي التلقائي الديناميكي المتبقي على إقلاع المباراة الحية
     final diff = match.matchDate.difference(DateTime.now());
     String countdownText = "00:00:00";
     if (!diff.isNegative) {
@@ -424,7 +411,7 @@ class _MatchesScreenState extends State<MatchesScreen> with SingleTickerProvider
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       child: GlassCard(
-        borderRadius: 28, // الحفاظ الكامل على دائرية تصميمك الأصلي الفخم
+        borderRadius: 28,
         child: Column(
           children: [
             if (match.isLive)
@@ -432,7 +419,6 @@ class _MatchesScreenState extends State<MatchesScreen> with SingleTickerProvider
                 alignment: Alignment.topLeft,
                 child: FadeTransition(
                   opacity: _blinkAnimation,
-                  // المربع الأحمر المتوهج واللامع (LIVE) الجاذب لعين المستخدم
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                     margin: const EdgeInsets.only(left: 14, top: 10),
@@ -565,11 +551,12 @@ class _MatchesScreenState extends State<MatchesScreen> with SingleTickerProvider
       ),
     );
   }
+
   Widget buildCustomResultCard(BuildContext context, MatchModel match) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       child: GlassCard(
-        borderRadius: 28, // الحفاظ الكامل على دائرية تصميمك الأصلي الفخم
+        borderRadius: 28,
         child: Column(
           children: [
             Row(
@@ -634,7 +621,6 @@ class _MatchesScreenState extends State<MatchesScreen> with SingleTickerProvider
     );
   }
 
-  // دالة المزامنة والربط التلقائي لتمرير متغير الاستدعاء الفعلي لكروت البث المباشر
   Widget buildLiveCard(BuildContext context, MatchModel match) {
     return buildLiveCardActual(context, match);
   }
