@@ -15,7 +15,8 @@ class LineupPlayerModel {
 
   factory LineupPlayerModel.fromMap(Map<String, dynamic> map) {
     return LineupPlayerModel(
-      name: (map['player_name'] ?? 'لاعب').toString(),
+      // دعم الاسم العربي الذكي القادم من السيرفر الجديد
+      name: (map['player_name_ar'] ?? map['player_name'] ?? 'لاعب').toString(),
       number: (map['jersey_number'] ?? '10').toString(),
       isSubstitute: map['is_substitute'] == true,
     );
@@ -75,7 +76,7 @@ class LineupTab extends StatelessWidget {
                         ),
                       ),
 
-                      // 🌟 العودة التاريخية للشعار الدائري النيوني المضيء (NF) في سنتر الدائرة ليعود تصميمك التجريبي الخرافي!
+                      // 🌟 العودة التاريخية للشعار الدائري النيوني المضيء (NF) في سنتر الدائرة
                       Center(
                         child: Container(
                           width: 65,
@@ -96,6 +97,7 @@ class LineupTab extends StatelessWidget {
                           ),
                         ),
                       ),
+
                       // توزيع لاعبي الفريق الأول (الأعلى) برمجياً من السيرفر
                       if (team1Starters.isEmpty)
                         const Positioned(
@@ -138,7 +140,7 @@ class LineupTab extends StatelessWidget {
                 ),
               ),
 
-              // شريط دكة البدلاء والاحتياط المطور لعرض باقي اللاعبين القادمين من السيرفر
+              // شريط دكة البدلاء والاحتياط المطور لعرض باقي اللاعبين
               if (substitutes.isNotEmpty)
                 Padding(
                   padding: const EdgeInsets.all(20.0),
