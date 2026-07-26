@@ -16,11 +16,16 @@ class MatchDetailModel {
   final double progress2;
 
   const MatchDetailModel({
-    required this.possession1, required this.possession2,
-    required this.shots1, required this.shots2,
-    required this.fouls1, required this.fouls2,
-    required this.injuries1, required this.injuries2,
-    required this.progress1, required this.progress2,
+    required this.possession1,
+    required this.possession2,
+    required this.shots1,
+    required this.shots2,
+    required this.fouls1,
+    required this.fouls2,
+    required this.injuries1,
+    required this.injuries2,
+    required this.progress1,
+    required this.progress2,
   });
 }
 
@@ -64,11 +69,16 @@ class DetailsTab extends StatelessWidget {
         }
 
         final details = MatchDetailModel(
-          possession1: possession1, possession2: possession2,
-          shots1: shots1, shots2: shots2,
-          fouls1: fouls1, fouls2: fouls2,
-          injuries1: injuries1, injuries2: injuries2,
-          progress1: prog1, progress2: prog2,
+          possession1: possession1,
+          possession2: possession2,
+          shots1: shots1,
+          shots2: shots2,
+          fouls1: fouls1,
+          fouls2: fouls2,
+          injuries1: injuries1,
+          injuries2: injuries2,
+          progress1: prog1,
+          progress2: prog2,
         );
 
         return SingleChildScrollView(
@@ -99,7 +109,7 @@ class DetailsTab extends StatelessWidget {
                   ),
                 ),
               ),
-                            const Padding(
+              const Padding(
                 padding: EdgeInsets.only(right: 20, top: 25, bottom: 10),
                 child: Align(
                   alignment: Alignment.centerRight,
@@ -159,7 +169,7 @@ class DetailsTab extends StatelessWidget {
     );
   }
 
-  Widget _buildStatRow(String label, String val1, String label2, double flex1, double flex2) {
+  Widget _buildStatRow(String label, String val1, String val2, double flex1, double flex2) {
     return Column(
       children: [
         Row(
@@ -167,7 +177,7 @@ class DetailsTab extends StatelessWidget {
           children: [
             Text(val1, style: const TextStyle(color: AppTheme.neonBlue, fontSize: 13, fontWeight: FontWeight.bold)),
             Text(label, style: const TextStyle(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
-            Text(label2, style: const TextStyle(color: Colors.redAccent, fontSize: 13, fontWeight: FontWeight.bold)),
+            Text(val2, style: const TextStyle(color: Colors.redAccent, fontSize: 13, fontWeight: FontWeight.bold)),
           ],
         ),
         const SizedBox(height: 6),
