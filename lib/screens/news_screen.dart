@@ -233,7 +233,9 @@ class _NewsScreenState extends State<NewsScreen> {
                           onTap: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (_) => NewsDetailScreen(article: article)),
+                              MaterialPageRoute(
+                                builder: (context) => NewsDetailScreen(article: article),
+                              ),
                             );
                           },
                           borderRadius: BorderRadius.circular(10),
@@ -320,7 +322,9 @@ class _NewsScreenState extends State<NewsScreen> {
                           onTap: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (_) => NewsDetailScreen(article: article)),
+                              MaterialPageRoute(
+                                builder: (context) => NewsDetailScreen(article: article),
+                              ),
                             );
                           },
                           borderRadius: BorderRadius.circular(8),
