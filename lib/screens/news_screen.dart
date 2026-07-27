@@ -1,19 +1,36 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../theme/app_theme.dart';
 import '../widgets/glass_card.dart';
+import 'news_detail_screen.dart';
 
 class NewsArticleModel {
   final String title;
-  final String time;
+  final String description;
   final String imageUrl;
-  final bool isMain;
+  final String source;
+  final String articleUrl;
+  final DateTime publishedAt;
 
   const NewsArticleModel({
     required this.title,
-    required this.time,
+    required this.description,
     required this.imageUrl,
-    required this.isMain,
+    required this.source,
+    required this.articleUrl,
+    required this.publishedAt,
   });
+
+  factory NewsArticleModel.fromMap(Map<String, dynamic> map) {
+    return NewsArticleModel(
+      title: (map['title_ar'] ?? map['title'] ?? '').toString(),
+      description: (map['description_ar'] ?? map['description'] ?? '').toString(),
+      imageUrl: (map['image_url'] ?? '').toString(),
+      source: (map['source'] ?? '').toString(),
+      articleUrl: (map['article_url'] ?? '').toString(),
+      publishedAt: DateTime.parse(map['published_at']),
+    );
+  }
 }
 
 class NewsScreen extends StatefulWidget {
@@ -24,7 +41,27 @@ class NewsScreen extends StatefulWidget {
 }
 
 class _NewsScreenState extends State<NewsScreen> {
+  final supabase = Supabase.instance.client;
+  late Future<List<NewsArticleModel>> newsFuture;
   bool _isVideosTab = false;
+
+  @override
+  void initState() {
+    super.initState();
+    newsFuture = fetchNews();
+  }
+
+  Future<List<NewsArticleModel>> fetchNews() async {
+    final data = await supabase
+        .from('news')
+        .select()
+        .order('published_at', ascending: false)
+        .limit(50);
+
+    return (data as List)
+        .map((e) => NewsArticleModel.fromMap(e))
+        .toList();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -103,20 +140,30 @@ class _NewsScreenState extends State<NewsScreen> {
                 ),
               ),
               const SizedBox(height: 10),
-              ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: 3,
-                itemBuilder: (context, index) {
-                  final article = NewsArticleModel(
-                    title: '',
-                    time: index == 0 ? '--:--' : '--:--',
-                    imageUrl: '',
-                    isMain: index == 0,
+              FutureBuilder<List<NewsArticleModel>>(
+                future: newsFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (snapshot.hasError) {
+                    return Center(child: Text(snapshot.error.toString()));
+                  }
+                  final articles = snapshot.data ?? [];
+                  if (articles.isEmpty) {
+                    return const Center(child: Text("لا توجد أخبار"));
+                  }
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: articles.length,
+                    itemBuilder: (context, index) {
+                      final article = articles[index];
+                      return index == 0
+                          ? _buildMainArticleCard(context, article)
+                          : _buildSubArticleCard(context, article);
+                    },
                   );
-                  return article.isMain 
-                      ? _buildMainArticleCard(context, article)
-                      : _buildSubArticleCard(context, article);
                 },
               ),
               const SizedBox(height: 120),
@@ -127,7 +174,6 @@ class _NewsScreenState extends State<NewsScreen> {
     );
   }
 
-  // 📐 دالة كارت الخبر أو الملخص الرئيسي مفرغة ومستعدة لاستقبال الروابط بدون تكرار
   Widget _buildMainArticleCard(BuildContext context, NewsArticleModel article) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -140,15 +186,23 @@ class _NewsScreenState extends State<NewsScreen> {
               width: double.infinity,
               height: 180,
               decoration: const BoxDecoration(
-                color: Color(0x0DFFFFFF),
                 borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
               ),
-              child: Center(
-                child: Icon(
-                  _isVideosTab ? Icons.play_circle_outline : Icons.image, 
-                  color: Colors.white12, 
-                  size: 48,
-                ),
+              child: ClipRRect(
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+                child: article.imageUrl.isNotEmpty
+                    ? Image.network(
+                        article.imageUrl,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => Container(
+                          color: Colors.black26,
+                          child: const Center(child: Icon(Icons.image, color: Colors.white24, size: 48)),
+                        ),
+                      )
+                    : Container(
+                        color: Colors.black26,
+                        child: const Center(child: Icon(Icons.image, color: Colors.white24, size: 48)),
+                      ),
               ),
             ),
             Padding(
@@ -158,7 +212,7 @@ class _NewsScreenState extends State<NewsScreen> {
                   Align(
                     alignment: Alignment.centerRight,
                     child: Text(
-                      _isVideosTab ? 'في انتظار تفاصيل الملخص للـ API...' : 'في انتظار العناوين الحية للـ API...',
+                      article.title,
                       textDirection: TextDirection.rtl,
                       style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold, fontFamily: 'Cairo'),
                     ),
@@ -176,24 +230,22 @@ class _NewsScreenState extends State<NewsScreen> {
                           border: Border.all(color: AppTheme.neonBlue, width: 1),
                         ),
                         child: InkWell(
-                          onTap: () {},
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (_) => NewsDetailScreen(article: article)),
+                            );
+                          },
                           borderRadius: BorderRadius.circular(10),
-                          child: Center(
-                            child: Text(
-                              _isVideosTab ? 'شاهد الملخص' : 'اقرأ المزيد', 
-                              style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold, fontFamily: 'Cairo'),
-                            ),
+                          child: const Center(
+                            child: Text('اقرأ المزيد', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
                           ),
                         ),
                       ),
-                      if (_isVideosTab)
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(color: const Color(0x3300B4FF), borderRadius: BorderRadius.circular(6)),
-                          child: const Text('00:00', style: TextStyle(color: AppTheme.neonBlue, fontSize: 11, fontWeight: FontWeight.bold)),
-                        )
-                      else
-                        Text(article.time, style: const TextStyle(color: Colors.white38, fontSize: 11)),
+                      Text(
+                        "${article.publishedAt.day}/${article.publishedAt.month}",
+                        style: const TextStyle(color: Colors.white38, fontSize: 11),
+                      ),
                     ],
                   ),
                 ],
@@ -205,7 +257,6 @@ class _NewsScreenState extends State<NewsScreen> {
     );
   }
 
-  // 📐 دالة كارت الخبر أو الملخص الفرعي مفرغة كلياً ومطهرة من نصوص التجارب لطلب نواف
   Widget _buildSubArticleCard(BuildContext context, NewsArticleModel article) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
@@ -219,15 +270,23 @@ class _NewsScreenState extends State<NewsScreen> {
               width: 90,
               height: 90,
               decoration: BoxDecoration(
-                color: const Color(0x0DFFFFFF),
                 borderRadius: BorderRadius.circular(14),
               ),
-              child: Center(
-                child: Icon(
-                  _isVideosTab ? Icons.play_circle_outline : Icons.image, 
-                  color: Colors.white10, 
-                  size: 28,
-                ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(14),
+                child: article.imageUrl.isNotEmpty
+                    ? Image.network(
+                        article.imageUrl,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => Container(
+                          color: Colors.black26,
+                          child: const Center(child: Icon(Icons.image, color: Colors.white10, size: 28)),
+                        ),
+                      )
+                    : Container(
+                        color: Colors.black26,
+                        child: const Center(child: Icon(Icons.image, color: Colors.white10, size: 28)),
+                      ),
               ),
             ),
             const SizedBox(width: 15),
@@ -238,7 +297,7 @@ class _NewsScreenState extends State<NewsScreen> {
                   Align(
                     alignment: Alignment.centerRight,
                     child: Text(
-                      _isVideosTab ? 'في انتظار تفاصيل الملخص للـ API...' : 'في انتظار تفاصيل الخبر للـ API...',
+                      article.title,
                       textDirection: TextDirection.rtl,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
@@ -255,26 +314,28 @@ class _NewsScreenState extends State<NewsScreen> {
                         decoration: BoxDecoration(
                           color: const Color(0x1F00B4FF),
                           borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: AppTheme.neonBlue.withValues(alpha: 0.5), width: 1),
+                          border: Border.all(color: AppTheme.neonBlue.withOpacity(0.5), width: 1),
                         ),
                         child: InkWell(
-                          onTap: () {},
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (_) => NewsDetailScreen(article: article)),
+                            );
+                          },
                           borderRadius: BorderRadius.circular(8),
-                          child: Center(
-                            child: Text(
-                              _isVideosTab ? 'شاهد الملخص' : 'اقرأ المزيد', 
-                              style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo'),
-                            ),
+                          child: const Center(
+                            child: Text('اقرأ المزيد', style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
                           ),
                         ),
                       ),
                       Row(
                         textDirection: TextDirection.rtl,
                         children: [
-                          Icon(_isVideosTab ? Icons.schedule : Icons.access_time, color: Colors.white24, size: 12),
+                          const Icon(Icons.access_time, color: Colors.white24, size: 12),
                           const SizedBox(width: 4),
                           Text(
-                            _isVideosTab ? '00:00' : (article.time.isEmpty ? '--' : article.time), 
+                            "${article.publishedAt.day}/${article.publishedAt.month}",
                             style: const TextStyle(color: Colors.white24, fontSize: 11, fontFamily: 'Cairo'),
                           ),
                         ],
