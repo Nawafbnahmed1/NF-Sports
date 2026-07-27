@@ -4,8 +4,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        // تثبيت النسخة الصريحة والنظامية المتوافقة مع الفلاتر الحديث لحل مشكلة Unresolved reference نهائياً
-        classpath("com.android.tools.build:gradle:8.1.0")
+        classpath("com.android.tools.build:gradle:8.2.1")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.0")
     }
 }
@@ -17,16 +16,8 @@ allprojects {
     }
 }
 
-val rootProjectBuildDir = project.rootProject.layout.buildDirectory.dir("../../build")
-subprojects {
-    project.layout.buildDirectory.set(rootProjectBuildDir.map { it.dir(project.name) })
-}
-subprojects {
-    eval({
-        project.evaluationDependsOn(":app")
-    })
-}
+val rootProjectBuildDir = project.rootProject.layout.buildDirectory
 
 tasks.register<Delete>("clean") {
-    delete(rootProject.layout.buildDirectory)
+    delete(rootProjectBuildDir)
 }
