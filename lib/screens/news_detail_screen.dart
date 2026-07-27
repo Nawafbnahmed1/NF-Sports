@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import '../theme/app_theme.dart';
 import 'news_screen.dart';
-import 'package:intl/intl.dart';
 
 class NewsDetailScreen extends StatelessWidget {
   final NewsArticleModel article;
