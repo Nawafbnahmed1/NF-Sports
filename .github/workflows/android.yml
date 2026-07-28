@@ -16,12 +16,23 @@ jobs:
         with:
           channel: stable
 
-      - run: |
+      - name: Build APK
+        run: |
           flutter clean
           flutter pub get
-          flutter build apk --release --target-platform android-arm,android-arm64
+          flutter build apk --release --verbose
+
+      - name: List build outputs
+        run: |
+          echo "=== APK ==="
+          find build -name "*.apk" || true
+          echo "=== AAB ==="
+          find build -name "*.aab" || true
+          echo "=== Outputs ==="
+          ls -R build/app/outputs || true
 
       - uses: actions/upload-artifact@v4
+        if: success()
         with:
           name: NF-Sports-APK
-          path: "**/build/app/outputs/**/app-release.apk"
+          path: build/app/outputs/**/*.apk
