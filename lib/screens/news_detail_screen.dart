@@ -124,7 +124,7 @@ class NewsDetailScreen extends StatelessWidget {
 
                   Text(
                     article.title,
-                    textDirection: TextDirection.rtl,
+                    textDirection: ui.TextDirection.rtl,
                     style: GoogleFonts.cairo(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
@@ -157,7 +157,7 @@ class NewsDetailScreen extends StatelessWidget {
                       article.description.isEmpty
                           ? 'لا يوجد وصف متوفر لهذا الخبر.'
                           : article.description,
-                      textDirection: TextDirection.rtl,
+                      textDirection: ui.TextDirection.rtl,
                       style: GoogleFonts.cairo(
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
