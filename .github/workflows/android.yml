@@ -16,14 +16,32 @@ jobs:
         with:
           channel: stable
 
-      - name: Build APK
+      - name: Build APK with Full Log
         run: |
           flutter clean
           flutter pub get
-          flutter build apk --release
+          flutter doctor -v
+          flutter build apk --release --verbose > build_log.txt 2>&1 || true
 
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
+      - name: Show Failure Details
+        if: always()
+        run: |
+          echo "========== FAILURE =========="
+          grep -n "FAILURE:" build_log.txt || true
+          
+          echo "========== EXCEPTION =========="
+          grep -n "Exception" build_log.txt || true
+          
+          echo "========== CAUSED BY =========="
+          grep -n "Caused by:" build_log.txt || true
+          
+          echo "========== ERROR =========="
+          grep -n "error:" build_log.txt || true
+          
+          echo "========== LAST 200 LINES =========="
+          tail -n 200 build_log.txt
+
+      - uses: actions/upload-artifact@v4
         if: success()
         with:
           name: NF-Sports-APK
