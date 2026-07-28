@@ -22,13 +22,16 @@ jobs:
           flutter pub get
           flutter build apk --release --verbose
 
-      - name: List build outputs
+      - name: Show all build files
+        if: always()
         run: |
-          echo "=== APK ==="
-          find build -name "*.apk" || true
-          echo "=== AAB ==="
-          find build -name "*.aab" || true
-          echo "=== Outputs ==="
+          echo "==== BUILD ===="
+          find build -type f || true
+          echo "==== APK ===="
+          find . -name "*.apk" || true
+          echo "==== AAB ===="
+          find . -name "*.aab" || true
+          echo "==== OUTPUTS ===="
           ls -R build/app/outputs || true
 
       - uses: actions/upload-artifact@v4
