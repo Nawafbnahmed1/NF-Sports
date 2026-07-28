@@ -20,22 +20,11 @@ jobs:
         run: |
           flutter clean
           flutter pub get
-          flutter build apk --release --verbose
+          flutter build apk --release
 
-      - name: Show all build files
-        if: always()
-        run: |
-          echo "==== BUILD ===="
-          find build -type f || true
-          echo "==== APK ===="
-          find . -name "*.apk" || true
-          echo "==== AAB ===="
-          find . -name "*.aab" || true
-          echo "==== OUTPUTS ===="
-          ls -R build/app/outputs || true
-
-      - uses: actions/upload-artifact@v4
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
         if: success()
         with:
           name: NF-Sports-APK
-          path: build/app/outputs/**/*.apk
+          path: android/app/build/outputs/**/*.apk
