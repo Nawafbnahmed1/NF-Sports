@@ -28,7 +28,7 @@ jobs:
         with:
           channel: stable
 
-      # ⚙️ 4. حقن الرخص، ترقية المكتبات المتعارضة، وبناء الـ APK حياً في حزمة برمجية واحدة
+      # ⚙️ 4. حقن الرخص، ترقية صارمة للمكتبات، وبناء الـ APK مع تجاوز تعارض الحزم المتبقية
       - name: Build APK with Full Log
         run: |
           mkdir -p "$ANDROID_HOME/licenses" || true
@@ -38,7 +38,8 @@ jobs:
           flutter clean
           flutter pub get
           flutter pub upgrade --major-versions || true
-          flutter build apk --release --verbose > build_log.txt 2>&1
+          flutter pub upgrade || true
+          flutter build apk --release --no-pub --verbose > build_log.txt 2>&1
 
       # 📊 لوحة استكشاف الأخطاء؛ تشتغل تلقائياً فقط في حال حدوث أي فشل حقيقي بالبناء
       - name: Show Failure Details
