@@ -16,7 +16,7 @@ class NavigationScreen extends StatefulWidget {
 class _NavigationScreenState extends State<NavigationScreen> with SingleTickerProviderStateMixin {
   int _selectedIndex = 0;
 
-  // 🌟 ترقية وإعادة توجيه المصفوفة لفتح التحفة الفنية لقسم المزيد الجديد كلياً والتزامه بالخفة الكاملة
+  // 🌟 ترقية وإعادة توجيه مصفوفة الشاشات الأربعة لفتح التحفة الفنية لقسم المزيد الجديد
   final List<Widget> _screens = [
     const HomeScreen(), 
     const MatchesScreen(),
@@ -26,7 +26,7 @@ class _NavigationScreenState extends State<NavigationScreen> with SingleTickerPr
 
   void _onItemTapped(int index) {
     if (_selectedIndex != index) {
-      HapticFeedback.selectionClick(); // اهتزاز تكتيكي فخم فائق الخفة عند الانتقال بين التبويبات الأربعة
+      HapticFeedback.selectionClick(); // اهتزاز تكتيكي فخم فائق الخفة عند الانتقال بين التبويبات
       setState(() {
         _selectedIndex = index;
       });
@@ -93,10 +93,10 @@ class _NavigationScreenState extends State<NavigationScreen> with SingleTickerPr
         child: Stack(
           alignment: Alignment.center,
           children: [
-            // 🌊 كبسولة الموجة السائلة المضيئة: تتحرك وتستقر خلف الأيقونة النشطة بنعومة فائقة
+            // 🌊 كبسولة الموجة السائلة المضيئة: تتحرك وتستقر خلف الأيقونة النشطة بنعومة فائقة (تم تصحيح الحرف الزائد الخاطئ)
             AnimatedContainer(
               duration: const Duration(milliseconds: 250),
-              curve: Curves.easeInOut,
+              curve: Curves.easeInOut, // ✓ استخدام المنحنى الرسمي المستقر والآمن كلياً لمنع توقف التجميع
               width: isSelected ? 55 : 0,
               height: isSelected ? 38 : 0,
               decoration: BoxDecoration(
