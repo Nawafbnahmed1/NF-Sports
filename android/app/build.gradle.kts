@@ -7,7 +7,7 @@ plugins {
 android {
     namespace = "com.example.nf_sports"
     
-    // 🚀 الترقية الجراحية الحاسمة لـ compileSdk لتلبية شرط المكتبات المحدثة لعام 2026
+    // ✓ الترقية الجراحية الحاسمة لـ compileSdk لتلبية شرط المكتبات المحدثة لعام 2026
     compileSdk = 35
 
     compileOptions {
@@ -27,7 +27,7 @@ android {
     defaultConfig {
         applicationId = "com.example.nf_sports"
         minSdk = 21
-        // 🚀 الترقية الجراحية لـ targetSdk ليتوافق بالملي مع شروط متجر جوجل بلاي الحديثة
+        // ✓ الترقية الجراحية لـ targetSdk ليتوافق بالملي مع شروط متجر جوجل بلاي الحديثة
         targetSdk = 35
         
         versionCode = 1
