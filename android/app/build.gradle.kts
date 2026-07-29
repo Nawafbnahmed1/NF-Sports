@@ -14,9 +14,20 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
+    // 🛡️ حقن مصفوفة التوقيع الافتراضية لحل تعارض الـ Release ومنع توقف السيرفر كلياً
+    signingConfigs {
+        create("release") {
+            val isRunOnCI = System.getenv("CI") != null
+            if (isRunOnCI) {
+                // استخدام توقيع افتراضي مدمج بداخل بيئة GitHub ليمر البناء بسلام ويخرج السهم
+                initWith(getByName("debug"))
+            }
+        }
+    }
+
     defaultConfig {
         applicationId = "com.example.nf_sports"
-        minSdk = flutter.minSdkVersion
+        minSdk = 21 // تحديد حد أدنى مستقر وثابت لدعم كافة الجوالات
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
@@ -24,7 +35,10 @@ android {
 
     buildTypes {
         release {
-            signingConfig = signingConfigs.getByName("debug")
+            // ربط الحزمة بالتوقيع الصحيح المجهز بالأعلى لمنع الكراش
+            signingConfig = signingConfigs.getByName("release")
+            isMinifyEnabled = false
+            isShrinkResources = false
         }
     }
 }
