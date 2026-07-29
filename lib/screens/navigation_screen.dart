@@ -4,7 +4,7 @@ import '../theme/app_theme.dart';
 import 'home_screen.dart';
 import 'matches_screen.dart';
 import 'news_screen.dart';
-import 'results_screen.dart';
+import 'more_screen.dart'; // 👑 حقن جوهرة شاشة المزيد المستقلة والجديدة لسهولة التعديل المستقبلي
 
 class NavigationScreen extends StatefulWidget {
   const NavigationScreen({super.key});
@@ -16,17 +16,17 @@ class NavigationScreen extends StatefulWidget {
 class _NavigationScreenState extends State<NavigationScreen> with SingleTickerProviderStateMixin {
   int _selectedIndex = 0;
 
-  // 🌟 طهرنا المصفوفة ومسحنا كلمة const من أمام HomeScreen لتشتغل السحبة الأفقية بدون أي تعارض
+  // 🌟 ترقية وإعادة توجيه المصفوفة لفتح التحفة الفنية لقسم المزيد الجديد كلياً والتزامه بالخفة الكاملة
   final List<Widget> _screens = [
     const HomeScreen(), 
     const MatchesScreen(),
     const NewsScreen(),
-    const ResultsScreen(),
+    const MoreScreen(), // الربط الهندسي الناجح بدلاً من الشاشات القديمة المستغنى عنها
   ];
 
   void _onItemTapped(int index) {
     if (_selectedIndex != index) {
-      HapticFeedback.selectionClick(); // اهتزاز تكتيكي فخم فائق الخفة عند الانتقال
+      HapticFeedback.selectionClick(); // اهتزاز تكتيكي فخم فائق الخفة عند الانتقال بين التبويبات الأربعة
       setState(() {
         _selectedIndex = index;
       });
@@ -37,7 +37,7 @@ class _NavigationScreenState extends State<NavigationScreen> with SingleTickerPr
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
-      // تفعيل وضعية تمدد الشاشات خلف البار العائم ليعطي عمق زجاجي أسطوري
+      // تفعيل وضعية تمدد الشاشات خلف البار العائم ليعطي عمق زجاجي أسطوري ثلاثي الأبعاد
       extendBody: true, 
       body: IndexedStack(
         index: _selectedIndex,
@@ -50,10 +50,10 @@ class _NavigationScreenState extends State<NavigationScreen> with SingleTickerPr
           child: Container(
             height: 68,
             decoration: BoxDecoration(
-              // مظهر زجاجي شفاف كالكريستال الفخم يعكس محتوى التطبيق من خلفه
+              // مظهر زجاجي شفاف كالكريستال الفخم يعكس محتوى التطبيق من خلفه بنقاء
               color: AppTheme.surfaceColor.withOpacity(0.85),
               borderRadius: BorderRadius.circular(22),
-              // إطار نيون رفيع ومشع يدمج لونك الرسمي مع التوهج لمنحه مظهر ثلاثي الأبعاد
+              // إطار نيون رفيع ومشع يدمج لونك الرسمي لتوحيد البراند
               border: Border.all(
                 color: AppTheme.neonBlue.withOpacity(0.25),
                 width: 1.5,
@@ -96,7 +96,7 @@ class _NavigationScreenState extends State<NavigationScreen> with SingleTickerPr
             // 🌊 كبسولة الموجة السائلة المضيئة: تتحرك وتستقر خلف الأيقونة النشطة بنعومة فائقة
             AnimatedContainer(
               duration: const Duration(milliseconds: 250),
-              curve: Curves.easeInOutCommom,
+              curve: Curves.easeInOut,
               width: isSelected ? 55 : 0,
               height: isSelected ? 38 : 0,
               decoration: BoxDecoration(
@@ -105,7 +105,6 @@ class _NavigationScreenState extends State<NavigationScreen> with SingleTickerPr
                 border: isSelected ? Border.all(color: AppTheme.neonBlue.withOpacity(0.2), width: 1) : null,
               ),
             ),
-            
             // محتوى الزر (الأيقونة والنص) مع تأثير التكبير واللمعان الانسيابي
             AnimatedScale(
               duration: const Duration(milliseconds: 200),
