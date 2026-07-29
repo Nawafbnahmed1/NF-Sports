@@ -19,25 +19,18 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      # 🎯 2. إعداد وتثبيت محرك الـ Android SDK وأدوات التجميع الرسمية بالسيرفر
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-
-      # 🛡️ 3. حقن الموافقة الصامتة والصارمة على كافة رخص الأندرويد باستخدام الصياغة الرسمية المستقرة لـ Linux
-      - name: Accept Android Licenses
-        run: |
-          mkdir -p "$ANDROID_HOME/licenses"
-          echo -e "\n8945a9b465d4cd44745d177af6122553d4d74a45\n24333f1a63b6b82d491a6342b723c300329884ba\ncd10d595b161d47148b77922724ec262002e1a4a\n3383895b62b1b367d79a2c151d6156d0d97f7d43\n2f8c0aab27545014e51e304206059fc00a317581\n35db2d02b115b2de370a803a085ee4e16a2167a1\n6c1d056516350449e924e0e1e7f24446a82a6f7e" > "$ANDROID_HOME/licenses/android-sdk-license"
-          yes | flutter doctor --android-licenses || true
-
-      # 🚀 4. تثبيت محرك فلاتر المستقر
+      # 🚀 2. تثبيت محرك فلاتر المستقر
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
 
-      # ⚙️ 5. تنظيف وحقن وبناء الـ APK الحقيقي بنقاء صارم وتجاوز الفحص المعلق
+      # ⚙️ 3. حقن الرخص وبناء الـ APK حياً في حزمة برمجية واحدة متلاحمة لمنع ضياع التراخيص بالسيرفر
       - name: Build APK with Full Log
         run: |
+          mkdir -p "$ANDROID_HOME/licenses" || true
+          echo -e "\n8945a9b465d4cd44745d177af6122553d4d74a45\n24333f1a63b6b82d491a6342b723c300329884ba\ncd10d595b161d47148b77922724ec262002e1a4a\n3383895b62b1b367d79a2c151d6156d0d97f7d43\n2f8c0aab27545014e51e304206059fc00a317581\n35db2d02b115b2de370a803a085ee4e16a2167a1\n6c1d056516350449e924e0e1e7f24446a82a6f7e" > "$ANDROID_HOME/licenses/android-sdk-license"
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses || true
+          yes | flutter doctor --android-licenses || true
           flutter clean
           flutter pub get
           flutter build apk --release --verbose > build_log.txt 2>&1
@@ -61,7 +54,7 @@ jobs:
           echo "========== LAST 200 LINES =========="
           tail -n 200 build_log.txt || true
 
-      # 📥 6. محرك الرفع الرسمي المحدث بالمسار الافتراضي الثابت والآمن لإعادة سهم التحميل فوراً
+      # 📥 4. محرك الرفع الرسمي المحدث بالمسار الافتراضي الثابت والآمن لإعادة سهم التحميل فوراً
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         if: success()
