@@ -21,8 +21,6 @@ class _MoreScreenState extends State<MoreScreen> with TickerProviderStateMixin {
   String _userRole = "مؤسس ومطور تطبيق NF Sports";
   int _correctPredictionsCount = 24; // رصيد التفاعل المؤهل لقنوات المناقشات
 
-  int? _selectedFeatureVote; // يحمل 1 للخيار A أو 2 للخيار B لترشيحات الميزات القادمة
-
   @override
   void initState() {
     super.initState();
@@ -179,7 +177,7 @@ class _MoreScreenState extends State<MoreScreen> with TickerProviderStateMixin {
                                   Text(_userName, style: GoogleFonts.cairo(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold)),
                                   Text(_userRole, style: GoogleFonts.cairo(color: AppTheme.neonBlue, fontSize: 10, fontWeight: FontWeight.w500)),
                                   const SizedBox(height: 4),
-                                  // شارة التفاعل التمهيدية لقنوات النقاش والجروبات الجماهيرية المستقبلية
+                                  // شارة التفاعل التمهيدية لقنوات النقاص والجروبات الجماهيرية المستقبلية
                                   Container(
                                     padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                     decoration: BoxDecoration(color: Colors.black38, borderRadius: BorderRadius.circular(6)),
@@ -232,84 +230,13 @@ class _MoreScreenState extends State<MoreScreen> with TickerProviderStateMixin {
                 ),
               ),
               const SizedBox(height: 10),
-              // 🚨 3. مختبر NF SPORTS التكتيكي لترشيح الميزات والتصويت التفاعلي للجماهير
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF161926).withOpacity(0.3),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: AppTheme.neonBlue.withOpacity(0.15), width: 1),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text('مختبر الميزات والترشيحات', style: GoogleFonts.cairo(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold)),
-                      Text('اختر الميزة التي تود رؤيتها مدمجة حياً في الإصدار القادم للتطبيق', textDirection: TextDirection.rtl, style: GoogleFonts.cairo(color: Colors.white38, fontSize: 10)),
-                      const SizedBox(height: 14),
-                      Row(
-                        children: [
-                          // 🎛️ الخيار الثاني B: المربعات الذكية بوزن صفر كيلوبايت للتصويت اللمسي التفاعلي
-                          Expanded(
-                            child: InkWell(
-                              onTap: () {
-                                HapticFeedback.lightImpact();
-                                setState(() => _selectedFeatureVote = 2);
-                                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(duration: Duration(seconds: 1), content: Text('تم تسجيل تصويتك للخيار B بنجاح! 🗳️', style: TextStyle(fontFamily: 'Cairo'))));
-                              },
-                              borderRadius: BorderRadius.circular(12),
-                              child: AnimatedContainer(
-                                duration: const Duration(milliseconds: 200),
-                                padding: const EdgeInsets.symmetric(vertical: 10),
-                                decoration: BoxDecoration(
-                                  color: _selectedFeatureVote == 2 ? const Color(0x2600B4FF) : Colors.black26,
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(color: _selectedFeatureVote == 2 ? AppTheme.neonBlue : Colors.white10, width: 1.5),
-                                ),
-                                child: Center(child: Text('خيار B: غرف الدردشة', style: GoogleFonts.cairo(color: _selectedFeatureVote == 2 ? AppTheme.neonBlue : Colors.white54, fontSize: 11, fontWeight: FontWeight.bold))),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          // 🎛️ الخيار الأول A: التفاعل المباشر وحقن جداول السحاب تلقائياً
-                          Expanded(
-                            child: InkWell(
-                              onTap: () {
-                                HapticFeedback.lightImpact();
-                                setState(() => _selectedFeatureVote = 1);
-                                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(duration: Duration(seconds: 1), content: Text('تم تسجيل تصويتك للخيار A بنجاح! 🗳️', style: TextStyle(fontFamily: 'Cairo'))));
-                              },
-                              borderRadius: BorderRadius.circular(12),
-                              child: AnimatedContainer(
-                                duration: const Duration(milliseconds: 200),
-                                padding: const EdgeInsets.symmetric(vertical: 10),
-                                decoration: BoxDecoration(
-                                  color: _selectedFeatureVote == 1 ? const Color(0x2600B4FF) : Colors.black26,
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(color: _selectedFeatureVote == 1 ? AppTheme.neonBlue : Colors.white10, width: 1.5),
-                                ),
-                                child: Center(child: Text('خيار A: قنوات المناقشة', style: GoogleFonts.cairo(color: _selectedFeatureVote == 1 ? AppTheme.neonBlue : Colors.white54, fontSize: 11, fontWeight: FontWeight.bold))),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 10),
-
-              // 🚨 4. شريط التفضيلات الكروية المخصصة (الفرق والبطولات المفضلة للمشجعين)
+              // 🚨 3. شريط التفضيلات الكروية المخصصة (الفرق والبطولات المفضلة للمشجعين)
               _buildSettingTile(icon: Icons.star_border_purple_500_rounded, iconColor: Colors.amberAccent, title: 'الفرق المفضلة', subtitle: 'إضافة فريقك المفضل لمتابعته أولاً بأول حياً'),
               _buildSettingTile(icon: Icons.emoji_events_outlined, iconColor: AppTheme.neonBlue, title: 'البطولات المفضلة', subtitle: 'إضافة البطولات المفضلة لمتابعتها وتخصيص الأخبار لها'),
               
               const Padding(padding: EdgeInsets.symmetric(horizontal: 24, vertical: 4), child: Divider(color: Colors.white10, height: 1)),
 
-              // 🚨 5. خيارات الضبط وإدارة قنوات حزم البيانات السحابية حياً
+              // 🚨 4. خيارات الضبط وإدارة قنوات حزم البيانات السحابية حياً
               _buildSettingTile(icon: Icons.notifications_active_outlined, iconColor: Colors.cyanAccent, title: 'الإشعارات التفضيلية', subtitle: 'إدارة وتخصيص تفضيلات إشعارات الأهداف وصافرة البث المباشر'),
               _buildSettingTile(icon: Icons.palette_outlined, iconColor: Colors.pinkAccent, title: 'المظهر والوضع الليلي', subtitle: 'تغيير مظهر التطبيق واختيار الوضع الليلي والنيون المضيء'),
               _buildSettingTile(icon: Icons.language_rounded, iconColor: Colors.indigoAccent, title: 'اللغة الحالية', subtitle: 'تغيير لغة التطبيق الحالية واختيار العربية أو الإنجليزية'),
@@ -325,7 +252,7 @@ class _MoreScreenState extends State<MoreScreen> with TickerProviderStateMixin {
               ),
               
               const SizedBox(height: 16),
-              // 🚨 6. كبسولات التواصل الاجتماعي والسوشيال ميديا المضغوطة أفقياً للدعم وقنوات التحديثات
+              // 🚨 5. كبسولات التواصل الاجتماعي والسوشيال ميديا المضغوطة أفقياً للدعم وقنوات التحديثات
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                 child: Row(
@@ -350,7 +277,7 @@ class _MoreScreenState extends State<MoreScreen> with TickerProviderStateMixin {
 
               const SizedBox(height: 12),
 
-              // 🚨 7. خانات لوحة سياسة الخصوصية الكريستالية وحول تطبيق NF SPORTS الفخم
+              // 🚨 6. خانات لوحة سياسة الخصوصية الكريستالية وحول تطبيق NF SPORTS الفخم
               _buildSettingTile(
                 icon: Icons.gavel_rounded, 
                 iconColor: Colors.blueAccent, 
@@ -362,7 +289,7 @@ class _MoreScreenState extends State<MoreScreen> with TickerProviderStateMixin {
 
               const SizedBox(height: 25),
 
-              // 🚨 8. بلوك الإصدار الرقمي الرسمي المزين بإطار نيون متلاشي (تم حذف تاريخ التحديث تماماً لطلب نواف الاستراتيجي)
+              // 🚨 7. بلوك الإصدار الرقمي الرسمي المزين بإطار نيون متلاشي (تم تصفية تاريخ التحديث تماماً لطلب نواف الاستراتيجي)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Container(
@@ -391,7 +318,7 @@ class _MoreScreenState extends State<MoreScreen> with TickerProviderStateMixin {
 
               const SizedBox(height: 40),
 
-              // 👑 9. توقيع شرف التأسيس الختامي المتنفس ببريق الليزر بأسفل الشاشة لتوحيد حقوق البراند
+              // 👑 8. توقيع شرف التأسيس الختامي المتنفس ببريق الليزر بأسفل الشاشة لتوحيد حقوق البراند
               Center(
                 child: Column(
                   children: [
