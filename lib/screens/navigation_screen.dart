@@ -140,4 +140,3 @@ class _NavigationScreenState extends State<NavigationScreen> with SingleTickerPr
     );
   }
 }
- 
