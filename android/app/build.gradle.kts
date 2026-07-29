@@ -7,7 +7,7 @@ plugins {
 android {
     namespace = "com.example.nf_sports"
     
-    // ⚙️ ترقية أرقام الـ SDK بشكل صريح لتتوافق بالملي مع ترقية الـ AGP 8.6.0 التي وضعها المطور
+    // ⚙️ تثبيت أرقام الـ SDK بشكل صريح لتتوافق بالملي مع ترقية الـ AGP 8.6.0 التي وضعها المطور
     compileSdk = 34
 
     compileOptions {
@@ -31,12 +31,9 @@ android {
         minSdk = 21 // حد أدنى مستقر وثابت لدعم كافة الجوالات حياً
         targetSdk = 34 // متوافق بالملي مع شروط متجر جوجل بلاي الحديثة
         
-        // جلب أرقام الإصدارات تلقائياً من نظام فلاتر المستقر
-        val flutterVersionCode = project.property("flutter-version-code") as? String ?: "1"
-        val flutterVersionName = project.property("flutter-version-name") as? String ?: "1.0.0"
-        
-        versionCode = flutterVersionCode.toInt()
-        versionName = flutterVersionName
+        // 🚀 تحديد أرقام الإصدارات الصريحة والثابتة لحل تعارض السيرفر ومنع توقف البناء كلياً
+        versionCode = 1
+        versionName = "1.0.0"
     }
 
     buildTypes {
