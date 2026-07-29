@@ -16,15 +16,17 @@ jobs:
         with:
           channel: stable
 
+      # ⚙️ تنظيف وحقن وبناء الـ APK الحقيقي بنقاء صارم وصدم الخادم لاستخراج المخرجات
       - name: Build APK with Full Log
         run: |
           flutter clean
           flutter pub get
           flutter doctor -v
-          flutter build apk --release --verbose > build_log.txt 2>&1 || true
+          flutter build apk --release --verbose > build_log.txt 2>&1
 
+      # 📊 لوحة استكشاف الأخطاء؛ تشتغل تلقائياً فقط في حال حدوث أي فشل حقيقي بالبناء
       - name: Show Failure Details
-        if: always()
+        if: failure()
         run: |
           echo "========== FAILURE =========="
           grep -n "FAILURE:" build_log.txt || true
@@ -41,8 +43,10 @@ jobs:
           echo "========== LAST 200 LINES =========="
           tail -n 200 build_log.txt
 
-      - uses: actions/upload-artifact@v4
+      # 📥 محرك الرفع الرسمي المحدث بالمسار الافتراضي الثابت والآمن لإعادة سهم التحميل فوراً
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
         if: success()
         with:
           name: NF-Sports-APK
-          path: android/app/build/outputs/**/*.apk
+          path: build/app/outputs/flutter-apk/app-release.apk
