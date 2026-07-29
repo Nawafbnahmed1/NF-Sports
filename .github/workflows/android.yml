@@ -19,12 +19,16 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      # 🚀 2. تثبيت محرك فلاتر المستقر
+      # 🎯 2. إعداد وتثبيت محرك الـ Android SDK وأدوات التجميع الرسمية بالسيرفر
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      # 🚀 3. تثبيت محرك فلاتر المستقر
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
 
-      # ⚙️ 3. حقن الرخص وبناء الـ APK حياً في حزمة برمجية واحدة متلاحمة لمنع ضياع التراخيص بالسيرفر
+      # ⚙️ 4. حقن الرخص، ترقية المكتبات المتعارضة، وبناء الـ APK حياً في حزمة برمجية واحدة
       - name: Build APK with Full Log
         run: |
           mkdir -p "$ANDROID_HOME/licenses" || true
@@ -33,6 +37,7 @@ jobs:
           yes | flutter doctor --android-licenses || true
           flutter clean
           flutter pub get
+          flutter pub upgrade --major-versions || true
           flutter build apk --release --verbose > build_log.txt 2>&1
 
       # 📊 لوحة استكشاف الأخطاء؛ تشتغل تلقائياً فقط في حال حدوث أي فشل حقيقي بالبناء
@@ -54,7 +59,7 @@ jobs:
           echo "========== LAST 200 LINES =========="
           tail -n 200 build_log.txt || true
 
-      # 📥 4. محرك الرفع الرسمي المحدث بالمسار الافتراضي الثابت والآمن لإعادة سهم التحميل فوراً
+      # 📥 5. محرك الرفع الرسمي المحدث بالمسار الافتراضي الثابت والآمن لإعادة سهم التحميل فوراً
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         if: success()
