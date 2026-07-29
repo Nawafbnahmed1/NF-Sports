@@ -7,20 +7,18 @@ plugins {
 android {
     namespace = "com.example.nf_sports"
     
-    // ⚙️ تثبيت أرقام الـ SDK بشكل صريح لتتوافق بالملي مع ترقية الـ AGP 8.6.0 التي وضعها المطور
-    compileSdk = 34
+    // 🚀 الترقية الجراحية الحاسمة لـ compileSdk لتلبية شرط المكتبات المحدثة لعام 2026
+    compileSdk = 35
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    // 🛡️ حقن مصفوفة التوقيع الافتراضية لحل تعارض الـ Release ومنع توقف السيرفر كلياً
     signingConfigs {
         create("release") {
             val isRunOnCI = System.getenv("CI") != null
             if (isRunOnCI) {
-                // استخدام توقيع افتراضي مدمج بداخل بيئة GitHub ليمر البناء بسلام ويخرج السهم
                 initWith(getByName("debug"))
             }
         }
@@ -28,17 +26,16 @@ android {
 
     defaultConfig {
         applicationId = "com.example.nf_sports"
-        minSdk = 21 // حد أدنى مستقر وثابت لدعم كافة الجوالات حياً
-        targetSdk = 34 // متوافق بالملي مع شروط متجر جوجل بلاي الحديثة
+        minSdk = 21
+        // 🚀 الترقية الجراحية لـ targetSdk ليتوافق بالملي مع شروط متجر جوجل بلاي الحديثة
+        targetSdk = 35
         
-        // 🚀 تحديد أرقام الإصدارات الصريحة والثابتة لحل تعارض السيرفر ومنع توقف البناء كلياً
         versionCode = 1
         versionName = "1.0.0"
     }
 
     buildTypes {
         release {
-            // ربط الحزمة بالتوقيع الصحيح المجهز بالأعلى لمنع الكراش
             signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = false
             isShrinkResources = false
