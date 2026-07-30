@@ -223,7 +223,6 @@ class _MoreScreenState extends State<MoreScreen> with TickerProviderStateMixin {
               ),
               const SizedBox(height: 10),
 
-              // ✅ تم تصحيح الأيقونة الأولى هنا (star_border_purple_500_rounded → star_border_rounded)
               _buildSettingTile(icon: Icons.star_border_rounded, iconColor: Colors.amberAccent, title: 'الفرق المفضلة', subtitle: 'إضافة فريقك المفضل لمتابعته أولاً بأول حياً'),
               _buildSettingTile(icon: Icons.emoji_events_outlined, iconColor: AppTheme.neonBlue, title: 'البطولات المفضلة', subtitle: 'إضافة البطولات المفضلة لمتابعتها وتخصيص الأخبار لها'),
               
@@ -251,7 +250,6 @@ class _MoreScreenState extends State<MoreScreen> with TickerProviderStateMixin {
                     _buildCompactSocialButton(icon: Icons.telegram_rounded, color: const Color(0xFF0088CC), label: 'تليجرام', onTap: () {
                     }),
                     const SizedBox(width: 8),
-                    // ✅ تم تصحيح الأيقونة الثانية هنا (whatsapp_rounded → chat_rounded)
                     _buildCompactSocialButton(icon: Icons.chat_rounded, color: Colors.green, label: 'واتساب', onTap: () {
                     }),
                     const SizedBox(width: 8),
