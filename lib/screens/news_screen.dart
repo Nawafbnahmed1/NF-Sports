@@ -47,7 +47,6 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
   bool _isVideosTab = false;
   late AnimationController _pulseController;
 
-  // 🧠 ذاكرة ذكية ومستقرة لتتبع المقالات والمقاطع التي فتحها المستخدم لتغيير لون حوافها برمجياً
   final Set<String> _readArticlesMemory = <String>{};
 
   @override
@@ -93,13 +92,10 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
     });
   }
 
-  // 📊 خوارزمية المشاهدات المتنامية والمتحركة الفريدة (لا تتكرر وتنمو تلقائياً كل نصف ساعة على مدار الأسبوع)
   String _generateDynamicViews(NewsArticleModel article) {
     final int seed = article.articleUrl.hashCode.abs();
-    final int baseViews = 300 + (seed % 300); // توليد رقم عشوائي فريد لكل فيديو من البداية بين 300 و 600
+    final int baseViews = 300 + (seed % 300);
     final duration = DateTime.now().difference(article.publishedAt);
-    
-    // ينمو الرقم بمعدل ذكي (حوالي 8 مشاهدات لكل نصف ساعة تمر)
     final int growth = (duration.inMinutes ~/ 30) * 8;
     final int totalViews = baseViews + growth;
     
@@ -108,16 +104,13 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
     }
     return '$totalViews';
   }
-  // 🎬 قنبلة الموسم: واجهة مشغل الفيديو السينمائي الخارق مع التحكم اللمسي الذكي وتدوير الشاشة وحقوق NF SPORTS
+
   void _openFuturisticVideoPlayer(BuildContext context, NewsArticleModel article) {
     HapticFeedback.vibrate();
-    
-    // حفظ الروتين الحالي للتطبيق ليتغير لون حواف المقطع تلقائياً للرمادي الخافت بعد المشاهدة
     setState(() {
       _readArticlesMemory.add(article.articleUrl);
     });
 
-    // إجبار النظام على السماح بتدوير الشاشة الكامل والأفقي لمتعة المشاهدة
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.landscapeLeft,
@@ -140,7 +133,6 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
               backgroundColor: Colors.black,
               body: Stack(
                 children: [
-                  // ⚽ منطقة العرض الافتراضية للفيديو القادم من السحاب حياً
                   Positioned.fill(
                     child: Center(
                       child: AspectRatio(
@@ -151,7 +143,6 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
                               Positioned.fill(child: Image.network(article.imageUrl, fit: BoxFit.cover)),
                             Container(color: Colors.black45),
                             
-                            // 🛡️ الختم الرقمي العالمي: شارة حقوق الملكية لـ NF SPORTS متوهجة بالنيون والسيان الشفاف في الزاوية
                             Positioned(
                               top: 16,
                               right: 16,
@@ -177,7 +168,6 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
                               ),
                             ),
 
-                            // شارة الجودة الفلورسنت المضيئة للـ HD داخل المشغل
                             Positioned(
                               top: 16,
                               left: 16,
@@ -201,11 +191,9 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
                     ),
                   ),
 
-                  // 🎛️ لوحة التحكم الذكية بالإيماءات اللمسية السريعة (يمين للشوت، ويسار للسطوع بنعومة)
                   Positioned.fill(
                     child: Row(
                       children: [
-                        // الجانب الأيسر: سحب السطوع
                         Expanded(
                           child: GestureDetector(
                             onVerticalDragUpdate: (details) {
@@ -223,7 +211,6 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
                             ),
                           ),
                         ),
-                        // الجانب الأيمن: سحب الصوت
                         Expanded(
                           child: GestureDetector(
                             onVerticalDragUpdate: (details) {
@@ -245,7 +232,6 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
                     ),
                   ),
 
-                  // 💎 شريط مؤشرات زجاجي مضيء سفلي للتحكم وتأكيد الحقوق
                   Positioned(
                     bottom: 30,
                     left: 20,
@@ -272,20 +258,18 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
                             ),
                           ),
                           const SizedBox(width: 12),
-                          // ميزة التحميل الخارجي بحماية الشعار للحقوق الفنية
                           IconButton(
                             icon: const Icon(Icons.download_for_offline, color: AppTheme.neonBlue, size: 24),
                             onPressed: () {
                               HapticFeedback.mediumImpact();
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('جاري تحميل المقطع بحقوق NF SPORTS...', style: TextStyle(fontFamily: 'Cairo'))),
+                                const SnackBar(content: Text('جاري التحميل...', style: TextStyle(fontFamily: 'Cairo'))),
                               );
                             },
                           ),
                           IconButton(
                             icon: const Icon(Icons.fullscreen_exit, color: Colors.white, size: 24),
                             onPressed: () {
-                              // إرجاع وضع الشاشة بالطول عند الإغلاق
                               SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
                               Navigator.pop(context);
                             },
@@ -301,10 +285,10 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
         );
       },
     ).then((_) {
-      // احتياط أمني لإرجاع وضع الشاشة الرأسي عند الخروج بالضغط خارج النافذة
       SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -400,7 +384,6 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // ⚡ شريط القصص (Stories) الذكي القابل للسحب أفقياً بالعداد المشع وتغير الألوان الذكي
                         Directionality(
                           textDirection: TextDirection.rtl,
                           child: SizedBox(
@@ -416,11 +399,9 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
                                 return GestureDetector(
                                   onTap: () {
                                     if (!_isVideosTab) {
-                                      // الأخبار: تنقل فوري وسلس لشاشة تفاصيل الخبر الحقيقية مع تفعيل ذاكرة الحواف
                                       setState(() { _readArticlesMemory.add(articles[i].articleUrl); });
                                       Navigator.push(context, MaterialPageRoute(builder: (context) => NewsDetailScreen(article: articles[i])));
                                     } else {
-                                      // الملخصات: إطلاق مشغل الفيديو السينمائي الخارق تلقائياً بحقوق NF SPORTS والتكبير الكامل
                                       _openFuturisticVideoPlayer(context, articles[i]);
                                     }
                                   },
@@ -444,7 +425,6 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
                                           ),
                                         ),
                                         const SizedBox(height: 6),
-                                        // عداد المشاهدات الرياضي التفاعلي المتنامي والمتحرك على مدار الأسبوع (يختلف لكل قصة تلقائياً)
                                         Row(
                                           children: [
                                             Icon(_isVideosTab ? Icons.play_arrow : Icons.visibility, size: 10, color: isRead ? Colors.white24 : AppTheme.neonBlue.withOpacity(0.7)),
@@ -470,7 +450,6 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
                         ),
 
                         const SizedBox(height: 5),
-                        // 🚨 شريط عنوان النيون المطور والنبّاض المخصص للأخبار والملخصات الحية (بديل النجمة التالفة)
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                           child: Container(
@@ -497,7 +476,7 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
                                 ),
                                 const SizedBox(width: 8),
                                 Text(
-                                  _isVideosTab ? 'أحدث الملخصات والأهداف الحية' : 'آخر الأخبار الرياضية العالمية',
+                                  _isVideosTab ? 'أحدث الملخصات والأهداف' : 'آخر الأخبار الرياضية',
                                   style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w900, fontFamily: 'Cairo'),
                                 ),
                                 const Spacer(),
@@ -532,20 +511,20 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
       ),
     );
   }
-  // 👑 الكرت الرئيسي الموزون والمضيء لصفحة الأخبار وصفحة الملخصات المطبوع بحقوقك الفنية تلقائياً
+
   Widget _buildMainArticleCard(BuildContext context, NewsArticleModel article) {
     final bool isRead = _readArticlesMemory.contains(article.articleUrl);
-    final bool isHotMatch = /كلاسيكو|ديربي|ريال مدريد|برشلونة|نهائي|عاجل/i.test(article.title);
+    final bool isHotMatch = /classico|derby|real madrid|barcelona|final|urgent/i.test(article.title);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       child: AnimatedOpacity(
         duration: const Duration(milliseconds: 300),
-        opacity: isRead ? 0.7 : 1.0, // تأثير زجاجي ناعم: تنخفض الشفافية قليلاً للكرت المقروء لتمييزه
+        opacity: isRead ? 0.7 : 1.0,
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(24),
-            boxShadow: !isRead ? AppTheme.neonGlow(blur: 16) : null, // تنطفئ حواف النيون وتتحول لرمادي خافت بعد الفتح
+            boxShadow: !isRead ? AppTheme.neonGlow(blur: 16) : null,
           ),
           child: GlassCard(
             padding: EdgeInsets.zero,
@@ -556,7 +535,7 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
                   children: [
                     Container(
                       width: double.infinity,
-                      height: 155, // الطول الموزون هندسياً لحماية الشاشة من التضخم المزعج
+                      height: 155,
                       decoration: const BoxDecoration(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
                       child: ClipRRect(
                         borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
@@ -566,7 +545,6 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
                       ),
                     ),
                     
-                    // 🛡️ الختم الرقمي لـ NF SPORTS على صور الأخبار والملخصات لضمان الحقوق الفنية عالمياً وبشكل أنيق
                     Positioned(
                       bottom: 10,
                       left: 12,
@@ -584,7 +562,6 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
                       ),
                     ),
 
-                    // تأثير إبداعي: أيقونة تشغيل نيون مرتعشة ونابضة تظهر فقط داخل تبويب الملخصات!
                     if (_isVideosTab)
                       Positioned.fill(
                         child: Center(
@@ -603,7 +580,6 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
                           ),
                         ),
                       ),
-                    // شارة الـ HD السيان المضيئة الاحترافية للملخصات
                     if (_isVideosTab)
                       Positioned(
                         top: 12,
@@ -681,7 +657,6 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
                           Row(
                             textDirection: TextDirection.rtl,
                             children: [
-                              // 💎 المربع الأزرق المضيء للدقائق (يظهر فقط في الملخصات) والوقت الرياضي اللحظي للخبر
                               if (_isVideosTab)
                                 Container(
                                   margin: const EdgeInsets.only(left: 8),
@@ -713,10 +688,10 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
       ),
     );
   }
-  // الكروت الفرعية المحدثة لصفحة الأخبار وصفحة الملخصات
+
   Widget _buildSubArticleCard(BuildContext context, NewsArticleModel article) {
     final bool isRead = _readArticlesMemory.contains(article.articleUrl);
-    final bool isHotMatch = /كلاسيكو|ديربي|ريال مدريد|برشلونة|نهائي|عاجل/i.test(article.title);
+    final bool isHotMatch = /classico|derby|real madrid|barcelona|final|urgent/i.test(article.title);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
@@ -743,7 +718,6 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
                     ),
                   ),
                   
-                  // 🛡️ الختم الرقمي لـ NF SPORTS على صور الكروت الفرعية لحماية المحتوى بشكل مصغر وأنيق
                   Positioned(
                     bottom: 4,
                     left: 4,
