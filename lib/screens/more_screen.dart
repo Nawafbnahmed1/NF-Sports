@@ -92,7 +92,8 @@ class _MoreScreenState extends State<MoreScreen> with TickerProviderStateMixin {
       borderRadius: BorderRadius.circular(14),
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-        decoration: BoxDecoration(color: color.withOpacity(0.08), borderRadius: BorderRadius.circular(14), border: Border.all(color: color.withOpacity(0.3), width: 1.5)),
+        decoration: BoxDecoration(color: color.withAlpha(20), borderRadius: BorderRadius.circular(14)),
+        
         child: Row(
           textDirection: TextDirection.rtl,
           mainAxisAlignment: MainAxisAlignment.center,
