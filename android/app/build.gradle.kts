@@ -7,8 +7,8 @@ plugins {
 android {
     namespace = "com.example.nf_sports"
     
-    // ✓ الترقية الجراحية الحاسمة لـ compileSdk لتلبية شرط المكتبات المحدثة لعام 2026
-    compileSdk = 35
+    // 🚀 رفع إصدار الـ compileSdk إلى 36 لتلبية متطلبات مكتبات AndroidX الحديثة لعام 2026
+    compileSdk = 36
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -26,9 +26,10 @@ android {
 
     defaultConfig {
         applicationId = "com.example.nf_sports"
-        minSdk = 21
-        // ✓ الترقية الجراحية لـ targetSdk ليتوافق بالملي مع شروط متجر جوجل بلاي الحديثة
-        targetSdk = 35
+        // 🚀 رفع الـ minSdk إلى 23 لتقليل مشاكل التوافق وضمان استقرار أمان المتجر
+        minSdk = 23
+        // 🚀 رفع الـ targetSdk إلى 36 تماشياً مع متطلبات التجميع الحديثة
+        targetSdk = 36
         
         versionCode = 1
         versionName = "1.0.0"
