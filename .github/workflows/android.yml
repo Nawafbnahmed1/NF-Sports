@@ -42,20 +42,17 @@ jobs:
         run: |
           flutter clean
           flutter pub get
-          flutter build apk --release --verbose 2>&1 | tee build.log
-        continue-on-error: true
+          flutter build apk --release --verbose | tee build.log
 
-      - name: Show real error
-        if: always()
+      - name: List APK files
         run: |
-          echo "===== FAILURE ====="
-          grep -n "FAILURE\|Error:\|Exception\|Target kernel_snapshot_program\|Execution failed\|Unhandled" build.log || true
-          echo "===== LAST 200 LINES ====="
-          tail -200 build.log
+          echo "===== APK Files ====="
+          find build -type f -name "*.apk"
 
-      - name: Upload Artifact
+      - name: Upload APK
         uses: actions/upload-artifact@v4
-        if: success()
+        if: always()
         with:
           name: NF-Sports-APK
-          path: build/app/outputs/flutter-apk/app-release.apk
+          path: build/app/outputs/flutter-apk/*.apk
+          if-no-files-found: error
