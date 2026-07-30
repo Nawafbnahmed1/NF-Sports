@@ -1,4 +1,3 @@
-import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../theme/app_theme.dart';
@@ -48,18 +47,12 @@ class _CyberPitchPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.2;
 
-    // رسم الحدود الخارجية للمستطيل الأخضر الفلورسنتي
     canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), paint);
-
-    // رسم خط المنتصف التكتيكي والدائرة المركزية لـ NF SPORTS
     canvas.drawLine(Offset(0, size.height / 2), Offset(size.width, size.height / 2), paint);
     canvas.drawCircle(Offset(size.width / 2, size.height / 2), 45, paint);
     canvas.drawCircle(Offset(size.width / 2, size.height / 2), 2, paint);
-
-    // رسم منطقة الجزاء العلوية والسفلية وهالات الركنية برياضيات موزونة كلياً
     canvas.drawRect(Rect.fromLTWH(size.width * 0.2, 0, size.width * 0.6, 50), paint);
     canvas.drawRect(Rect.fromLTWH(size.width * 0.35, 0, size.width * 0.3, 18), paint);
-    
     canvas.drawRect(Rect.fromLTWH(size.width * 0.2, size.height - 50, size.width * 0.6, 50), paint);
     canvas.drawRect(Rect.fromLTWH(size.width * 0.35, size.height - 18, size.width * 0.3, 18), paint);
   }
@@ -67,11 +60,11 @@ class _CyberPitchPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant _CyberPitchPainter oldDelegate) => oldDelegate.pulseValue != pulseValue;
 }
+
 class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProviderStateMixin {
   late AnimationController _pulseController;
   late AnimationController _marqueeController;
   
-  // 🧠 البنك التكتيكي: هندسة 11 مركزاً تفاعلياً موزعة بالملي على خطة (4-3-3) الممتعة للمشجعين
   final List<UserLineupPrediction> _predictedLineup = [
     UserLineupPrediction(positionName: 'GK', dx: 0.5, dy: 0.88),
     UserLineupPrediction(positionName: 'CB1', dx: 0.32, dy: 0.72),
@@ -92,20 +85,17 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
   final TextEditingController _userNameController = TextEditingController();
   
   Color _selectedJerseyColor = AppTheme.neonBlue;
-  bool _isOfficialLineupReleased = false; // مستشعر ذكي: إذا تحول لـ true يتوقف التوقع ويظهر الواقع تلقائياً
-  bool _showTutorial = true; // التحكم في تلاشي الشريطة الإرشادية بنعومة
+  bool _isOfficialLineupReleased = false;
+  bool _showTutorial = true;
 
   @override
   void initState() {
     super.initState();
-    
-    // متحكم التنفس الليزري للدائرة المركزية وهالات الروبوتات
     _pulseController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 2),
     )..repeat(reverse: true);
 
-    // متحكم حركة شريط الإعلانات والشاشات الجانبية لـ NF SPORTS لجمع المال مستقبلاً
     _marqueeController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 12),
@@ -122,7 +112,6 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
     super.dispose();
   }
 
-  // دالة الفتح النظيفة لدكة الاحتياط عند الضغط على مركز في الملعب
   void _openMechaBench(int index) {
     if (_isOfficialLineupReleased) return;
     HapticFeedback.lightImpact();
@@ -136,7 +125,6 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
     });
   }
 
-  // خوارزمية إرسال التشكيلة وحصاد عقلية المدرب وحفظها حياً في جداول السحاب الخاصة بك
   void _submitPredictionToCloud() {
     if (_userNameController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -144,13 +132,12 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
       );
       return;
     }
-    
     HapticFeedback.mediumImpact();
-    // هنا يتم حقن الجدول السحابي ببيانات التوقع بالاسم والرقم والقميص فوراً وبشكل صامت
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('تم إرسال تشكيلتك يا ${_userNameController.text.trim()}! في انتظار مطابقة الواقع... 🏆', style: TextStyle(fontFamily: 'Cairo'))),
     );
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -173,7 +160,6 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 🚨 1. هيدر الاستاد السيبراني المضيء واللوغوهات المتقابلة بنبض الليزر المفرغ
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               child: GlassCard(
@@ -226,7 +212,6 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
               ),
             ),
 
-            // 💡 2. شريط الإرشاد الزجاجي التفاعلي والمضيء بنعومة لتوضيح طريقة اللعب للمشجع
             if (_showTutorial && !_isOfficialLineupReleased)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
@@ -258,11 +243,10 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                 ),
               ),
 
-            // 🔮 3. معجزة ملعب الهولوغرام الفضائي للتوقعات التفاعلية وحشد الجماهير
             Padding(
               padding: const EdgeInsets.all(20.0),
               child: AspectRatio(
-                aspectRatio: 0.72, // الأبعاد الهندسية الموزونة لملعب كرة القدم الاحترافي
+                aspectRatio: 0.72,
                 child: Container(
                   decoration: BoxDecoration(
                     color: const Color(0xFF040A14),
@@ -271,7 +255,6 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                   ),
                   child: Stack(
                     children: [
-                      // رسم خطوط العشب الفلورسنتية المشعة بالخلفية
                       Positioned.fill(
                         child: AnimatedBuilder(
                           animation: _pulseController,
@@ -282,7 +265,6 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                           },
                         ),
                       ),
-                      // رصف وتوزيع الـ 11 مركزاً التكتيكياً التفاعلياً فوق عشب الملعب
                       LayoutBuilder(
                         builder: (context, constraints) {
                           return Stack(
@@ -297,12 +279,11 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                                 top: posY,
                                 child: GestureDetector(
                                   onTap: () {
-                                    setState(() => _showTutorial = false); // إخفاء التوضيح فور بدء اللمس واللعب
+                                    setState(() => _showTutorial = false);
                                     _openMechaBench(index);
                                   },
                                   child: Column(
                                     children: [
-                                      // الروبوت التكتيكي المتوهج: يرتعش وينبض بلهب النيون لإعلامه بالتحديد أو الثبات
                                       AnimatedBuilder(
                                         animation: _pulseController,
                                         builder: (context, child) {
@@ -342,7 +323,6 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                           );
                         },
                       ),
-                                        // 🎛️ دكة الاحتياط السيبرانية الجانبية المنبثقة لرصف الأسماء والألوان
                       if (_activePositionIndex != null && !_isOfficialLineupReleased)
                         Positioned(
                           bottom: 12, left: 12, right: 12,
@@ -435,7 +415,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                                             p.isPlaced = true;
                                             _activePositionIndex = null;
                                           });
-                                          HapticFeedback.mediumImpact(); // اهتزاز ميكانيكي لطيف عند استقرار الروبوت في مركزه
+                                          HapticFeedback.mediumImpact();
                                         }
                                       },
                                       child: const Text('تأكيد التمركز', style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
@@ -451,7 +431,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                 ),
               ),
             ),
-                        // 🚨 4. لوحة إدخال اسم المدرب التوقعي وزر إرسال التشكيلة الحية إلى السحاب
+
             if (!_isOfficialLineupReleased)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
@@ -492,8 +472,6 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
               ),
 
             const SizedBox(height: 10),
-
-            // 🚨 5. لوحة الإعلانات والشاشات الليد الجانبية الذكية (المستقبل الاستثماري لجمع المال دون تغيير التصميم)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Container(
@@ -527,8 +505,6 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
             ),
 
             const SizedBox(height: 25),
-
-            // 🚨 6. بلوك الإحصائيات الفلورسنتية الطويلة ذات المسارات النيونية الحركية ثلاثية الأبعاد لـ NF SPORTS
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 24, vertical: 4),
               child: Text('إحصائيات المواجهة اللحظية', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
@@ -541,7 +517,6 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                   padding: const EdgeInsets.all(14.0),
                   child: Column(
                     children: [
-                      // إحصائية الاستحواذ كمثال تكتيكي منسق بالألوان الموحدة
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: const [
@@ -566,7 +541,6 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                         ),
                       ),
                       const SizedBox(height: 16),
-                      // إحصائية التسديدات الموزونة
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: const [
@@ -597,8 +571,6 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
             ),
 
             const SizedBox(height: 20),
-
-            // 🚨 7. لوحة العيادة الطبية والغيابات المنزلقة المدمجة بوميض نبضات القلب لحماية راحة عين المشجع
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 24, vertical: 4),
               child: Text('العيادة الطبية والغيابات', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
@@ -630,7 +602,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
               ),
             ),
             
-            const SizedBox(height: 120), // مساحة تمرير سفلية مريحة لعدم الاصطدام بالبار العائم
+            const SizedBox(height: 120),
           ],
         ),
       ),
