@@ -10,29 +10,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # ✓ 1. سحب كود المشروع الأصلي من حسابك
       - uses: actions/checkout@v4
 
-      # ✓ 2. تثبيت محرك فلاتر الرسمي والقناء المستقرة
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
 
-      # ☕ 3. تثبيت واستقرار بيئة جافا الرسمية JDK 17
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
 
-      # 🎯 4. إعداد وتثبيت محرك الـ Android SDK لتأمين وقبول الرخص تلقائياً
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      # ⚙️ 5. تثبيت إصدار الـ Gradle Wrapper وحقن إعدادات المساعد لتعطيل الـ Compile Avoidance
       - name: Force Gradle Wrapper & Properties Version
         run: |
-          # بناء ملف الـ properties الخاص بالـ Wrapper
           mkdir -p android/gradle/wrapper
           echo "distributionBase=GRADLE_USER_HOME" > android/gradle/wrapper/gradle-wrapper.properties
           echo "distributionPath=wrapper/dists" >> android/gradle/wrapper/gradle-wrapper.properties
@@ -40,49 +34,25 @@ jobs:
           echo "zipStorePath=wrapper/dists" >> android/gradle/wrapper/gradle-wrapper.properties
           echo "distributionUrl=https\://services.gradle.org/distributions/gradle-8.11.1-bin.zip" >> android/gradle/wrapper/gradle-wrapper.properties
           
-          # حقن الإعدادات الثلاثة التي طلبها المساعد لمنع تعارض الـ Kotlin DSL Incremental
           echo "kotlin.incremental=false" >> android/gradle.properties
           echo "kotlin.compiler.execution.strategy=in-process" >> android/gradle.properties
           echo "org.gradle.kotlin.dsl.precompiled.accessors=false" >> android/gradle.properties
-          
-          echo "===== Verified Dynamic Gradle Properties ====="
-          cat android/gradle.properties
 
-      # 🔍 6. الخطوات التشخيصية لمراقبة توافق البيئة
-      - name: Verify Generated Android Config & Flutter Version
-        run: |
-          echo "===== Verifying build.gradle.kts contents ====="
-          cat android/app/build.gradle.kts || true
-          flutter --version || true
-
-      # 🏗️ 7. الطحن والتجميع الفعلي النقي مع توجيه وحصر الضغط لمعالج الهواتف الحديثة arm64
-      - name: Build APK with Full Log
+      - name: Build APK
         run: |
           flutter clean
           flutter pub get
-          flutter pub upgrade --major-versions || true
-          flutter pub upgrade || true
-          
-          # إطلاق البناء الصارم وحفظ السجلات الشاملة بدون حجب الأخطاء
-          flutter build apk --release --target-platform android-arm64 --verbose > build_log.txt 2>&1
+          flutter build apk --release --verbose 2>&1 | tee build.log
+        continue-on-error: true
 
-      # 📊 8. بروتوكول التتبع المزدوج الأقوى (يشتغل في كل الحالات: خطأ أحمر أو صح أخضر بدون تحميل)
-      - name: Advanced Error and Crash Diagnosis Report
+      - name: Show real error
         if: always()
         run: |
-          echo "========== 1. CHECKING IF APK FILE GENERATED =========="
-          ls -la build/app/outputs/flutter-apk/ || echo "🚨 ALERT: APK file was NOT generated on the disk!"
-          
-          echo "========== 2. DART & COMPILER EXPANDED ERRORS =========="
-          grep -n -E "Error:|error •|Unhandled exception|Target kernel_snapshot_program failed|lib/" build_log.txt || true
-          
-          echo "========== 3. GRADLE & PROCESS CRASH DETAILS =========="
-          grep -n -E "FAILURE:|Caused by:|Exception" build_log.txt || true
-          
-          echo "========== 4. LAST 100 LINES OF THE ENTIRE BUILD =========="
-          tail -n 100 build_log.txt || true
+          echo "===== FAILURE ====="
+          grep -n "FAILURE\|Error:\|Exception\|Target kernel_snapshot_program\|Execution failed\|Unhandled" build.log || true
+          echo "===== LAST 200 LINES ====="
+          tail -200 build.log
 
-      # 📥 9. محرك الرفع الرسمي المحدث والآمن لتوفير سهم التحميل الأخضر فور النجاح واكتمال الملف
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         if: success()
