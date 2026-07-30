@@ -124,7 +124,7 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
       context: context,
       barrierDismissible: true,
       barrierLabel: "Player",
-      barrierColor: Colors.black95,
+      barrierColor: Colors.black.withOpacity(0.95), // ✅ تم التصحيح هنا
       transitionDuration: const Duration(milliseconds: 300),
       pageBuilder: (context, anim1, anim2) {
         return StatefulBuilder(
@@ -514,7 +514,11 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
 
   Widget _buildMainArticleCard(BuildContext context, NewsArticleModel article) {
     final bool isRead = _readArticlesMemory.contains(article.articleUrl);
-    final bool isHotMatch = /classico|derby|real madrid|barcelona|final|urgent/i.test(article.title);
+    // ✅ تم تصحيح التعبير النمطي هنا
+    final bool isHotMatch = RegExp(
+      r'classico|derby|real madrid|barcelona|final|urgent',
+      caseSensitive: false,
+    ).hasMatch(article.title);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -691,7 +695,11 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
 
   Widget _buildSubArticleCard(BuildContext context, NewsArticleModel article) {
     final bool isRead = _readArticlesMemory.contains(article.articleUrl);
-    final bool isHotMatch = /classico|derby|real madrid|barcelona|final|urgent/i.test(article.title);
+    // ✅ تم تصحيح التعبير النمطي هنا أيضاً
+    final bool isHotMatch = RegExp(
+      r'classico|derby|real madrid|barcelona|final|urgent',
+      caseSensitive: false,
+    ).hasMatch(article.title);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
