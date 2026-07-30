@@ -13,19 +13,19 @@ jobs:
       # ✓ 1. سحب كود المشروع الأصلي من حسابك
       - uses: actions/checkout@v4
 
-      # ✓ 2. تثبيت محرك فلاتر الرسمي والقناة المستقرة بناءً على ترتيب المساعد
+      # ✓ 2. تثبيت محرك فلاتر الرسمي والقناة المستقرة
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
 
-      # ☕ 3. تثبيت واستقرار بيئة جافا الرسمية JDK 17 التابعة لـ Temurin
+      # ☕ 3. تثبيت واستقرار بيئة جافا الرسمية JDK 17
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
 
-      # 🎯 4. إعداد وتثبيت محرك الـ Android SDK لتأمين وقبول الرخص تلقائياً من السحاب
+      # 🎯 4. إعداد وتثبيت محرك الـ Android SDK لتأمين وقبول الرخص تلقائياً
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
@@ -39,26 +39,33 @@ jobs:
           echo "zipStorePath=wrapper/dists" >> android/gradle/wrapper/gradle-wrapper.properties
           echo "distributionUrl=https\://services.gradle.org/distributions/gradle-8.11.1-bin.zip" >> android/gradle/wrapper/gradle-wrapper.properties
 
-      # 🏗️ 6. الطحن والتجميع الفعلي النقي والمباشر بدون أي خطوات رخص معطلة أو مجازفات
-      - name: Flutter Pub Get & Build APK
+      # 🏗️ 6. تشغيل البناء مع التحليل المفصل لكود الـ Dart (بناءً على خطة المساعد الحكيمة)
+      - name: Build APK (verbose)
         run: |
           flutter clean
           flutter pub get
+          
+          echo "========== START FLUTTER ANALYZE =========="
+          flutter analyze || true
+          echo "========== END FLUTTER ANALYZE =========="
+          
           flutter pub upgrade --major-versions || true
           flutter pub upgrade || true
           
-          # إطلاق البناء الفعلي النظيف للـ Release وحفظ السجلات الصامتة للتحقق
-          flutter build apk --release --verbose > build_log.txt 2>&1
+          # إطلاق البناء الفعلي المطوّر وحفظ السجلات الشاملة
+          flutter build apk --release --verbose > build_log.txt 2>&1 || true
 
-      # 📊 7. الأداة الاستكشافية الحصرية لطباعة آخر 50 سطراً بعد البناء فقط إذا فشل (بناءً على طلب المساعد)
-      - name: Print Last 50 Lines on Failure
-        if: failure()
+      # 📊 7. الأداة الاستكشافية المتقدمة التي طلبها صديقك لقشر أخطاء Dart وخطوات الـ Analyzer بالملي
+      - name: Show Dart compile errors
+        if: always()
         run: |
-          echo "========== START FAILURE REPORT (LAST 50 LINES) =========="
-          tail -n 50 build_log.txt || true
-          echo "========== END FAILURE REPORT =========="
+          echo "========== DART COMPILER ERRORS =========="
+          grep -n -A 80 -B 120 "compileFlutterBuildRelease FAILED" build_log.txt || true
+          
+          echo "========== ANALYZER =========="
+          grep -n -E "Error:|error •|Unhandled exception|Target kernel_snapshot_program failed|Failed assertion|lib/" build_log.txt || true
 
-      # 📥 8. محرك الرفع الرسمي المحدث والآمن لإعادة سهم التحميل الملكي فور النجاح
+      # لوحة المخرجات الروتينة في حال النجاح المستقر
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         if: success()
