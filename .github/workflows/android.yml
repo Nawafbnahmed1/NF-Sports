@@ -28,7 +28,30 @@ jobs:
         with:
           channel: stable
 
-      # ⚙️ 4. طحن الملفات بناءً على معادلة الصديق المساعد وإطلاق التجميع
+      # 🔍 4. الخطوة التشخيصية الحاسمة التي طلبها المساعد لكشف الملف المتمرد وقيم الـ 33 المخفية
+      - name: Verify Android SDK configuration
+        run: |
+          echo "===== Checking for existing gradle files ====="
+          ls -la android/app/ || true
+          ls -la android/ || true
+          
+          echo "===== app/build.gradle ====="
+          cat android/app/build.gradle || true
+
+          echo "===== app/build.gradle.kts ====="
+          cat android/app/build.gradle.kts || true
+
+          echo "===== settings.gradle ====="
+          cat android/settings.gradle || true
+
+          echo "===== settings.gradle.kts ====="
+          cat android/settings.gradle.kts || true
+          
+          echo "===== Scanning for hidden 33 configurations ====="
+          grep -R "compileSdk.*33" android/ || true
+          grep -R "targetSdk.*33" android/ || true
+
+      # ⚙️ 5. طحن الملفات بناءً على معادلة الصديق المساعد وإطلاق التجميع
       - name: Build APK with Full Log
         run: |
           flutter clean
@@ -42,16 +65,8 @@ jobs:
           yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses || true
           yes | flutter doctor --android-licenses || true
           
-          # 🏗️ التجميع الفعلي وضخ البيانات لملف سجل الفحص المكتوم
+          # 🏗️ التجميع الفعلي وضخ البيانات لملف سجل الفحص
           flutter build apk --release --verbose > build_log.txt 2>&1
-
-      # 📊 5. الأداة الاستكشافية الرسمية التي طلبها المساعد لطباعة الـ 120 سطراً الحاسمة لأسماء المكتبات الستة
-      - name: Print AAR metadata section
-        if: always()
-        run: |
-          echo "========== START AAR METADATA REPORT =========="
-          grep -n -A 120 "6 issues were found when checking AAR metadata" build_log.txt || true
-          echo "========== END AAR METADATA REPORT =========="
 
       # لوحة تفاصيل الأخطاء العامة الاحتياطية بالسيرفر
       - name: Show Failure Details
