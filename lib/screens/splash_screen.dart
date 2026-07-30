@@ -23,25 +23,21 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
   void initState() {
     super.initState();
     
-    // 1. متحكم تنفس توهج الشعار النيوني لـ NF SPORTS
     _logoPulseController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 2),
     )..repeat(reverse: true);
 
-    // 2. متحكم الصاعقة الكهربائية الخاطفة للشعار عند الانطلاق لأول أجزاء من الثانية
     _lightningController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 800),
     )..forward();
 
-    // 3. متحكم سرعة قفز وجزيئات النقاط الثلاث المشعة في الأسفل
     _dotsController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 650),
     )..repeat(reverse: true);
 
-    // 4. متحكم شبكة خطوط النيون الانسيابية المتحركة في الخلفية
     _gridController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 10),
@@ -59,18 +55,15 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
     super.dispose();
   }
 
-  // 🛠️ البوابة الذكية الصارمة: تفحص الإنترنت حياً لتأمين العبور أو تشغيل قفل الأوفلاين القاطع
   Future<void> _startAppInitializationGate() async {
     setState(() {
       _isChecking = true;
       _isOffline = false;
     });
     
-    // فحص أمني دقيق ومستقر للشبكة والخوادم الحقيقية لمدة ثانيتين
     await Future.delayed(const Duration(seconds: 2));
     
     try {
-      // فحص حقيقي؛ إذا كان الإنترنت منقطعاً تماماً يفعل الحظر، عدا ذلك يستمر بالتحميل دون كراش
       bool isFullyDisconnected = false; 
       
       if (!isFullyDisconnected) {
@@ -94,19 +87,19 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
   }
 
   void _activateOfflineLockMode() {
-    HapticFeedback.mediumImpact(); // اهتزاز تنبيهي لطيف وناعم يحمي راحة المستخدم
+    HapticFeedback.mediumImpact();
     setState(() {
       _isOffline = true;
       _isChecking = false;
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
       body: Stack(
         children: [
-          // 🌌 أ. شبكة خطوط النيون الانسيابية في الخلفية (Cyber Grid Particle Aura) متحركة برياضيات صافية وبدون صور
           Positioned.fill(
             child: AnimatedBuilder(
               animation: _gridController,
@@ -122,7 +115,6 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
             ),
           ),
 
-          // 💎 ب. كبسولة الرسالة الترحيبية العلوية الزجاجية العائمة والمضيئة بنعومة
           Positioned(
             top: 60,
             left: 0,
@@ -159,7 +151,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
               ),
             ),
           ),
-          // 💎 ج. منطقة عرض الشعار العمودي الفخم (حرفا NF العملاقان وتحتهما كلمة SPORTS الحادة) بالصاعقة الكهربائية وهالة التنفس النيوني
+
           Positioned.fill(
             child: Center(
               child: AnimatedBuilder(
@@ -189,7 +181,6 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        // حرفا NF المدمجان عمودياً بخط حاد وتوهج خارق ثلاثي الأبعاد
                         Text(
                           'NF',
                           style: TextStyle(
@@ -205,7 +196,6 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
                           ),
                         ),
                         const SizedBox(height: 6),
-                        // كلمة SPORTS متمصلة بالأسفل بشكل فخم ومتباعد الحروف وكالات الأنباء الكبرى
                         const Text(
                           'SPORTS',
                           style: TextStyle(
@@ -228,7 +218,6 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
             ),
           ),
 
-          // 💎 د. الجزء السفلي: التحكم بالنقاط الثلاث المتلاشية أو شاشة الحظر الكامل الصارمة عند انقطاع النت
           Positioned(
             bottom: 60,
             left: 40,
@@ -260,7 +249,6 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
                           style: TextStyle(color: Colors.white38, fontSize: 12, fontFamily: 'Cairo'),
                         ),
                         const SizedBox(height: 24),
-                        // زر إعادة المحاولة النبّاض باللون الأحمر الفخم لحظر الأوفلاين
                         InkWell(
                           onTap: _startAppInitializationGate,
                           borderRadius: BorderRadius.circular(30),
@@ -288,7 +276,6 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
                   : Column(
                       key: const ValueKey('loading_dots_ui'),
                       children: [
-                        // النقاط الثلاث النيونية القافزة ذات الوميض المتوالي وجزيئات التلاشي الفخمة
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: List.generate(3, (index) {
@@ -332,7 +319,6 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
   }
 }
 
-// 🎨 الرسام الهندسي لشبكة خطوط النيون الانسيابية المتحركة بالخلفية (Cyber Grid Engine)
 class _CyberGridPainter extends CustomPainter {
   final double progress;
   final Color lineColor;
@@ -351,15 +337,13 @@ class _CyberGridPainter extends CustomPainter {
       ..strokeWidth = 0.8
       ..style = PaintingStyle.stroke;
 
-    final double step = 45.0; // مقاس مربعات الشبكة المتناسق
+    final double step = 45.0;
     final double yOffset = (progress * step);
 
-    // رسم الخطوط الأفقية المتحركة بانسيابية لأسفل الهاتف
     for (double y = -step; y < size.height + step; y += step) {
       canvas.drawLine(Offset(0, y + yOffset), Offset(size.width, y + yOffset), paint);
     }
 
-    // رسم الخطوط العمودية الثابتة لتقفيل المربعات الزجاجية بالعمق البصري
     for (double x = 0; x < size.width; x += step) {
       canvas.drawLine(Offset(x, 0), Offset(x, size.height), paint);
     }
