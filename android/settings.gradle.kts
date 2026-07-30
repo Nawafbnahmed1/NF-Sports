@@ -17,9 +17,9 @@ pluginManagement {
 
 plugins {
     id("dev.flutter.flutter-plugin-loader") version "1.0.0"
-    // 🚀 الترقية الجراحية الحاسمة لـ AGP إلى 8.6.0 لتلبية شرط فلاتر الإجباري وتدمير التعارض للأبد
     id("com.android.application") version "8.6.0" apply false
-    id("org.jetbrains.kotlin.android") version "2.0.0" apply false
+    // 🚀 تحديث صارم ومستقر للكوتلن إلى 2.2.20 بناءً على نصيحة المساعد الذكية لمنع تحذيرات فلاتر
+    id("org.jetbrains.kotlin.android") version "2.2.20" apply false
 }
 
 include(":app")
