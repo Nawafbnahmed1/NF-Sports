@@ -28,7 +28,7 @@ jobs:
         with:
           channel: stable
 
-      # ⚙️ 4. تنظيف وترقية وحقن الرخص وبناء الـ APK بنقاء باهر وتخطي الملفات المفقودة كلياً
+      # ⚙️ 4. طحن الملفات بناءً على معادلة الصديق المساعد وإطلاق التجميع
       - name: Build APK with Full Log
         run: |
           flutter clean
@@ -42,32 +42,20 @@ jobs:
           yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses || true
           yes | flutter doctor --android-licenses || true
           
-          # 🏗️ الإطلاق الفعلي والتجميع السحابي المباشر والنقي لحزمة الـ APK الصادقة 100%
+          # 🏗️ التجميع الفعلي وضخ البيانات لملف سجل الفحص المكتوم
           flutter build apk --release --verbose > build_log.txt 2>&1
 
-      # 📊 لوحة استكشاف الأخطاء البرمجية؛ تشتغل تلقائياً فقط في حال وجود خطأ حقيقي بداخل الـ lib
+      # 📊 5. الأداة الاستكشافية الرسمية التي طلبها المساعد لطباعة الـ 120 سطراً الحاسمة لأسماء المكتبات الستة
+      - name: Print AAR metadata section
+        if: always()
+        run: |
+          echo "========== START AAR METADATA REPORT =========="
+          grep -n -A 120 "6 issues were found when checking AAR metadata" build_log.txt || true
+          echo "========== END AAR METADATA REPORT =========="
+
+      # لوحة تفاصيل الأخطاء العامة الاحتياطية بالسيرفر
       - name: Show Failure Details
         if: failure()
         run: |
-          echo "========== FAILURE =========="
-          grep -n "FAILURE:" build_log.txt || true
-          
-          echo "========== EXCEPTION =========="
-          grep -n "Exception" build_log.txt || true
-          
-          echo "========== CAUSED BY =========="
-          grep -n "Caused by:" build_log.txt || true
-          
-          echo "========== ERROR =========="
-          grep -n "error:" build_log.txt || true
-          
           echo "========== LAST 200 LINES =========="
           tail -n 200 build_log.txt || true
-
-      # 📥 5. محرك الرفع الرسمي المحدث بالمسار الآمن لإعادة سهم التحميل الأخضر فوراً عند النجاح
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v4
-        if: success()
-        with:
-          name: NF-Sports-APK
-          path: build/**/app-release.apk
