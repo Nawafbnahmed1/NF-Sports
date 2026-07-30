@@ -70,4 +70,4 @@ jobs:
         if: success()
         with:
           name: NF-Sports-APK
-          path: build/app/outputs/flutter-apk/app-release.apk
+          path: build/**/app-release.apk
