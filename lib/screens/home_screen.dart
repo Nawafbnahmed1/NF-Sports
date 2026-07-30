@@ -6,6 +6,7 @@ import '../widgets/section_title.dart';
 import '../widgets/neon_button.dart';
 import 'match_detail_screen.dart';
 import 'news_detail_screen.dart';
+import 'news_screen.dart'; // تم إضافة هذا السطر المفقود
 
 class HomeMatchModel {
   final String team1;
@@ -51,7 +52,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   late AnimationController _pulseController;
   late AnimationController _audioWaveController;
 
-  // 🧠 ذاكرة ذكية ومستقرة لتتبع المقالات والمقاطع التي فتحها المستخدم في الشاشة الرئيسية لتغيير لون حوافها
   final Set<String> _homeReadMemory = <String>{};
 
   @override
@@ -75,13 +75,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     super.dispose();
   }
 
-  // 📊 خوارزمية المشاهدات المتنامية والمتحركة الفريدة للشاشة الرئيسية (أرقام فريدة وزوجية ومنفردة تنمو على مدار الاسبوع)
   String _generateDynamicViewsForHome(HomeMediaModel media) {
     final int seed = media.videoUrl.hashCode.abs() + media.title.hashCode.abs();
     final int baseViews = 450 + (seed % 250); 
     final duration = DateTime.now().difference(media.publishedAt);
-    
-    // ينمو الرقم بمعدل ذكي ومنطقي كلما مر الوقت (حوالي 11 مشاهدة لكل نصف ساعة)
     final int growth = (duration.inMinutes ~/ 30) * 11;
     final int totalViews = baseViews + growth;
     
@@ -90,7 +87,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     }
     return '$totalViews';
   }
-  // 🎬 مشغل الفيديو السينمائي الخارق للشاشة الرئيسية مع التدوير الذكي والتحكم اللمسي وحقوق الملكية
+
   void _openFullscreenVideoPlayer(BuildContext context, HomeMediaModel media) {
     HapticFeedback.vibrate();
     
@@ -98,7 +95,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       _homeReadMemory.add(media.videoUrl);
     });
 
-    // السماح بنظام التدوير الكامل والأفقي لمتعة المشاهدة
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.landscapeLeft,
@@ -131,7 +127,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               Positioned.fill(child: Image.network(media.imageUrl, fit: BoxFit.cover)),
                             Container(color: Colors.black45),
                             
-                            // 🛡️ ختم الجودة والأمان: شارة حقوق الملكية لـ NF SPORTS متوهجة بالنيون والسيان الشفاف في الزاوية
                             Positioned(
                               top: 16,
                               right: 16,
@@ -157,7 +152,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               ),
                             ),
 
-                            // شارة الـ HD الاحترافية المضيئة بداخل مشغل الشاشة الرئيسية
                             Positioned(
                               top: 16,
                               left: 16,
@@ -181,11 +175,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     ),
                   ),
 
-                  // 🎛️ لوحة التحكم الذكية بالإيماءات اللمسية السريعة (يمين للصوت، ويسار للسطوع بنعومة)
                   Positioned.fill(
                     child: Row(
                       children: [
-                        // الجانب الأيسر: سحب السطوع
                         Expanded(
                           child: GestureDetector(
                             onVerticalDragUpdate: (details) {
@@ -203,7 +195,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             ),
                           ),
                         ),
-                        // الجانب الأيمن: سحب الصوت
                         Expanded(
                           child: GestureDetector(
                             onVerticalDragUpdate: (details) {
@@ -225,7 +216,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     ),
                   ),
 
-                  // 💎 شريط مؤشرات زجاجي مضيء سفلي للتحكم وتأكيد الحقوق والتحميل
                   Positioned(
                     bottom: 30,
                     left: 20,
@@ -252,7 +242,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             ),
                           ),
                           const SizedBox(width: 12),
-                          // ميزة التحميل الخارجي بحماية الشعار للحقوق الفنية والبراند الخاص بك
                           IconButton(
                             icon: const Icon(Icons.download_for_offline, color: AppTheme.neonBlue, size: 24),
                             onPressed: () {
@@ -283,6 +272,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -333,7 +323,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   scrollDirection: Axis.horizontal,
                   physics: const BouncingScrollPhysics(),
-                  itemCount: 3, // يمتد تلقائياً حسب مصفوفة السحاب
+                  itemCount: 3,
                   itemBuilder: (context, index) {
                     final match = HomeMatchModel(
                       team1: '', 
@@ -412,8 +402,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                   children: [
                                     Text(match.time, style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
                                     const SizedBox(height: 5),
-                                    
-                                    // 🎤 ميزة المستقبل الخيالية: إذا كانت المباراة جارية (LIVE) يرتعش مؤشر الموجات الصوتية النيونية الحية بدلاً من الوقت الثابت ليعكس أجواء الملعب
                                     isLive
                                         ? Row(
                                             mainAxisAlignment: MainAxisAlignment.center,
@@ -475,8 +463,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               ],
                             ),
                             const SizedBox(height: 6),
-                            
-                            // ⚡ شريط الاستحواذ الفلورسنتي الحركي ثلاثي الأبعاد المدعوم بظلال متأرجحة متوهجة تعكس سير المباراة
                             ClipRRect(
                               borderRadius: BorderRadius.circular(6),
                               child: Container(
@@ -555,25 +541,24 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-  // 🔄 دالة بناء شريط السحب الأفقي للأخبار واللقطات المطورة كلياً للتمدد التلقائي مع الـ 228 مشاهدة وحقوق الملكية والذاكرة اللمسية
   Widget _buildHorizontalList({required bool isNews}) {
     return SizedBox(
-      height: isNews ? 165 : 175, // الارتفاع الموزون لاحتواء العدادات وهالة التوهج بدون تضخم
+      height: isNews ? 165 : 175,
       child: ListView.builder(
         padding: const EdgeInsets.symmetric(horizontal: 20),
         scrollDirection: Axis.horizontal,
         physics: const BouncingScrollPhysics(),
-        itemCount: 10, // يمتد أوتوماتيكياً حسب قائمة السحاب والـ API لتغطية الـ 100 عنصر
+        itemCount: 10,
         itemBuilder: (context, index) {
           final media = HomeMediaModel(
             title: isNews ? 'عنوان الخبر الرياضي الممتد' : 'ملخص المباراة والأهداف الحاسمة',
             imageUrl: '', 
             videoUrl: 'unique_video_id_$index',
-            publishedAt: DateTime.now().subtract(Duration(minutes: index * 45)), // فجوة زمنية فريدة لكل كرت لتغيير أرقام المشاهدة
+            publishedAt: DateTime.now().subtract(Duration(minutes: index * 45)),
           );
 
           final bool isRead = _homeReadMemory.contains(media.videoUrl);
-          final bool isHot = index % 3 == 0; // جعل بعض الكروت عشوائياً ساخنة جداً لإضفاء الحيوية
+          final bool isHot = index % 3 == 0;
 
           return GestureDetector(
             onTap: () {
@@ -582,22 +567,19 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               });
               HapticFeedback.mediumImpact();
               if (isNews) {
-                // الانتقال الفوري لشاشة تفاصيل الخبر الحقيقية
                 Navigator.push(context, MaterialPageRoute(builder: (context) => NewsDetailScreen(article: NewsArticleModel(title: media.title, description: '', imageUrl: media.imageUrl, source: 'NF SPORTS', articleUrl: media.videoUrl, publishedAt: media.publishedAt))));
               } else {
-                // إطلاق مشغل الفيديو السينمائي الخارق للشاشة الرئيسية بالتكبير والتحكم الذكي
                 _openFullscreenVideoPlayer(context, media);
               }
             },
             child: AnimatedOpacity(
               duration: const Duration(milliseconds: 300),
-              opacity: isRead ? 0.75 : 1.0, // انخفاض السطوع قليلاً بعد القراءة واللمس لتمييز المحتوى
+              opacity: isRead ? 0.75 : 1.0,
               child: Container(
                 width: isNews ? 160 : 230,
                 margin: const EdgeInsets.only(left: 14),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
-                  // هالة الوميض الصاعق للبطاقات المشتعلة والجديدة، وتحول الحواف للرمادي الداكن بعد الفتح
                   boxShadow: (!isRead && isHot) ? [
                     BoxShadow(color: AppTheme.glowBlue.withOpacity(0.25), blurRadius: 12, spreadRadius: 1),
                     BoxShadow(color: AppTheme.neonBlue.withOpacity(0.15), blurRadius: 6, spreadRadius: 0)
@@ -618,7 +600,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
                               color: Colors.black26,
                             ),
-                            // تأثير العمق البصري الحركي: تغليف الصور والمؤشرات بحواف نيون زجاجية
                             child: ClipRRect(
                               borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
                               child: media.imageUrl.isNotEmpty
@@ -627,7 +608,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             ),
                           ),
                           
-                          // 🛡️ الختم الرقمي لـ NF SPORTS على زوايا صور كروت الشاشة الرئيسية لحفظ الحقوق
                           Positioned(
                             top: 8,
                             left: 8,
@@ -641,7 +621,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             ),
                           ),
 
-                          // شارة الـ HD السيان المشعة للملخصات والأهداف
                           if (!isNews)
                             Positioned(
                               top: 8,
@@ -679,8 +658,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               ],
                             ),
                             const SizedBox(height: 6),
-                            
-                            // العداد الرياضي التفاعلي المعدّل (تأثير نمو 228 مشاهدة فريدة وزوجية ومنفردة لكل نصف ساعة)
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               textDirection: TextDirection.rtl,
@@ -696,7 +673,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                     ),
                                   ],
                                 ),
-                                // شارة التحميل السريع المتاحة بجانب العداد لحفظ الحقوق الفنية للمنصة
                                 Icon(isNews ? Icons.insert_drive_file_outlined : Icons.file_download_done, size: 11, color: Colors.white24),
                               ],
                             ),
