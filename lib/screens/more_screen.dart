@@ -1,4 +1,3 @@
-import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -15,11 +14,10 @@ class _MoreScreenState extends State<MoreScreen> with TickerProviderStateMixin {
   late AnimationController _glowController;
   final TextEditingController _userSuggestionController = TextEditingController();
   
-  // حقول إدارة ومزامنة هويات المشجعين حياً بالسحاب لراحة الهاتف
   bool _isLoggedIn = false; 
   String _userName = "نواف بن أحمد";
   String _userRole = "مؤسس ومطور تطبيق NF Sports";
-  int _correctPredictionsCount = 24; // رصيد التفاعل المؤهل لقنوات المناقشات
+  int _correctPredictionsCount = 24;
 
   @override
   void initState() {
@@ -37,7 +35,6 @@ class _MoreScreenState extends State<MoreScreen> with TickerProviderStateMixin {
     super.dispose();
   }
 
-  // 🎛️ نافذة خيارات الدخول الثلاثية المنبثقة بنعومة من أسفل الجوال لربط حسابات الـ API
   void _showAuthBottomSheet() {
     HapticFeedback.mediumImpact();
     showModalBottomSheet(
@@ -57,21 +54,18 @@ class _MoreScreenState extends State<MoreScreen> with TickerProviderStateMixin {
               Text('سجل حسابك لتوقع التشكيلات والمناقشة حياً مع جماهير فريقك', textAlign: TextAlign.center, style: GoogleFonts.cairo(color: Colors.white38, fontSize: 11)),
               const SizedBox(height: 24),
               
-              // 🌐 1. زر الدخول الفاخر والمحمي عبر حساب Google
               _buildAuthButton(icon: Icons.g_mobiledata_rounded, text: 'تسجيل الدخول عبر Google', color: const Color(0xFF4285F4), onTap: () {
                 Navigator.pop(context);
                 setState(() => _isLoggedIn = true);
               }),
               const SizedBox(height: 12),
               
-              // ✉️ 2. زر الدخول الآمن عبر البريد الإلكتروني
               _buildAuthButton(icon: Icons.mail_outline_rounded, text: 'تسجيل الدخول عبر البريد الإلكتروني', color: AppTheme.neonBlue, onTap: () {
                 Navigator.pop(context);
                 setState(() => _isLoggedIn = true);
               }),
               const SizedBox(height: 12),
               
-              // 📱 3. زر الدخول الرشيق والمستقر عبر رقم الهاتف
               _buildAuthButton(icon: Icons.phone_android_rounded, text: 'تسجيل الدخول عبر رقم الهاتف', color: Colors.green, onTap: () {
                 Navigator.pop(context);
                 setState(() => _isLoggedIn = true);
@@ -106,6 +100,7 @@ class _MoreScreenState extends State<MoreScreen> with TickerProviderStateMixin {
       ),
     );
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -115,7 +110,6 @@ class _MoreScreenState extends State<MoreScreen> with TickerProviderStateMixin {
           physics: const BouncingScrollPhysics(),
           child: Column(
             children: [
-              // 🏆 1. الهيدر العلوي وشعار البراند والكأس النيوني بتأثير التنفس الليزري الخافت
               Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: Row(
@@ -145,7 +139,6 @@ class _MoreScreenState extends State<MoreScreen> with TickerProviderStateMixin {
                 ),
               ),
 
-              // 📱 2. بطاقة حساب المشجع الذكية (تتحول ديناميكياً لتشبه الواتساب في دقة وفخامة التنظيم)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                 child: Container(
@@ -160,7 +153,6 @@ class _MoreScreenState extends State<MoreScreen> with TickerProviderStateMixin {
                       ? Row(
                           textDirection: TextDirection.rtl,
                           children: [
-                            // دائرة الحساب المشعة الحاضنة لـ صورة الملف الشخصي حياً
                             Container(
                               width: 54, height: 54,
                               decoration: BoxDecoration(
@@ -178,7 +170,6 @@ class _MoreScreenState extends State<MoreScreen> with TickerProviderStateMixin {
                                   Text(_userName, style: GoogleFonts.cairo(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold)),
                                   Text(_userRole, style: GoogleFonts.cairo(color: AppTheme.neonBlue, fontSize: 10, fontWeight: FontWeight.w500)),
                                   const SizedBox(height: 4),
-                                  // شارة التفاعل التمهيدية لقنوات النقاص والجروبات الجماهيرية المستقبلية
                                   Container(
                                     padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                     decoration: BoxDecoration(color: Colors.black38, borderRadius: BorderRadius.circular(6)),
@@ -231,13 +222,13 @@ class _MoreScreenState extends State<MoreScreen> with TickerProviderStateMixin {
                 ),
               ),
               const SizedBox(height: 10),
-              // 🚨 3. شريط التفضيلات الكروية المخصصة (الفرق والبطولات المفضلة للمشجعين)
-              _buildSettingTile(icon: Icons.star_border_purple_500_rounded, iconColor: Colors.amberAccent, title: 'الفرق المفضلة', subtitle: 'إضافة فريقك المفضل لمتابعته أولاً بأول حياً'),
+
+              // ✅ تم تصحيح الأيقونة الأولى هنا (star_border_purple_500_rounded → star_border_rounded)
+              _buildSettingTile(icon: Icons.star_border_rounded, iconColor: Colors.amberAccent, title: 'الفرق المفضلة', subtitle: 'إضافة فريقك المفضل لمتابعته أولاً بأول حياً'),
               _buildSettingTile(icon: Icons.emoji_events_outlined, iconColor: AppTheme.neonBlue, title: 'البطولات المفضلة', subtitle: 'إضافة البطولات المفضلة لمتابعتها وتخصيص الأخبار لها'),
               
               const Padding(padding: EdgeInsets.symmetric(horizontal: 24, vertical: 4), child: Divider(color: Colors.white10, height: 1)),
 
-              // 🚨 4. خيارات الضبط وإدارة قنوات حزم البيانات السحابية حياً
               _buildSettingTile(icon: Icons.notifications_active_outlined, iconColor: Colors.cyanAccent, title: 'الإشعارات التفضيلية', subtitle: 'إدارة وتخصيص تفضيلات إشعارات الأهداف وصافرة البث المباشر'),
               _buildSettingTile(icon: Icons.palette_outlined, iconColor: Colors.pinkAccent, title: 'المظهر والوضع الليلي', subtitle: 'تغيير مظهر التطبيق واختيار الوضع الليلي والنيون المضيء'),
               _buildSettingTile(icon: Icons.language_rounded, iconColor: Colors.indigoAccent, title: 'اللغة الحالية', subtitle: 'تغيير لغة التطبيق الحالية واختيار العربية أو الإنجليزية'),
@@ -253,24 +244,18 @@ class _MoreScreenState extends State<MoreScreen> with TickerProviderStateMixin {
               ),
               
               const SizedBox(height: 16),
-              // 🚨 5. كبسولات التواصل الاجتماعي والسوشيال ميديا المضغوطة أفقياً للدعم وقنوات التحديثات
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                 child: Row(
                   children: [
-                    // كبسولة تليجرام للتصويتات الموسعة
                     _buildCompactSocialButton(icon: Icons.telegram_rounded, color: const Color(0xFF0088CC), label: 'تليجرام', onTap: () {
-                      // يتم استدعاء دالة url_launcher لاحقاً وربطها بمتغير القناة من السحاب
                     }),
                     const SizedBox(width: 8),
-                    // كبسولة واتساب للانضمام لقناة التحديثات حياً أولاً بأول
-                    _buildCompactSocialButton(icon: Icons.whatsapp_rounded, color: Colors.green, label: 'واتساب', onTap: () {
-                      // يتم ربط رابط القناة حياً من لوحة التحكم السحابية دون تعديل الكود
+                    // ✅ تم تصحيح الأيقونة الثانية هنا (whatsapp_rounded → chat_rounded)
+                    _buildCompactSocialButton(icon: Icons.chat_rounded, color: Colors.green, label: 'واتساب', onTap: () {
                     }),
                     const SizedBox(width: 8),
-                    // كبسولة إنستغرام لفتح حساب نواف للدعم الفني وحل أي مشاكل تزعج المشجع
                     _buildCompactSocialButton(icon: Icons.camera_alt_rounded, color: Colors.pinkAccent, label: 'إنستغرام', onTap: () {
-                      // يتم توجيه المشجع لحسابك مباشرة لحل المشكلات والاقتراحات
                     }),
                   ],
                 ),
@@ -278,7 +263,6 @@ class _MoreScreenState extends State<MoreScreen> with TickerProviderStateMixin {
 
               const SizedBox(height: 12),
 
-              // 🚨 6. خانات لوحة سياسة الخصوصية الكريستالية وحول تطبيق NF SPORTS الفخم
               _buildSettingTile(
                 icon: Icons.gavel_rounded, 
                 iconColor: Colors.blueAccent, 
@@ -290,7 +274,6 @@ class _MoreScreenState extends State<MoreScreen> with TickerProviderStateMixin {
 
               const SizedBox(height: 25),
 
-              // 🚨 7. بلوك الإصدار الرقمي الرسمي المزين بإطار نيون متلاشي (تم تصفية تاريخ التحديث تماماً لطلب نواف الاستراتيجي)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Container(
@@ -319,7 +302,6 @@ class _MoreScreenState extends State<MoreScreen> with TickerProviderStateMixin {
 
               const SizedBox(height: 40),
 
-              // 👑 8. توقيع شرف التأسيس الختامي المتنفس ببريق الليزر بأسفل الشاشة لتوحيد حقوق البراند
               Center(
                 child: Column(
                   children: [
@@ -337,7 +319,7 @@ class _MoreScreenState extends State<MoreScreen> with TickerProviderStateMixin {
                 ),
               ),
 
-              const SizedBox(height: 120), // مساحة أمان للتمرير بحرية فوق البار العائم
+              const SizedBox(height: 120),
             ],
           ),
         ),
@@ -345,15 +327,18 @@ class _MoreScreenState extends State<MoreScreen> with TickerProviderStateMixin {
     );
   }
 
-  // 🛡️ وثيقة سياسة الخصوصية الكريستالية الحقيقية والمصاغة كلياً بخط Cairo لتلبية شروط المتاجر الرسمية فوراً
   void _showPrivacyDialog() {
     HapticFeedback.mediumImpact();
     showDialog(
       context: context,
+      backgroundColor: const Color(0xFF0A1220),
+      surfaceTintColor: Colors.transparent,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       builder: (context) {
         return AlertDialog(
           backgroundColor: const Color(0xFF0A1220),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20), border: Border.all(color: Colors.white10)),
+          surfaceTintColor: Colors.transparent,
+          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           title: Text('سياسة الخصوصية وحماية البيانات', textAlign: TextAlign.right, style: GoogleFonts.cairo(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),
           content: SingleChildScrollView(
             child: Text(
@@ -373,7 +358,6 @@ class _MoreScreenState extends State<MoreScreen> with TickerProviderStateMixin {
     );
   }
 
-  // دالة بناء خيارات القائمة المشتركة والمنسقة جرافيكياً
   Widget _buildSettingTile({required IconData icon, required Color iconColor, required String title, required String subtitle, VoidCallback? onTap}) {
     return InkWell(
       onTap: () {
@@ -408,7 +392,6 @@ class _MoreScreenState extends State<MoreScreen> with TickerProviderStateMixin {
     );
   }
 
-  // دالة بناء كبسولات السوشيال ميديا الأفقية والمضغوطة لزيادة الجاذبية والرشاقة
   Widget _buildCompactSocialButton({required IconData icon, required Color color, required String label, required VoidCallback onTap}) {
     return Expanded(
       child: InkWell(
