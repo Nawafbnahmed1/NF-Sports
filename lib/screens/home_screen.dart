@@ -106,7 +106,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       context: context,
       barrierDismissible: true,
       barrierLabel: "HomePlayer",
-      barrierColor: AppTheme.black95,
+      barrierColor: Colors.black.withOpacity(0.95),
       transitionDuration: const Duration(milliseconds: 300),
       pageBuilder: (context, anim1, anim2) {
         return StatefulBuilder(
