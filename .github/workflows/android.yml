@@ -29,41 +29,52 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      # ⚙️ 5. حقن وتثبيت إصدار الـ Gradle Wrapper المستقر المتوافق مع AGP 8.9.1
-      - name: Force Gradle Wrapper Version
+      # ⚙️ 5. تثبيت إصدار الـ Gradle Wrapper وحقن إعدادات المساعد لتعطيل الـ Compile Avoidance
+      - name: Force Gradle Wrapper & Properties Version
         run: |
+          # بناء ملف الـ properties الخاص بالـ Wrapper
           mkdir -p android/gradle/wrapper
           echo "distributionBase=GRADLE_USER_HOME" > android/gradle/wrapper/gradle-wrapper.properties
           echo "distributionPath=wrapper/dists" >> android/gradle/wrapper/gradle-wrapper.properties
           echo "zipStoreBase=GRADLE_USER_HOME" >> android/gradle/wrapper/gradle-wrapper.properties
           echo "zipStorePath=wrapper/dists" >> android/gradle/wrapper/gradle-wrapper.properties
           echo "distributionUrl=https\://services.gradle.org/distributions/gradle-8.11.1-bin.zip" >> android/gradle/wrapper/gradle-wrapper.properties
+          
+          # حقن الإعدادات الثلاثة التي طلبها المساعد لمنع تعارض الـ Kotlin DSL Incremental
+          echo "kotlin.incremental=false" >> android/gradle.properties
+          echo "kotlin.compiler.execution.strategy=in-process" >> android/gradle.properties
+          echo "org.gradle.kotlin.dsl.precompiled.accessors=false" >> android/gradle.properties
+          
+          echo "===== Verified Dynamic Gradle Properties ====="
+          cat android/gradle.properties
 
-      # 🏗️ 6. تشغيل البناء مع التحليل المفصل لكود الـ Dart (بناءً على خطة المساعد الحكيمة)
-      - name: Build APK (verbose)
+      # 🔍 6. الخطوات التشخيصية لمراقبة توافق البيئة
+      - name: Verify Generated Android Config & Flutter Version
+        run: |
+          echo "===== Verifying build.gradle.kts contents ====="
+          cat android/app/build.gradle.kts || true
+          flutter --version || true
+
+      # 🏗️ 7. الطحن والتجميع الفعلي وحفظ السجلات الشاملة
+      - name: Build APK with Full Log
         run: |
           flutter clean
           flutter pub get
-          
-          echo "========== START FLUTTER ANALYZE =========="
-          flutter analyze || true
-          echo "========== END FLUTTER ANALYZE =========="
-          
           flutter pub upgrade --major-versions || true
           flutter pub upgrade || true
           
-          # إطلاق البناء الفعلي المطوّر وحفظ السجلات الشاملة
+          # إطلاق البناء الفعلي النظيف وحفظ السجلات
           flutter build apk --release --verbose > build_log.txt 2>&1 || true
 
-      # 📊 7. الأداة الاستكشافية المتقدمة التي طلبها صديقك لقشر أخطاء Dart وخطوات الـ Analyzer بالملي
-      - name: Show Dart compile errors
+      # 📊 8. طباعة آخر 80 سطراً بعد أول كلمة ERROR (بناءً على طلب المساعد الصارم)
+      - name: Print Last 80 Lines After Error
         if: always()
         run: |
-          echo "========== DART COMPILER ERRORS =========="
-          grep -n -A 80 -B 120 "compileFlutterBuildRelease FAILED" build_log.txt || true
-          
-          echo "========== ANALYZER =========="
-          grep -n -E "Error:|error •|Unhandled exception|Target kernel_snapshot_program failed|Failed assertion|lib/" build_log.txt || true
+          echo "========== START FAILURE REPORT (LAST 80 LINES) =========="
+          grep -n -A 80 "ERROR" build_log.txt || true
+          grep -n -B 40 -A 40 "compileFlutterBuildRelease" build_log.txt || true
+          grep -n -B 40 -A 40 "compileReleaseKotlin" build_log.txt || true
+          echo "========== END FAILURE REPORT =========="
 
       # لوحة المخرجات الروتينة في حال النجاح المستقر
       - name: Upload Artifact
