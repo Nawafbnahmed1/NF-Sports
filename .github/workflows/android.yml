@@ -28,30 +28,17 @@ jobs:
         with:
           channel: stable
 
-      # 🔍 4. الخطوة التشخيصية الحاسمة التي طلبها المساعد لكشف الملف المتمرد وقيم الـ 33 المخفية
-      - name: Verify Android SDK configuration
+      # 🔍 4. الخطوات التشخيصية المتقدمة والمحدثة بناءً على طلب المساعد الحاسم
+      - name: Verify Generated Android Config & Flutter Version
         run: |
-          echo "===== Checking for existing gradle files ====="
-          ls -la android/app/ || true
-          ls -la android/ || true
-          
-          echo "===== app/build.gradle ====="
-          cat android/app/build.gradle || true
-
-          echo "===== app/build.gradle.kts ====="
+          echo "===== 1. Verifying actual file contents at build time ====="
           cat android/app/build.gradle.kts || true
-
-          echo "===== settings.gradle ====="
-          cat android/settings.gradle || true
-
-          echo "===== settings.gradle.kts ====="
-          cat android/settings.gradle.kts || true
           
-          echo "===== Scanning for hidden 33 configurations ====="
-          grep -R "compileSdk.*33" android/ || true
-          grep -R "targetSdk.*33" android/ || true
+          echo "===== 2. Checking Flutter Doctor & Version ====="
+          flutter --version || true
+          flutter doctor -v || true
 
-      # ⚙️ 5. طحن الملفات بناءً على معادلة الصديق المساعد وإطلاق التجميع
+      # ⚙️ 5. طحن الملفات وإطلاق التجميع وضخ البيانات لملف سجل الفحص
       - name: Build APK with Full Log
         run: |
           flutter clean
@@ -65,8 +52,17 @@ jobs:
           yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses || true
           yes | flutter doctor --android-licenses || true
           
-          # 🏗️ التجميع الفعلي وضخ البيانات لملف سجل الفحص
+          # 🏗️ التجميع الفعلي النقي مع استخراج السجل الشامل
           flutter build apk --release --verbose > build_log.txt 2>&1
+
+      # 📊 6. طباعة أول 60 سطراً لتعارض الـ AAR المباشر من قلب السجل بناءً على طلب صديقك الأخير
+      - name: Print Deep AAR Errors and Metadata Details
+        if: always()
+        run: |
+          echo "========== START DEEP AAR ERRORS =========="
+          grep -n -A 60 "issues were found when checking AAR metadata" build_log.txt || true
+          grep -n -A 60 "compiled against android-" build_log.txt || true
+          echo "========== END DEEP AAR ERRORS =========="
 
       # لوحة تفاصيل الأخطاء العامة الاحتياطية بالسيرفر
       - name: Show Failure Details
