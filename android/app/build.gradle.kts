@@ -7,8 +7,11 @@ plugins {
 android {
     namespace = "com.example.nf_sports"
     
-    // 🚀 رفع إصدار الـ compileSdk إلى 36 لتلبية متطلبات مكتبات AndroidX الحديثة لعام 2026
+    // ✓ الترقية الجراحية الحاسمة لـ compileSdk لتلبية شرط المكتبات المحدثة لعام 2026
     compileSdk = 36
+
+    // 🚀 حقن إصدار الـ NDK الأعلى والمطلوب رسمياً من السيرفر لتدمير تعارض مكتبة الـ jni للأبد
+    ndkVersion = "28.2.13676358"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -26,9 +29,9 @@ android {
 
     defaultConfig {
         applicationId = "com.example.nf_sports"
-        // 🚀 رفع الـ minSdk إلى 23 لتقليل مشاكل التوافق وضمان استقرار أمان المتجر
+        // ✓ الحد الأدنى المستقر المستهدف بناءً على خطة المساعد
         minSdk = 23
-        // 🚀 رفع الـ targetSdk إلى 36 تماشياً مع متطلبات التجميع الحديثة
+        // ✓ الإصدار المستهدف للمتجر بناءً على خطة المساعد
         targetSdk = 36
         
         versionCode = 1
