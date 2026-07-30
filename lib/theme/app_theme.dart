@@ -1,15 +1,39 @@
 import 'package:flutter/material.dart';
 
 class AppTheme {
-  // الألوان الأساسية للمستقبل والنظام الداكن
-  static const Color backgroundColor = Color(0xFF060B14); // أسود عميق جداً رياضي
-  static const Color surfaceColor = Color(0xFF0A1220);     // أزرق زجاجي داكن للكروت
+  static const Color backgroundColor = Color(0xFF0A0A0A);
+  static const Color surfaceColor = Color(0xFF151515);
+  static const Color cardColor = Color(0xFF1E1E1E);
   
-  // 🚨 خلطة النيون السحرية المتوهجة (تأكد من مطابقتها بالملي)
-  static const Color neonBlue = Color(0xFF00B4FF);         // الأزرق النيوني المضيء
-  static const Color neonCyan = Color(0xFF00F0FF);         // السيان المشع للتأثيرات
-  
-  // الألوان الثانوية ونصوص النظام
-  static const Color textPrimary = Colors.white;
-  static const Color textSecondary = Colors.white54;
+  static const Color neonBlue = Color(0xFF00B4FF);
+  static const Color glowBlue = Color(0xFF00B4FF);
+  static const Color black95 = Color(0xFF0A0A0A);
+  static const Color black70 = Color(0x00000000);
+
+  static List<BoxShadow> neonGlow({double blur = 8}) {
+    return [
+      BoxShadow(
+        color: neonBlue.withOpacity(0.2),
+        blurRadius: blur,
+        spreadRadius: 1,
+      ),
+    ];
+  }
+
+  static final ThemeData darkTheme = ThemeData(
+    brightness: Brightness.dark,
+    scaffoldBackgroundColor: backgroundColor,
+    primaryColor: neonBlue,
+    colorScheme: const ColorScheme.dark(
+      primary: neonBlue,
+      secondary: neonBlue,
+      surface: surfaceColor,
+    ),
+    fontFamily: 'Cairo',
+    appBarTheme: const AppBarTheme(
+      backgroundColor: backgroundColor,
+      elevation: 0,
+      iconTheme: IconThemeData(color: Colors.white),
+    ),
+  );
 }
