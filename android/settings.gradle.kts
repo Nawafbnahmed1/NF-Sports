@@ -17,8 +17,9 @@ pluginManagement {
 
 plugins {
     id("dev.flutter.flutter-plugin-loader") version "1.0.0"
-    id("com.android.application") version "8.6.0" apply false
-    // 🚀 تحديث صارم ومستقر للكوتلن إلى 2.2.20 بناءً على نصيحة المساعد الذكية لمنع تحذيرات فلاتر
+    // 🚀 الترقية الجراحية لـ AGP إلى 8.9.1 لتلبية شروط مكتبات AndroidX الحديثة لعام 2026
+    id("com.android.application") version "8.9.1" apply false
+    // ✓ الإبقاء على إصدار لغة الكوتلن المستقر 2.2.20 بدون تغيير بناءً على خطة المساعد
     id("org.jetbrains.kotlin.android") version "2.2.20" apply false
 }
 
