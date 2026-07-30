@@ -6,7 +6,7 @@ import '../widgets/section_title.dart';
 import '../widgets/neon_button.dart';
 import 'match_detail_screen.dart';
 import 'news_detail_screen.dart';
-import 'news_screen.dart'; // تم إضافة هذا السطر المفقود
+import 'news_screen.dart';
 
 class HomeMatchModel {
   final String team1;
@@ -31,7 +31,7 @@ class HomeMediaModel {
   final String title;
   final String imageUrl;
   final String videoUrl;
-  final DateTime publishedAt; // ميزة التوقيت الصارم لنمو المشاهدات حياً تلقائياً
+  final DateTime publishedAt;
 
   const HomeMediaModel({
     required this.title,
@@ -51,7 +51,6 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   late AnimationController _pulseController;
   late AnimationController _audioWaveController;
-
   final Set<String> _homeReadMemory = <String>{};
 
   @override
@@ -90,7 +89,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   void _openFullscreenVideoPlayer(BuildContext context, HomeMediaModel media) {
     HapticFeedback.vibrate();
-    
     setState(() {
       _homeReadMemory.add(media.videoUrl);
     });
@@ -108,7 +106,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       context: context,
       barrierDismissible: true,
       barrierLabel: "HomePlayer",
-      barrierColor: Colors.black95,
+      barrierColor: AppTheme.black95,
       transitionDuration: const Duration(milliseconds: 300),
       pageBuilder: (context, anim1, anim2) {
         return StatefulBuilder(
