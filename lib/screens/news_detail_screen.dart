@@ -304,7 +304,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with SingleTickerPr
                             child: Center(
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
-                                textDirection: TextDirection.rtl,
+                                textDirection: ui.TextDirection.rtl,
                                 children: [
                                   const Icon(Icons.share_rounded, color: Colors.white, size: 16),
                                   const SizedBox(width: 8),
