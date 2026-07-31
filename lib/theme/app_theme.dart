@@ -4,11 +4,11 @@ class AppTheme {
   static const Color backgroundColor = Color(0xFF0A0A0A);
   static const Color surfaceColor = Color(0xFF151515);
   static const Color cardColor = Color(0xFF1E1E1E);
-  
+
   static const Color neonBlue = Color(0xFF00B4FF);
   static const Color glowBlue = Color(0xFF00B4FF);
   static const Color black95 = Color(0xFF0A0A0A);
-  static const Color black70 = Color(0x00000000);
+  static const Color black70 = Color(0xB3000000);
 
   static List<BoxShadow> neonGlow({double blur = 8}) {
     return [
