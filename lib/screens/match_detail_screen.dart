@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../theme/app_theme.dart';
 import 'package:glass_kit/glass_kit.dart';
+import '../widgets/glass_card.dart';
 
 class UserLineupPrediction {
   final String positionName;
@@ -163,10 +164,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              child: GlassContainer.clear(
-  width: double.infinity,
-  height: 120, 
-  borderRadius: BorderRadius.circular(24),
+              child: GlassCard(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 10),
                   child: Row(
@@ -334,13 +332,11 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                           bottom: 12,
                           left: 12,
                           right: 12,
-                          child: GlassContainer.clear(                          
-                           width: double.infinity,
-                            height: 200, 
-                            borderRadius: BorderRadius.circular(24),
-                            borderRadius: 16,
-                            padding: const EdgeInsets.all(12),
-                            child: Column(
+                           child: GlassCard(
+          borderRadius: BorderRadius.circular(24),
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Row(
