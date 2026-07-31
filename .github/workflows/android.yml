@@ -51,12 +51,14 @@ jobs:
       - name: List APK files
         run: |
           echo "===== APK Files ====="
-          find build -type f ( -name "*.apk" -o -name "*.aab" )
+          find build -type f -name "*.apk"
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: NF-Sports-APK
-          path: build/app/outputs/flutter-apk/*.apk
+          path: |
+            build/app/outputs/flutter-apk/*.apk
+            build/app/outputs/apk/release/*.apk
           if-no-files-found: error
