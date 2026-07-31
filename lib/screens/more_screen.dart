@@ -13,8 +13,8 @@ class MoreScreen extends StatefulWidget {
 class _MoreScreenState extends State<MoreScreen> with TickerProviderStateMixin {
   late AnimationController _glowController;
   final TextEditingController _userSuggestionController = TextEditingController();
-  
-  bool _isLoggedIn = false; 
+
+  bool _isLoggedIn = false;
   String _userName = "نواف بن أحمد";
   String _userRole = "مؤسس ومطور تطبيق NF Sports";
   int _correctPredictionsCount = 24;
@@ -53,23 +53,35 @@ class _MoreScreenState extends State<MoreScreen> with TickerProviderStateMixin {
               const SizedBox(height: 6),
               Text('سجل حسابك لتوقع التشكيلات والمناقشة حياً مع جماهير فريقك', textAlign: TextAlign.center, style: GoogleFonts.cairo(color: Colors.white38, fontSize: 11)),
               const SizedBox(height: 24),
-              
-              _buildAuthButton(icon: Icons.g_mobiledata_rounded, text: 'تسجيل الدخول عبر Google', color: const Color(0xFF4285F4), onTap: () {
-                Navigator.pop(context);
-                setState(() => _isLoggedIn = true);
-              }),
+              _buildAuthButton(
+                icon: Icons.g_mobiledata_rounded,
+                text: 'تسجيل الدخول عبر Google',
+                color: const Color(0xFF4285F4),
+                onTap: () {
+                  Navigator.pop(context);
+                  setState(() => _isLoggedIn = true);
+                },
+              ),
               const SizedBox(height: 12),
-              
-              _buildAuthButton(icon: Icons.mail_outline_rounded, text: 'تسجيل الدخول عبر البريد الإلكتروني', color: AppTheme.neonBlue, onTap: () {
-                Navigator.pop(context);
-                setState(() => _isLoggedIn = true);
-              }),
+              _buildAuthButton(
+                icon: Icons.mail_outline_rounded,
+                text: 'تسجيل الدخول عبر البريد الإلكتروني',
+                color: AppTheme.neonBlue,
+                onTap: () {
+                  Navigator.pop(context);
+                  setState(() => _isLoggedIn = true);
+                },
+              ),
               const SizedBox(height: 12),
-              
-              _buildAuthButton(icon: Icons.phone_android_rounded, text: 'تسجيل الدخول عبر رقم الهاتف', color: Colors.green, onTap: () {
-                Navigator.pop(context);
-                setState(() => _isLoggedIn = true);
-              }),
+              _buildAuthButton(
+                icon: Icons.phone_android_rounded,
+                text: 'تسجيل الدخول عبر رقم الهاتف',
+                color: Colors.green,
+                onTap: () {
+                  Navigator.pop(context);
+                  setState(() => _isLoggedIn = true);
+                },
+              ),
             ],
           ),
         );
@@ -77,7 +89,12 @@ class _MoreScreenState extends State<MoreScreen> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildAuthButton({required IconData icon, required String text, required Color color, required VoidCallback onTap}) {
+  Widget _buildAuthButton({
+    required IconData icon,
+    required String text,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
     return InkWell(
       onTap: () {
         HapticFeedback.lightImpact();
@@ -86,8 +103,10 @@ class _MoreScreenState extends State<MoreScreen> with TickerProviderStateMixin {
       borderRadius: BorderRadius.circular(14),
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-        decoration: BoxDecoration(color: color.withAlpha(20), borderRadius: BorderRadius.circular(14)),
-        
+        decoration: BoxDecoration(
+          color: color.withAlpha(20),
+          borderRadius: BorderRadius.circular(14),
+        ),
         child: Row(
           textDirection: TextDirection.rtl,
           mainAxisAlignment: MainAxisAlignment.center,
@@ -122,7 +141,13 @@ class _MoreScreenState extends State<MoreScreen> with TickerProviderStateMixin {
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            boxShadow: [BoxShadow(color: AppTheme.neonBlue.withOpacity(0.15 * _glowController.value), blurRadius: 10, spreadRadius: 1)]
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppTheme.neonBlue.withOpacity(0.15 * _glowController.value),
+                                blurRadius: 10,
+                                spreadRadius: 1,
+                              ),
+                            ],
                           ),
                           child: const Icon(Icons.emoji_events_rounded, color: AppTheme.neonBlue, size: 32),
                         );
@@ -149,18 +174,24 @@ class _MoreScreenState extends State<MoreScreen> with TickerProviderStateMixin {
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(color: Colors.white10, width: 1.5),
                   ),
-                  child: _isLoggedIn 
+                  child: _isLoggedIn
                       ? Row(
                           textDirection: TextDirection.rtl,
                           children: [
                             Container(
-                              width: 54, height: 54,
+                              width: 54,
+                              height: 54,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 border: Border.all(color: AppTheme.neonBlue, width: 2),
-                                boxShadow: [BoxShadow(color: AppTheme.neonBlue.withOpacity(0.2), blurRadius: 8)],
+                                boxShadow: [
+                                  BoxShadow(color: AppTheme.neonBlue.withOpacity(0.2), blurRadius: 8),
+                                ],
                               ),
-                              child: const CircleAvatar(backgroundColor: Color(0xFF1A1D2E), child: Icon(Icons.person_rounded, color: Colors.white, size: 28)),
+                              child: const CircleAvatar(
+                                backgroundColor: Color(0xFF1A1D2E),
+                                child: Icon(Icons.person_rounded, color: Colors.white, size: 28),
+                              ),
                             ),
                             const SizedBox(width: 14),
                             Expanded(
@@ -189,7 +220,12 @@ class _MoreScreenState extends State<MoreScreen> with TickerProviderStateMixin {
                             Row(
                               textDirection: TextDirection.rtl,
                               children: [
-                                Container(width: 44, height: 44, decoration: const BoxDecoration(color: Colors.white10, shape: BoxShape.circle), child: const Icon(Icons.account_circle_outlined, color: Colors.white38, size: 26)),
+                                Container(
+                                  width: 44,
+                                  height: 44,
+                                  decoration: const BoxDecoration(color: Colors.white10, shape: BoxShape.circle),
+                                  child: const Icon(Icons.account_circle_outlined, color: Colors.white38, size: 26),
+                                ),
                                 const SizedBox(width: 12),
                                 Expanded(
                                   child: Column(
@@ -214,47 +250,51 @@ class _MoreScreenState extends State<MoreScreen> with TickerProviderStateMixin {
                                   borderRadius: BorderRadius.circular(12),
                                   border: Border.all(color: AppTheme.neonBlue.withOpacity(0.4), width: 1.5),
                                 ),
-                                child: Center(child: Text('تسجيل الدخول أو إنشاء حساب مخصص', style: GoogleFonts.cairo(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold))),
+                                child: Center(
+                                  child: Text('تسجيل الدخول أو إنشاء حساب مخصص', style: GoogleFonts.cairo(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+                                ),
                               ),
                             ),
                           ],
                         ),
                 ),
               ),
-              const SizedBox(height: 10),
 
+              const SizedBox(height: 10),
               _buildSettingTile(icon: Icons.star_border_rounded, iconColor: Colors.amberAccent, title: 'الفرق المفضلة', subtitle: 'إضافة فريقك المفضل لمتابعته أولاً بأول حياً'),
               _buildSettingTile(icon: Icons.emoji_events_outlined, iconColor: AppTheme.neonBlue, title: 'البطولات المفضلة', subtitle: 'إضافة البطولات المفضلة لمتابعتها وتخصيص الأخبار لها'),
-              
-              const Padding(padding: EdgeInsets.symmetric(horizontal: 24, vertical: 4), child: Divider(color: Colors.white10, height: 1)),
+
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 4),
+                child: Divider(color: Colors.white10, height: 1),
+              ),
 
               _buildSettingTile(icon: Icons.notifications_active_outlined, iconColor: Colors.cyanAccent, title: 'الإشعارات التفضيلية', subtitle: 'إدارة وتخصيص تفضيلات إشعارات الأهداف وصافرة البث المباشر'),
               _buildSettingTile(icon: Icons.palette_outlined, iconColor: Colors.pinkAccent, title: 'المظهر والوضع الليلي', subtitle: 'تغيير مظهر التطبيق واختيار الوضع الليلي والنيون المضيء'),
               _buildSettingTile(icon: Icons.language_rounded, iconColor: Colors.indigoAccent, title: 'اللغة الحالية', subtitle: 'تغيير لغة التطبيق الحالية واختيار العربية أو الإنجليزية'),
               _buildSettingTile(
-                icon: Icons.cloud_sync_rounded, 
-                iconColor: Colors.tealAccent, 
-                title: 'التحقق من وجود تحديثات حية', 
+                icon: Icons.cloud_sync_rounded,
+                iconColor: Colors.tealAccent,
+                title: 'التحقق من وجود تحديثات حية',
                 subtitle: 'التحقق من آخر تحديث وترقية حزم التطبيق الحية الحين من الخادم',
                 onTap: () {
                   HapticFeedback.mediumImpact();
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('تطبيقك متصل بالسحاب ومحدث بالكامل لآخر حزمة مستقرة! 🌐🔥', style: TextStyle(fontFamily: 'Cairo'))));
-                }
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('تطبيقك متصل بالسحاب ومحدث بالكامل لآخر حزمة مستقرة! 🌐🔥', style: TextStyle(fontFamily: 'Cairo'))),
+                  );
+                },
               ),
-              
+
               const SizedBox(height: 16),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                 child: Row(
                   children: [
-                    _buildCompactSocialButton(icon: Icons.telegram_rounded, color: const Color(0xFF0088CC), label: 'تليجرام', onTap: () {
-                    }),
+                    _buildCompactSocialButton(icon: Icons.telegram_rounded, color: const Color(0xFF0088CC), label: 'تليجرام', onTap: () {}),
                     const SizedBox(width: 8),
-                    _buildCompactSocialButton(icon: Icons.chat_rounded, color: Colors.green, label: 'واتساب', onTap: () {
-                    }),
+                    _buildCompactSocialButton(icon: Icons.chat_rounded, color: Colors.green, label: 'واتساب', onTap: () {}),
                     const SizedBox(width: 8),
-                    _buildCompactSocialButton(icon: Icons.camera_alt_rounded, color: Colors.pinkAccent, label: 'إنستغرام', onTap: () {
-                    }),
+                    _buildCompactSocialButton(icon: Icons.camera_alt_rounded, color: Colors.pinkAccent, label: 'إنستغرام', onTap: () {}),
                   ],
                 ),
               ),
@@ -262,11 +302,11 @@ class _MoreScreenState extends State<MoreScreen> with TickerProviderStateMixin {
               const SizedBox(height: 12),
 
               _buildSettingTile(
-                icon: Icons.gavel_rounded, 
-                iconColor: Colors.blueAccent, 
-                title: 'سياسة الخصوصية وبنود الشروط', 
+                icon: Icons.gavel_rounded,
+                iconColor: Colors.blueAccent,
+                title: 'سياسة الخصوصية وبنود الشروط',
                 subtitle: 'قراءة بنود وشروط سياسة الخصوصية الصارمة وحماية بيانات المستخدمين',
-                onTap: _showPrivacyDialog
+                onTap: _showPrivacyDialog,
               ),
               _buildSettingTile(icon: Icons.info_outline_rounded, iconColor: Colors.orangeAccent, title: 'حول التطبيق', subtitle: 'الفخم NF Sports معلومات وتفاصيل شاملة حول تطبيق براند الرياضة'),
 
@@ -277,22 +317,16 @@ class _MoreScreenState extends State<MoreScreen> with TickerProviderStateMixin {
                 child: Container(
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF161926).withOpacity(0.2), 
-                    borderRadius: BorderRadius.circular(14), 
+                    color: const Color(0xFF161926).withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(14),
                     border: Border.all(color: Colors.white10),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     textDirection: TextDirection.rtl,
                     children: [
-                      Text(
-                        'إصدار التطبيق الرسمي', 
-                        style: GoogleFonts.cairo(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold),
-                      ),
-                      Text(
-                        '1.0.0', 
-                        style: GoogleFonts.cairo(color: AppTheme.neonBlue, fontSize: 13, fontWeight: FontWeight.bold),
-                      ),
+                      Text('إصدار التطبيق الرسمي', style: GoogleFonts.cairo(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold)),
+                      Text('1.0.0', style: GoogleFonts.cairo(color: AppTheme.neonBlue, fontSize: 13, fontWeight: FontWeight.bold)),
                     ],
                   ),
                 ),
@@ -332,9 +366,7 @@ class _MoreScreenState extends State<MoreScreen> with TickerProviderStateMixin {
       builder: (context) {
         return Dialog(
           backgroundColor: const Color(0xFF0A1220),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           child: AlertDialog(
             backgroundColor: const Color(0xFF0A1220),
             surfaceTintColor: Colors.transparent,
@@ -359,7 +391,13 @@ class _MoreScreenState extends State<MoreScreen> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildSettingTile({required IconData icon, required Color iconColor, required String title, required String subtitle, VoidCallback? onTap}) {
+  Widget _buildSettingTile({
+    required IconData icon,
+    required Color iconColor,
+    required String title,
+    required String subtitle,
+    VoidCallback? onTap,
+  }) {
     return InkWell(
       onTap: () {
         HapticFeedback.lightImpact();
@@ -371,7 +409,8 @@ class _MoreScreenState extends State<MoreScreen> with TickerProviderStateMixin {
           textDirection: TextDirection.rtl,
           children: [
             Container(
-              width: 38, height: 38,
+              width: 38,
+              height: 38,
               decoration: BoxDecoration(color: iconColor.withOpacity(0.06), borderRadius: BorderRadius.circular(10)),
               child: Icon(icon, color: iconColor, size: 18),
             ),
@@ -393,7 +432,12 @@ class _MoreScreenState extends State<MoreScreen> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildCompactSocialButton({required IconData icon, required Color color, required String label, required VoidCallback onTap}) {
+  Widget _buildCompactSocialButton({
+    required IconData icon,
+    required Color color,
+    required String label,
+    required VoidCallback onTap,
+  }) {
     return Expanded(
       child: InkWell(
         onTap: () {
@@ -403,7 +447,11 @@ class _MoreScreenState extends State<MoreScreen> with TickerProviderStateMixin {
         borderRadius: BorderRadius.circular(12),
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 8),
-          decoration: BoxDecoration(color: color.withOpacity(0.06), borderRadius: BorderRadius.circular(12), border: Border.all(color: color.withOpacity(0.2))),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.06),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: color.withOpacity(0.2)),
+          ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             textDirection: TextDirection.rtl,
