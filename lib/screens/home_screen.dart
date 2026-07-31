@@ -21,9 +21,16 @@ class HomeMatchModel {
   final String f2;
 
   const HomeMatchModel({
-    required this.team1, required this.team2, required this.status,
-    required this.time, required this.p1, required this.p2,
-    required this.h1, required this.h2, required this.f1, required this.f2,
+    required this.team1,
+    required this.team2,
+    required this.status,
+    required this.time,
+    required this.p1,
+    required this.p2,
+    required this.h1,
+    required this.h2,
+    required this.f1,
+    required this.f2,
   });
 }
 
@@ -76,11 +83,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   String _generateDynamicViewsForHome(HomeMediaModel media) {
     final int seed = media.videoUrl.hashCode.abs() + media.title.hashCode.abs();
-    final int baseViews = 450 + (seed % 250); 
+    final int baseViews = 450 + (seed % 250);
     final duration = DateTime.now().difference(media.publishedAt);
     final int growth = (duration.inMinutes ~/ 30) * 11;
     final int totalViews = baseViews + growth;
-    
+
     if (totalViews >= 1000) {
       return '${(totalViews / 1000).toStringAsFixed(1)}K';
     }
@@ -124,7 +131,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             if (media.imageUrl.isNotEmpty)
                               Positioned.fill(child: Image.network(media.imageUrl, fit: BoxFit.cover)),
                             Container(color: Colors.black45),
-                            
                             Positioned(
                               top: 16,
                               right: 16,
@@ -149,7 +155,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                 ),
                               ),
                             ),
-
                             Positioned(
                               top: 16,
                               left: 16,
@@ -163,7 +168,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                 child: const Text("1080p HD", style: TextStyle(color: Color(0xFF00F0FF), fontSize: 9, fontWeight: FontWeight.bold)),
                               ),
                             ),
-
                             const Center(
                               child: Icon(Icons.play_arrow_rounded, color: AppTheme.neonBlue, size: 64),
                             ),
@@ -172,7 +176,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       ),
                     ),
                   ),
-
                   Positioned.fill(
                     child: Row(
                       children: [
@@ -187,7 +190,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               color: Colors.transparent,
                               alignment: Alignment.centerLeft,
                               padding: const EdgeInsets.only(left: 20),
-                              child: localBrightness < 0.5 
+                              child: localBrightness < 0.5
                                   ? const Icon(Icons.brightness_low, color: Colors.white24)
                                   : const Icon(Icons.brightness_high, color: AppTheme.neonBlue),
                             ),
@@ -204,7 +207,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               color: Colors.transparent,
                               alignment: Alignment.centerRight,
                               padding: const EdgeInsets.only(right: 20),
-                              child: localVolume == 0 
+                              child: localVolume == 0
                                   ? const Icon(Icons.volume_off, color: Colors.white24)
                                   : const Icon(Icons.volume_up, color: AppTheme.neonBlue),
                             ),
@@ -213,7 +216,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       ],
                     ),
                   ),
-
                   Positioned(
                     bottom: 30,
                     left: 20,
@@ -293,7 +295,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           'NF',
                           style: TextStyle(
                             color: AppTheme.neonBlue,
-                            fontSize: 42, 
+                            fontSize: 42,
                             fontWeight: FontWeight.bold,
                             shadows: AppTheme.neonGlow(blur: 25),
                           ),
@@ -314,7 +316,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 ),
               ),
               const SectionTitle(title: 'مباريات اليوم'),
-              
               SizedBox(
                 height: 355,
                 child: ListView.builder(
@@ -324,16 +325,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   itemCount: 3,
                   itemBuilder: (context, index) {
                     final match = HomeMatchModel(
-                      team1: '', 
-                      team2: '', 
-                      status: '', 
-                      time: '', 
-                      p1: '0%', 
-                      p2: '0%', 
-                      h1: '', 
-                      h2: '', 
-                      f1: '', 
-                      f2: '', 
+                      team1: '',
+                      team2: '',
+                      status: '',
+                      time: '',
+                      p1: '0%',
+                      p2: '0%',
+                      h1: '',
+                      h2: '',
+                      f1: '',
+                      f2: '',
                     );
 
                     final bool isLive = match.status.contains('مباشر') || match.status.toLowerCase().contains('live');
@@ -343,13 +344,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       margin: const EdgeInsets.only(right: 16),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(24),
-                        boxShadow: isLive ? [
-                          BoxShadow(
-                            color: Colors.redAccent.withOpacity(0.15),
-                            blurRadius: 20,
-                            spreadRadius: 1,
-                          )
-                        ] : null,
+                        boxShadow: isLive
+                            ? [
+                                BoxShadow(
+                                  color: Colors.redAccent.withOpacity(0.15),
+                                  blurRadius: 20,
+                                  spreadRadius: 1,
+                                )
+                              ]
+                            : null,
                       ),
                       child: GlassCard(
                         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
@@ -364,12 +367,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                 border: Border.all(color: isLive ? Colors.redAccent.withOpacity(0.4) : AppTheme.neonBlue.withOpacity(0.4), width: 1),
                               ),
                               child: Text(
-                                match.status, 
+                                match.status,
                                 style: TextStyle(
-                                  color: isLive ? Colors.redAccent : AppTheme.neonBlue, 
-                                  fontSize: 10, 
-                                  fontWeight: FontWeight.bold, 
-                                  fontFamily: 'Cairo'
+                                  color: isLive ? Colors.redAccent : AppTheme.neonBlue,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'Cairo',
                                 ),
                               ),
                             ),
@@ -428,7 +431,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                             child: Text(match.time, style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
                                           ),
                                     const SizedBox(height: 4),
-                                    Text('', style: const TextStyle(color: Colors.white38, fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                                    const Text('', style: TextStyle(color: Colors.white38, fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
                                   ],
                                 ),
                                 Expanded(
@@ -470,24 +473,24 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                 child: Row(
                                   children: [
                                     Expanded(
-                                      flex: int.tryParse(match.p1.replaceAll('%', '')) ?? 1, 
+                                      flex: int.tryParse(match.p1.replaceAll('%', '')) ?? 1,
                                       child: Container(
                                         decoration: BoxDecoration(
                                           color: AppTheme.neonBlue,
                                           boxShadow: [BoxShadow(color: AppTheme.neonBlue.withOpacity(0.5), blurRadius: 4)],
                                         ),
                                       ),
-                                    ), 
-                                    const Expanded(flex: 15, child: Container(color: Colors.white10)),   
+                                    ),
+                                    const Expanded(flex: 15, child: ColoredBox(color: Colors.white10)),
                                     Expanded(
-                                      flex: int.tryParse(match.p2.replaceAll('%', '')) ?? 1, 
+                                      flex: int.tryParse(match.p2.replaceAll('%', '')) ?? 1,
                                       child: Container(
                                         decoration: BoxDecoration(
                                           color: Colors.redAccent,
                                           boxShadow: [BoxShadow(color: Colors.redAccent.withOpacity(0.5), blurRadius: 4)],
                                         ),
                                       ),
-                                    ), 
+                                    ),
                                   ],
                                 ),
                               ),
@@ -506,7 +509,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(match.f1, style: const TextStyle(color: Colors.green, fontSize: 13, fontWeight: FontWeight.bold, letterSpacing: 1.5)),
-                                Text('', style: const TextStyle(color: Colors.white38, fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                                const Text('', style: TextStyle(color: Colors.white38, fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
                                 Text(match.f2, style: const TextStyle(color: Colors.amber, fontSize: 13, fontWeight: FontWeight.bold, letterSpacing: 1.5)),
                               ],
                             ),
@@ -524,7 +527,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   },
                 ),
               ),
-
               const SizedBox(height: 20),
               const SectionTitle(title: 'آخر الأخبار'),
               _buildHorizontalList(isNews: true),
@@ -550,7 +552,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         itemBuilder: (context, index) {
           final media = HomeMediaModel(
             title: isNews ? 'عنوان الخبر الرياضي الممتد' : 'ملخص المباراة والأهداف الحاسمة',
-            imageUrl: '', 
+            imageUrl: '',
             videoUrl: 'unique_video_id_$index',
             publishedAt: DateTime.now().subtract(Duration(minutes: index * 45)),
           );
@@ -578,10 +580,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 margin: const EdgeInsets.only(left: 14),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
-                  boxShadow: (!isRead && isHot) ? [
-                    BoxShadow(color: AppTheme.glowBlue.withOpacity(0.25), blurRadius: 12, spreadRadius: 1),
-                    BoxShadow(color: AppTheme.neonBlue.withOpacity(0.15), blurRadius: 6, spreadRadius: 0)
-                  ] : null,
+                  boxShadow: (!isRead && isHot)
+                      ? [
+                          BoxShadow(color: AppTheme.glowBlue.withOpacity(0.25), blurRadius: 12, spreadRadius: 1),
+                          BoxShadow(color: AppTheme.neonBlue.withOpacity(0.15), blurRadius: 6, spreadRadius: 0),
+                        ]
+                      : null,
                 ),
                 child: GlassCard(
                   padding: EdgeInsets.zero,
@@ -602,10 +606,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
                               child: media.imageUrl.isNotEmpty
                                   ? Image.network(media.imageUrl, fit: BoxFit.cover)
-                                  : Center(child: Icon(isNews ? Icons.newspaper : Icons.play_circle_outline, color: isRead ? Colors.white10 : AppTheme.neonBlue.withOpacity(0.4), size: 32)),
+                                  : Center(
+                                      child: Icon(
+                                        isNews ? Icons.newspaper : Icons.play_circle_outline,
+                                        color: isRead ? Colors.white10 : AppTheme.neonBlue.withOpacity(0.4),
+                                        size: 32,
+                                      ),
+                                    ),
                             ),
                           ),
-                          
                           Positioned(
                             top: 8,
                             left: 8,
@@ -618,14 +627,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               ),
                             ),
                           ),
-
                           if (!isNews)
                             Positioned(
                               top: 8,
                               right: 8,
                               child: Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
-                                decoration: BoxDecoration(color: Colors.black70, borderRadius: BorderRadius.circular(4), border: Border.all(color: const Color(0xFF00F0FF), width: 0.5)),
+                                decoration: BoxDecoration(color: Colors.black87, borderRadius: BorderRadius.circular(4), border: Border.all(color: const Color(0xFF00F0FF), width: 0.5)),
                                 child: const Text("HD", style: TextStyle(color: Color(0xFF00F0FF), fontSize: 8, fontWeight: FontWeight.bold)),
                               ),
                             ),
