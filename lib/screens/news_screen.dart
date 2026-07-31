@@ -124,7 +124,7 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
       context: context,
       barrierDismissible: true,
       barrierLabel: "Player",
-      barrierColor: Colors.black.withOpacity(0.95), // ✅ تم التصحيح هنا
+      barrierColor: Colors.black.withOpacity(0.95),
       transitionDuration: const Duration(milliseconds: 300),
       pageBuilder: (context, anim1, anim2) {
         return StatefulBuilder(
@@ -514,7 +514,6 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
 
   Widget _buildMainArticleCard(BuildContext context, NewsArticleModel article) {
     final bool isRead = _readArticlesMemory.contains(article.articleUrl);
-    // ✅ تم تصحيح التعبير النمطي هنا
     final bool isHotMatch = RegExp(
       r'classico|derby|real madrid|barcelona|final|urgent',
       caseSensitive: false,
@@ -695,7 +694,6 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
 
   Widget _buildSubArticleCard(BuildContext context, NewsArticleModel article) {
     final bool isRead = _readArticlesMemory.contains(article.articleUrl);
-    // ✅ تم تصحيح التعبير النمطي هنا أيضاً
     final bool isHotMatch = RegExp(
       r'classico|derby|real madrid|barcelona|final|urgent',
       caseSensitive: false,
