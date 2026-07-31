@@ -329,28 +329,31 @@ class _MoreScreenState extends State<MoreScreen> with TickerProviderStateMixin {
     HapticFeedback.mediumImpact();
     showDialog(
       context: context,
-      backgroundColor: const Color(0xFF0A1220),
-      surfaceTintColor: Colors.transparent,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       builder: (context) {
-        return AlertDialog(
+        return Dialog(
           backgroundColor: const Color(0xFF0A1220),
-          surfaceTintColor: Colors.transparent,
-          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          title: Text('سياسة الخصوصية وحماية البيانات', textAlign: TextAlign.right, style: GoogleFonts.cairo(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),
-          content: SingleChildScrollView(
-            child: Text(
-              'التزاماً منا بمعايير الأمان العالمية وشروط المتاجر الرسمية، نؤكد في منصة NF SPORTS حماية بيانات المستخدمين وسريتها المطلقة بنسبة 100%. إن معلومات تسجيل الدخول وحصاد توقعات التشكيلات التكتيكية يتم تشفيرها بالكامل وحفظها عبر خوادم السحاب المشفرة بأمان صارم، ولا يتم مشاركتها أو بيعها لأي جهات خارجية نهائياً. إن استخدامك للتطبيق يعني موافقتك الصريحة على شروط الخدمة لتقديم أفضل تجربة رياضية متكاملة تليق بك كمدرب ومشجع أسطوري.',
-              textDirection: TextDirection.rtl,
-              style: GoogleFonts.cairo(color: Colors.white60, fontSize: 12, height: 1.6),
-            ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
           ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text('الموافقة وإغلاق', style: GoogleFonts.cairo(color: AppTheme.neonBlue, fontSize: 12, fontWeight: FontWeight.bold)),
+          child: AlertDialog(
+            backgroundColor: const Color(0xFF0A1220),
+            surfaceTintColor: Colors.transparent,
+            shape: const RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            title: Text('سياسة الخصوصية وحماية البيانات', textAlign: TextAlign.right, style: GoogleFonts.cairo(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),
+            content: SingleChildScrollView(
+              child: Text(
+                'التزاماً منا بمعايير الأمان العالمية وشروط المتاجر الرسمية، نؤكد في منصة NF SPORTS حماية بيانات المستخدمين وسريتها المطلقة بنسبة 100%. إن معلومات تسجيل الدخول وحصاد توقعات التشكيلات التكتيكية يتم تشفيرها بالكامل وحفظها عبر خوادم السحاب المشفرة بأمان صارم، ولا يتم مشاركتها أو بيعها لأي جهات خارجية نهائياً. إن استخدامك للتطبيق يعني موافقتك الصريحة على شروط الخدمة لتقديم أفضل تجربة رياضية متكاملة تليق بك كمدرب ومشجع أسطوري.',
+                textDirection: TextDirection.rtl,
+                style: GoogleFonts.cairo(color: Colors.white60, fontSize: 12, height: 1.6),
+              ),
             ),
-          ],
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text('الموافقة وإغلاق', style: GoogleFonts.cairo(color: AppTheme.neonBlue, fontSize: 12, fontWeight: FontWeight.bold)),
+              ),
+            ],
+          ),
         );
       },
     );
