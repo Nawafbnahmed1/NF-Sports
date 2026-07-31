@@ -60,7 +60,6 @@ class _CyberPitchPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant _CyberPitchPainter oldDelegate) => oldDelegate.pulseValue != pulseValue;
 }
-
 class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProviderStateMixin {
   late AnimationController _pulseController;
   late AnimationController _marqueeController;
@@ -137,7 +136,6 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
       SnackBar(content: Text('تم إرسال تشكيلتك يا ${_userNameController.text.trim()}! في انتظار مطابقة الواقع... 🏆', style: const TextStyle(fontFamily: 'Cairo'))),
     );
   }
-
   @override
   Widget build(BuildContext context) {
     final colors = [Colors.cyanAccent, AppTheme.neonBlue, Colors.amberAccent, Colors.redAccent];
@@ -332,106 +330,107 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                           bottom: 12,
                           left: 12,
                           right: 12,
-                           child: GlassCard(
-          borderRadius: BorderRadius.circular(24),
-          child: Padding(
-            padding: const EdgeInsets.all(12),
-            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  textDirection: TextDirection.rtl,
-                                  children: [
-                                    Text('إعداد مركز: ${_predictedLineup[_activePositionIndex!].positionName}', style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
-                                    IconButton(
-                                      constraints: const BoxConstraints(),
-                                      padding: EdgeInsets.zero,
-                                      icon: const Icon(Icons.close_rounded, color: Colors.white38, size: 18),
-                                      onPressed: () => setState(() => _activePositionIndex = null),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 8),
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: TextField(
-                                        controller: _playerNameController,
-                                        textAlign: TextAlign.right,
-                                        style: const TextStyle(color: Colors.white, fontSize: 12),
-                                        decoration: InputDecoration(
-                                          hintText: 'اسم اللاعب التوقعي',
-                                          hintStyle: const TextStyle(color: Colors.white24, fontSize: 11, fontFamily: 'Cairo'),
-                                          contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                                          filled: true,
-                                          fillColor: Colors.black26,
-                                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide.none),
-                                        ),
+                          child: GlassCard(
+                            borderRadius: BorderRadius.circular(24),
+                            child: Padding(
+                              padding: const EdgeInsets.all(12),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    textDirection: TextDirection.rtl,
+                                    children: [
+                                      Text('إعداد مركز: ${_predictedLineup[_activePositionIndex!].positionName}', style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                                      IconButton(
+                                        constraints: const BoxConstraints(),
+                                        padding: EdgeInsets.zero,
+                                        icon: const Icon(Icons.close_rounded, color: Colors.white38, size: 18),
+                                        onPressed: () => setState(() => _activePositionIndex = null),
                                       ),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    SizedBox(
-                                      width: 50,
-                                      child: TextField(
-                                        controller: _playerNumberController,
-                                        keyboardType: TextInputType.number,
-                                        textAlign: TextAlign.center,
-                                        style: const TextStyle(color: Colors.white, fontSize: 12),
-                                        decoration: InputDecoration(
-                                          hintText: 'الرقم',
-                                          hintStyle: const TextStyle(color: Colors.white24, fontSize: 11, fontFamily: 'Cairo'),
-                                          contentPadding: const EdgeInsets.symmetric(vertical: 8),
-                                          filled: true,
-                                          fillColor: Colors.black26,
-                                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide.none),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 8),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  textDirection: TextDirection.rtl,
-                                  children: [
-                                    Row(
-                                      children: colors.map((color) {
-                                        return GestureDetector(
-                                          onTap: () => setState(() => _selectedJerseyColor = color),
-                                          child: Container(
-                                            margin: const EdgeInsets.symmetric(horizontal: 4),
-                                            width: 18,
-                                            height: 18,
-                                            decoration: BoxDecoration(
-                                              color: color,
-                                              shape: BoxShape.circle,
-                                              border: Border.all(color: _selectedJerseyColor == color ? Colors.white : Colors.transparent, width: 1.5),
-                                            ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: TextField(
+                                          controller: _playerNameController,
+                                          textAlign: TextAlign.right,
+                                          style: const TextStyle(color: Colors.white, fontSize: 12),
+                                          decoration: InputDecoration(
+                                            hintText: 'اسم اللاعب التوقعي',
+                                            hintStyle: const TextStyle(color: Colors.white24, fontSize: 11, fontFamily: 'Cairo'),
+                                            contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                                            filled: true,
+                                            fillColor: Colors.black26,
+                                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide.none),
                                           ),
-                                        );
-                                      }).toList(),
-                                    ),
-                                    ElevatedButton(
-                                      style: ElevatedButton.styleFrom(backgroundColor: AppTheme.neonBlue, padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
-                                      onPressed: () {
-                                        if (_playerNameController.text.trim().isNotEmpty) {
-                                          setState(() {
-                                            final p = _predictedLineup[_activePositionIndex!];
-                                            p.playerName = _playerNameController.text.trim();
-                                            p.playerNumber = _playerNumberController.text.trim().isEmpty ? '10' : _playerNumberController.text.trim();
-                                            p.jerseyColor = _selectedJerseyColor;
-                                            p.isPlaced = true;
-                                            _activePositionIndex = null;
-                                          });
-                                          HapticFeedback.mediumImpact();
-                                        }
-                                      },
-                                      child: const Text('تأكيد التمركز', style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
-                                    ),
-                                  ],
-                                ),
-                              ],
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      SizedBox(
+                                        width: 50,
+                                        child: TextField(
+                                          controller: _playerNumberController,
+                                          keyboardType: TextInputType.number,
+                                          textAlign: TextAlign.center,
+                                          style: const TextStyle(color: Colors.white, fontSize: 12),
+                                          decoration: InputDecoration(
+                                            hintText: 'الرقم',
+                                            hintStyle: const TextStyle(color: Colors.white24, fontSize: 11, fontFamily: 'Cairo'),
+                                            contentPadding: const EdgeInsets.symmetric(vertical: 8),
+                                            filled: true,
+                                            fillColor: Colors.black26,
+                                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide.none),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    textDirection: TextDirection.rtl,
+                                    children: [
+                                      Row(
+                                        children: colors.map((color) {
+                                          return GestureDetector(
+                                            onTap: () => setState(() => _selectedJerseyColor = color),
+                                            child: Container(
+                                              margin: const EdgeInsets.symmetric(horizontal: 4),
+                                              width: 18,
+                                              height: 18,
+                                              decoration: BoxDecoration(
+                                                color: color,
+                                                shape: BoxShape.circle,
+                                                border: Border.all(color: _selectedJerseyColor == color ? Colors.white : Colors.transparent, width: 1.5),
+                                              ),
+                                            ),
+                                          );
+                                        }).toList(),
+                                      ),
+                                      ElevatedButton(
+                                        style: ElevatedButton.styleFrom(backgroundColor: AppTheme.neonBlue, padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
+                                        onPressed: () {
+                                          if (_playerNameController.text.trim().isNotEmpty) {
+                                            setState(() {
+                                              final p = _predictedLineup[_activePositionIndex!];
+                                              p.playerName = _playerNameController.text.trim();
+                                              p.playerNumber = _playerNumberController.text.trim().isEmpty ? '10' : _playerNumberController.text.trim();
+                                              p.jerseyColor = _selectedJerseyColor;
+                                              p.isPlaced = true;
+                                              _activePositionIndex = null;
+                                            });
+                                            HapticFeedback.mediumImpact();
+                                          }
+                                        },
+                                        child: const Text('تأكيد التمركز', style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
@@ -444,36 +443,38 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                 child: GlassCard(
                   borderRadius: 16,
-                  padding: const EdgeInsets.all(12),
-                  child: Row(
-                    textDirection: TextDirection.rtl,
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: _userNameController,
-                          textAlign: TextAlign.right,
-                          style: const TextStyle(color: Colors.white, fontSize: 13),
-                          decoration: InputDecoration(
-                            hintText: 'اكتب اسمك كمدرب (إجباري)',
-                            hintStyle: const TextStyle(color: Colors.white24, fontSize: 11, fontFamily: 'Cairo'),
-                            contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                            filled: true,
-                            fillColor: Colors.black26,
-                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Row(
+                      textDirection: TextDirection.rtl,
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: _userNameController,
+                            textAlign: TextAlign.right,
+                            style: const TextStyle(color: Colors.white, fontSize: 13),
+                            decoration: InputDecoration(
+                              hintText: 'اكتب اسمك كمدرب (إجباري)',
+                              hintStyle: const TextStyle(color: Colors.white24, fontSize: 11, fontFamily: 'Cairo'),
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                              filled: true,
+                              fillColor: Colors.black26,
+                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 12),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green,
-                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        const SizedBox(width: 12),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green,
+                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                          ),
+                          onPressed: _submitPredictionToCloud,
+                          child: const Text('إرسال الخطة', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
                         ),
-                        onPressed: _submitPredictionToCloud,
-                        child: const Text('إرسال الخطة', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
