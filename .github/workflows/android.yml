@@ -63,15 +63,10 @@ jobs:
           echo "===== BUILD FILES ====="
           ls -la build || true
           echo "===== APK SEARCH ====="
-          find . -type f ( -name "*.apk" -o -name "*.aab" ) || true
+          find . -type f -name "*.apk" || true
+          find . -type f -name "*.aab" || true
           echo "===== LAST 120 LINES OF BUILD LOG ====="
           tail -n 120 build.log || true
-
-      - name: List APK files
-        if: always()
-        run: |
-          echo "===== APK Files ====="
-          find . -type f -name "*.apk" || true
 
       - name: Upload APK
         if: always()
