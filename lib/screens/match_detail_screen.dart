@@ -163,9 +163,10 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              child: GlassContainer(
-            
-                borderRadius: 24,
+              child: GlassContainer.clear(
+  width: double.infinity,
+  height: 120, 
+  borderRadius: BorderRadius.circular(24),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 10),
                   child: Row(
@@ -333,7 +334,10 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                           bottom: 12,
                           left: 12,
                           right: 12,
-                          child: GlassCard(
+                          child: GlassContainer.clear(                          
+                           width: double.infinity,
+                            height: 200, 
+                            borderRadius: BorderRadius.circular(24),
                             borderRadius: 16,
                             padding: const EdgeInsets.all(12),
                             child: Column(
