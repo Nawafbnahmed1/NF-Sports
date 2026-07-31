@@ -10,9 +10,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - uses: subosito/flutter-action@v2
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
         with:
           channel: stable
 
@@ -44,21 +46,39 @@ jobs:
 
       - name: Build APK
         run: |
+          set -o pipefail
           flutter clean
           flutter pub get
-          flutter build apk --release --verbose | tee build.log
+          flutter build apk --release --verbose 2>&1 | tee build.log
+
+      - name: Show build status
+        if: always()
+        run: |
+          echo "===== CURRENT DIR ====="
+          pwd
+          echo "===== ROOT FILES ====="
+          ls -la
+          echo "===== ANDROID FILES ====="
+          ls -la android || true
+          echo "===== BUILD FILES ====="
+          ls -la build || true
+          echo "===== APK SEARCH ====="
+          find . -type f ( -name "*.apk" -o -name "*.aab" ) || true
+          echo "===== LAST 120 LINES OF BUILD LOG ====="
+          tail -n 120 build.log || true
 
       - name: List APK files
+        if: always()
         run: |
           echo "===== APK Files ====="
-          find build -type f -name "*.apk"
+          find . -type f -name "*.apk" || true
 
       - name: Upload APK
-        uses: actions/upload-artifact@v4
         if: always()
+        uses: actions/upload-artifact@v4
         with:
           name: NF-Sports-APK
           path: |
             build/app/outputs/flutter-apk/*.apk
             build/app/outputs/apk/release/*.apk
-          if-no-files-found: error
+          if-no-files-found: warn
