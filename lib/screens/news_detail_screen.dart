@@ -209,11 +209,11 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with SingleTickerPr
                             border: Border.all(color: AppTheme.neonBlue.withOpacity(0.15), width: 1),
                           ),
                           child: Row(
-                            textDirection: TextDirection.rtl,
+                            textDirection: ui.TextDirection.rtl,
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Row(
-                                textDirection: TextDirection.rtl,
+                                textDirection: ui.TextDirection.rtl,
                                 children: [
                                   const Icon(Icons.mic_external_on_rounded, color: AppTheme.neonBlue, size: 18),
                                   const SizedBox(width: 8),
