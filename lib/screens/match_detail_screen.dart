@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../theme/app_theme.dart';
 
-// 🧱 نموذج التوقعات التكتيكي الصافي لربط وحقن بيانات قمصان وروبوتات المشجعين حياً بالسحاب
 class UserLineupPrediction {
   final String positionName;
   final double dx;
@@ -33,7 +32,6 @@ class MatchDetailScreen extends StatefulWidget {
   State<MatchDetailScreen> createState() => _MatchDetailScreenState();
 }
 
-// 🎨 رسّام ملاعب الهولوغرام الفضائية لكرة القدم (Cyber Pitch Engine) برياضيات الأكواد الصافية صفر كيلوبايت لسرعة الهاتف
 class _CyberPitchPainter extends CustomPainter {
   final Color linesColor;
   final double pulseValue;
@@ -430,7 +428,6 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                   ),
                 ),
               ),
-            ),
 
             if (!_isOfficialLineupReleased)
               Padding(
