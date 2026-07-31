@@ -46,7 +46,6 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
   late Future<List<NewsArticleModel>> newsFuture;
   bool _isVideosTab = false;
   late AnimationController _pulseController;
-
   final Set<String> _readArticlesMemory = <String>{};
 
   @override
@@ -98,7 +97,7 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
     final duration = DateTime.now().difference(article.publishedAt);
     final int growth = (duration.inMinutes ~/ 30) * 8;
     final int totalViews = baseViews + growth;
-    
+
     if (totalViews >= 1000) {
       return '${(totalViews / 1000).toStringAsFixed(1)}K';
     }
@@ -142,7 +141,6 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
                             if (article.imageUrl.isNotEmpty)
                               Positioned.fill(child: Image.network(article.imageUrl, fit: BoxFit.cover)),
                             Container(color: Colors.black45),
-                            
                             Positioned(
                               top: 16,
                               right: 16,
@@ -167,7 +165,6 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
                                 ),
                               ),
                             ),
-
                             Positioned(
                               top: 16,
                               left: 16,
@@ -181,7 +178,6 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
                                 child: const Text("1080p HD", style: TextStyle(color: Color(0xFF00F0FF), fontSize: 9, fontWeight: FontWeight.bold)),
                               ),
                             ),
-
                             const Center(
                               child: Icon(Icons.play_arrow_rounded, color: AppTheme.neonBlue, size: 64),
                             ),
@@ -190,7 +186,6 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
                       ),
                     ),
                   ),
-
                   Positioned.fill(
                     child: Row(
                       children: [
@@ -205,7 +200,7 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
                               color: Colors.transparent,
                               alignment: Alignment.centerLeft,
                               padding: const EdgeInsets.only(left: 20),
-                              child: localBrightness < 0.5 
+                              child: localBrightness < 0.5
                                   ? const Icon(Icons.brightness_low, color: Colors.white24)
                                   : const Icon(Icons.brightness_high, color: AppTheme.neonBlue),
                             ),
@@ -222,7 +217,7 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
                               color: Colors.transparent,
                               alignment: Alignment.centerRight,
                               padding: const EdgeInsets.only(right: 20),
-                              child: localVolume == 0 
+                              child: localVolume == 0
                                   ? const Icon(Icons.volume_off, color: Colors.white24)
                                   : const Icon(Icons.volume_up, color: AppTheme.neonBlue),
                             ),
@@ -231,7 +226,6 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
                       ],
                     ),
                   ),
-
                   Positioned(
                     bottom: 30,
                     left: 20,
@@ -312,7 +306,7 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
                       children: [
                         Expanded(
                           child: InkWell(
-                            onTap: () { setState(() { _isVideosTab = false; }); },
+                            onTap: () => setState(() => _isVideosTab = false),
                             borderRadius: BorderRadius.circular(14),
                             child: Container(
                               padding: const EdgeInsets.symmetric(vertical: 14),
@@ -336,7 +330,7 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
                         const SizedBox(width: 15),
                         Expanded(
                           child: InkWell(
-                            onTap: () { setState(() { _isVideosTab = true; }); },
+                            onTap: () => setState(() => _isVideosTab = true),
                             borderRadius: BorderRadius.circular(14),
                             child: Container(
                               padding: const EdgeInsets.symmetric(vertical: 14),
@@ -365,20 +359,24 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
                   future: newsFuture,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: Padding(
-                        padding: EdgeInsets.only(top: 80.0),
-                        child: CircularProgressIndicator(),
-                      ));
+                      return const Center(
+                        child: Padding(
+                          padding: EdgeInsets.only(top: 80.0),
+                          child: CircularProgressIndicator(),
+                        ),
+                      );
                     }
                     if (snapshot.hasError) {
                       return Center(child: Text(snapshot.error.toString(), style: const TextStyle(color: Colors.white24)));
                     }
                     final articles = snapshot.data ?? [];
                     if (articles.isEmpty) {
-                      return const Center(child: Padding(
-                        padding: EdgeInsets.only(top: 80.0),
-                        child: Text("لا توجد بيانات حالية", style: TextStyle(color: Colors.white38, fontFamily: 'Cairo')),
-                      ));
+                      return const Center(
+                        child: Padding(
+                          padding: EdgeInsets.only(top: 80.0),
+                          child: Text("لا توجد بيانات حالية", style: TextStyle(color: Colors.white38, fontFamily: 'Cairo')),
+                        ),
+                      );
                     }
 
                     return Column(
@@ -395,11 +393,11 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
                               itemCount: articles.length > 8 ? 8 : articles.length,
                               itemBuilder: (context, i) {
                                 final bool isRead = _readArticlesMemory.contains(articles[i].articleUrl);
-                                
+
                                 return GestureDetector(
                                   onTap: () {
                                     if (!_isVideosTab) {
-                                      setState(() { _readArticlesMemory.add(articles[i].articleUrl); });
+                                      setState(() => _readArticlesMemory.add(articles[i].articleUrl));
                                       Navigator.push(context, MaterialPageRoute(builder: (context) => NewsDetailScreen(article: articles[i])));
                                     } else {
                                       _openFuturisticVideoPlayer(context, articles[i]);
@@ -431,12 +429,7 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
                                             const SizedBox(width: 2),
                                             Text(
                                               _generateDynamicViews(articles[i]),
-                                              style: TextStyle(
-                                                color: isRead ? Colors.white24 : Colors.white60, 
-                                                fontSize: 9.5, 
-                                                fontWeight: FontWeight.bold,
-                                                fontFamily: 'Cairo'
-                                              ),
+                                              style: TextStyle(color: isRead ? Colors.white24 : Colors.white60, fontSize: 9.5, fontWeight: FontWeight.bold, fontFamily: 'Cairo'),
                                             ),
                                           ],
                                         ),
@@ -448,7 +441,6 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
                             ),
                           ),
                         ),
-
                         const SizedBox(height: 5),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
@@ -485,9 +477,7 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
                             ),
                           ),
                         ),
-
                         const SizedBox(height: 5),
-
                         ListView.builder(
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
@@ -514,10 +504,7 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
 
   Widget _buildMainArticleCard(BuildContext context, NewsArticleModel article) {
     final bool isRead = _readArticlesMemory.contains(article.articleUrl);
-    final bool isHotMatch = RegExp(
-      r'classico|derby|real madrid|barcelona|final|urgent',
-      caseSensitive: false,
-    ).hasMatch(article.title);
+    final bool isHotMatch = RegExp(r'classico|derby|real madrid|barcelona|final|urgent', caseSensitive: false).hasMatch(article.title);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -547,7 +534,6 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
                             : Container(color: Colors.black26, child: const Center(child: Icon(Icons.image, color: Colors.white24, size: 48))),
                       ),
                     ),
-                    
                     Positioned(
                       bottom: 10,
                       left: 12,
@@ -564,7 +550,6 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
                         ),
                       ),
                     ),
-
                     if (_isVideosTab)
                       Positioned.fill(
                         child: Center(
@@ -589,7 +574,7 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
                         left: 12,
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                          decoration: BoxDecoration(color: Colors.black70, borderRadius: BorderRadius.circular(6), border: Border.all(color: const Color(0xFF00F0FF), width: 1)),
+                          decoration: BoxDecoration(color: Colors.black87, borderRadius: BorderRadius.circular(6), border: Border.all(color: const Color(0xFF00F0FF), width: 1)),
                           child: const Text("HD", style: TextStyle(color: Color(0xFF00F0FF), fontSize: 9, fontWeight: FontWeight.bold)),
                         ),
                       ),
@@ -619,11 +604,11 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
-                                  color: isRead ? Colors.white38 : Colors.white, 
-                                  fontSize: 13.5, 
-                                  fontWeight: FontWeight.bold, 
-                                  fontFamily: 'Cairo', 
-                                  height: 1.4
+                                  color: isRead ? Colors.white38 : Colors.white,
+                                  fontSize: 13.5,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'Cairo',
+                                  height: 1.4,
                                 ),
                               ),
                             ),
@@ -644,7 +629,7 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
                             ),
                             child: InkWell(
                               onTap: () {
-                                setState(() { _readArticlesMemory.add(article.articleUrl); });
+                                setState(() => _readArticlesMemory.add(article.articleUrl));
                                 if (!_isVideosTab) {
                                   Navigator.push(context, MaterialPageRoute(builder: (context) => NewsDetailScreen(article: article)));
                                 } else {
@@ -665,9 +650,9 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
                                   margin: const EdgeInsets.only(left: 8),
                                   padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                                   decoration: BoxDecoration(
-                                    color: isRead ? Colors.white10 : const Color(0x1F00B4FF), 
-                                    borderRadius: BorderRadius.circular(6), 
-                                    border: Border.all(color: isRead ? Colors.white24 : AppTheme.neonBlue.withOpacity(0.4))
+                                    color: isRead ? Colors.white10 : const Color(0x1F00B4FF),
+                                    borderRadius: BorderRadius.circular(6),
+                                    border: Border.all(color: isRead ? Colors.white24 : AppTheme.neonBlue.withOpacity(0.4)),
                                   ),
                                   child: Text("10 د", style: TextStyle(color: isRead ? Colors.white38 : Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
                                 ),
@@ -694,10 +679,7 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
 
   Widget _buildSubArticleCard(BuildContext context, NewsArticleModel article) {
     final bool isRead = _readArticlesMemory.contains(article.articleUrl);
-    final bool isHotMatch = RegExp(
-      r'classico|derby|real madrid|barcelona|final|urgent',
-      caseSensitive: false,
-    ).hasMatch(article.title);
+    final bool isHotMatch = RegExp(r'classico|derby|real madrid|barcelona|final|urgent', caseSensitive: false).hasMatch(article.title);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
@@ -723,7 +705,6 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
                           : Container(color: Colors.black26, child: const Center(child: Icon(Icons.image, color: Colors.white10, size: 28))),
                     ),
                   ),
-                  
                   Positioned(
                     bottom: 4,
                     left: 4,
@@ -736,16 +717,15 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
                       ),
                     ),
                   ),
-
                   if (_isVideosTab)
                     Positioned.fill(
                       child: Center(
                         child: Container(
                           padding: const EdgeInsets.all(4),
                           decoration: BoxDecoration(
-                            color: Colors.black45, 
-                            shape: BoxShape.circle, 
-                            border: Border.all(color: isRead ? Colors.white38 : AppTheme.neonBlue, width: 1.5)
+                            color: Colors.black45,
+                            shape: BoxShape.circle,
+                            border: Border.all(color: isRead ? Colors.white38 : AppTheme.neonBlue, width: 1.5),
                           ),
                           child: Icon(Icons.play_arrow_rounded, color: isRead ? Colors.white38 : AppTheme.neonBlue, size: 18),
                         ),
@@ -775,11 +755,11 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
-                                color: isRead ? Colors.white38 : Colors.white, 
-                                fontSize: 12.5, 
-                                fontWeight: FontWeight.bold, 
-                                fontFamily: 'Cairo', 
-                                height: 1.3
+                                color: isRead ? Colors.white38 : Colors.white,
+                                fontSize: 12.5,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'Cairo',
+                                height: 1.3,
                               ),
                             ),
                           ),
@@ -800,7 +780,7 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
                           ),
                           child: InkWell(
                             onTap: () {
-                              setState(() { _readArticlesMemory.add(article.articleUrl); });
+                              setState(() => _readArticlesMemory.add(article.articleUrl));
                               if (!_isVideosTab) {
                                 Navigator.push(context, MaterialPageRoute(builder: (context) => NewsDetailScreen(article: article)));
                               } else {
@@ -821,9 +801,9 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
                                 margin: const EdgeInsets.only(left: 6),
                                 padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
                                 decoration: BoxDecoration(
-                                  color: isRead ? Colors.white10 : const Color(0x1A00B4FF), 
-                                  borderRadius: BorderRadius.circular(5), 
-                                  border: Border.all(color: isRead ? Colors.white24 : AppTheme.neonBlue.withOpacity(0.3))
+                                  color: isRead ? Colors.white10 : const Color(0x1A00B4FF),
+                                  borderRadius: BorderRadius.circular(5),
+                                  border: Border.all(color: isRead ? Colors.white24 : AppTheme.neonBlue.withOpacity(0.3)),
                                 ),
                                 child: Text("12 د", style: TextStyle(color: isRead ? Colors.white38 : Colors.white60, fontSize: 9, fontWeight: FontWeight.bold)),
                               ),
