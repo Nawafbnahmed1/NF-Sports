@@ -62,7 +62,7 @@ class _CyberPitchPainter extends CustomPainter {
 class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProviderStateMixin {
   late AnimationController _pulseController;
   late AnimationController _marqueeController;
-  
+
   final List<UserLineupPrediction> _predictedLineup = [
     UserLineupPrediction(positionName: 'GK', dx: 0.5, dy: 0.88),
     UserLineupPrediction(positionName: 'CB1', dx: 0.32, dy: 0.72),
@@ -81,7 +81,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
   final TextEditingController _playerNameController = TextEditingController();
   final TextEditingController _playerNumberController = TextEditingController();
   final TextEditingController _userNameController = TextEditingController();
-  
+
   Color _selectedJerseyColor = AppTheme.neonBlue;
   bool _isOfficialLineupReleased = false;
   bool _showTutorial = true;
@@ -132,12 +132,14 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
     }
     HapticFeedback.mediumImpact();
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('تم إرسال تشكيلتك يا ${_userNameController.text.trim()}! في انتظار مطابقة الواقع... 🏆', style: TextStyle(fontFamily: 'Cairo'))),
+      SnackBar(content: Text('تم إرسال تشكيلتك يا ${_userNameController.text.trim()}! في انتظار مطابقة الواقع... 🏆', style: const TextStyle(fontFamily: 'Cairo'))),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final colors = [Colors.cyanAccent, AppTheme.neonBlue, Colors.amberAccent, Colors.redAccent];
+
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
       appBar: AppBar(
@@ -171,7 +173,8 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                         child: Column(
                           children: [
                             Container(
-                              width: 44, height: 44,
+                              width: 44,
+                              height: 44,
                               decoration: BoxDecoration(color: Colors.white.withOpacity(0.04), shape: BoxShape.circle),
                               child: const Icon(Icons.shield, color: Colors.white60, size: 32),
                             ),
@@ -195,7 +198,8 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                         child: Column(
                           children: [
                             Container(
-                              width: 44, height: 44,
+                              width: 44,
+                              height: 44,
                               decoration: BoxDecoration(color: Colors.white.withOpacity(0.04), shape: BoxShape.circle),
                               child: const Icon(Icons.shield, color: Colors.white60, size: 32),
                             ),
@@ -209,7 +213,6 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                 ),
               ),
             ),
-
             if (_showTutorial && !_isOfficialLineupReleased)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
@@ -225,10 +228,10 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                     ),
                     child: Row(
                       textDirection: TextDirection.rtl,
-                      children: const [
-                        Icon(Icons.lightbulb_outline, color: AppTheme.neonBlue, size: 18),
-                        SizedBox(width: 8),
-                        Expanded(
+                      children: [
+                        const Icon(Icons.lightbulb_outline, color: AppTheme.neonBlue, size: 18),
+                        const SizedBox(width: 8),
+                        const Expanded(
                           child: Text(
                             '💡 طريقة توقع تشكيلة المدرب : اضغط على مركز في الملعب، ثم اختر الروبوت من دكة الاحتياط، واكتب اسم اللاعب ورقمه لتبني خطتك الأسطورية!',
                             textDirection: TextDirection.rtl,
@@ -240,7 +243,6 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                   ),
                 ),
               ),
-
             Padding(
               padding: const EdgeInsets.all(20.0),
               child: AspectRatio(
@@ -286,7 +288,8 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                                         animation: _pulseController,
                                         builder: (context, child) {
                                           return Container(
-                                            width: 40, height: 40,
+                                            width: 40,
+                                            height: 40,
                                             decoration: BoxDecoration(
                                               color: p.isPlaced ? p.jerseyColor.withOpacity(0.2) : (isActive ? AppTheme.neonBlue.withOpacity(0.3) : const Color(0x1AFFFFFF)),
                                               shape: BoxShape.circle,
@@ -294,9 +297,11 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                                                 color: p.isPlaced ? p.jerseyColor : (isActive ? Colors.white : AppTheme.neonBlue.withOpacity(0.4)),
                                                 width: isActive ? 2.0 : 1.5,
                                               ),
-                                              boxShadow: (p.isPlaced || isActive) ? [
-                                                BoxShadow(color: (p.isPlaced ? p.jerseyColor : AppTheme.neonBlue).withOpacity(0.4 * _pulseController.value), blurRadius: 10)
-                                              ] : null,
+                                              boxShadow: (p.isPlaced || isActive)
+                                                  ? [
+                                                      BoxShadow(color: (p.isPlaced ? p.jerseyColor : AppTheme.neonBlue).withOpacity(0.4 * _pulseController.value), blurRadius: 10),
+                                                    ]
+                                                  : null,
                                             ),
                                             child: child,
                                           );
@@ -323,7 +328,9 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                       ),
                       if (_activePositionIndex != null && !_isOfficialLineupReleased)
                         Positioned(
-                          bottom: 12, left: 12, right: 12,
+                          bottom: 12,
+                          left: 12,
+                          right: 12,
                           child: GlassCard(
                             borderRadius: 16,
                             padding: const EdgeInsets.all(12),
@@ -387,14 +394,16 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                                   textDirection: TextDirection.rtl,
                                   children: [
                                     Row(
-                                      children: [Colors.cyanAccent, AppTheme.neonBlue, Colors.amberAccent, Colors.redAccent].map((color) {
+                                      children: colors.map((color) {
                                         return GestureDetector(
                                           onTap: () => setState(() => _selectedJerseyColor = color),
                                           child: Container(
                                             margin: const EdgeInsets.symmetric(horizontal: 4),
-                                            width: 18, height: 18,
+                                            width: 18,
+                                            height: 18,
                                             decoration: BoxDecoration(
-                                              color: color, shape: BoxShape.circle,
+                                              color: color,
+                                              shape: BoxShape.circle,
                                               border: Border.all(color: _selectedJerseyColor == color ? Colors.white : Colors.transparent, width: 1.5),
                                             ),
                                           ),
@@ -428,7 +437,6 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                   ),
                 ),
               ),
-
             if (!_isOfficialLineupReleased)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
@@ -467,7 +475,6 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                   ),
                 ),
               ),
-
             const SizedBox(height: 10),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -500,7 +507,6 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                 ),
               ),
             ),
-
             const SizedBox(height: 25),
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 24, vertical: 4),
@@ -531,8 +537,8 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                           color: Colors.white10,
                           child: Row(
                             children: const [
-                              Expanded(flex: 45, child: Container(color: Colors.cyanAccent)),
-                              Expanded(flex: 55, child: Container(color: AppTheme.neonBlue)),
+                              Expanded(flex: 45, child: ColoredBox(color: Colors.cyanAccent)),
+                              Expanded(flex: 55, child: ColoredBox(color: AppTheme.neonBlue)),
                             ],
                           ),
                         ),
@@ -555,8 +561,8 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                           color: Colors.white10,
                           child: Row(
                             children: const [
-                              Expanded(flex: 8, child: Container(color: Colors.cyanAccent)),
-                              Expanded(flex: 12, child: Container(color: AppTheme.neonBlue)),
+                              Expanded(flex: 8, child: ColoredBox(color: Colors.cyanAccent)),
+                              Expanded(flex: 12, child: ColoredBox(color: AppTheme.neonBlue)),
                             ],
                           ),
                         ),
@@ -566,7 +572,6 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                 ),
               ),
             ),
-
             const SizedBox(height: 20),
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 24, vertical: 4),
@@ -598,7 +603,6 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                 ),
               ),
             ),
-            
             const SizedBox(height: 120),
           ],
         ),
