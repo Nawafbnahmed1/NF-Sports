@@ -51,6 +51,14 @@ jobs:
           flutter pub get
           flutter build apk --release --verbose 2>&1 | tee build.log
 
+      - name: Show build error
+        if: always()
+        run: |
+          echo "===== FIRST ERROR LINES ====="
+          grep -n -i -E "what went wrong|error|failed|exception|caused by" build.log | head -n 80 || true
+          echo "===== LAST 200 LINES ====="
+          tail -n 200 build.log || true
+
       - name: Show build status
         if: always()
         run: |
@@ -65,8 +73,6 @@ jobs:
           echo "===== APK SEARCH ====="
           find . -type f -name "*.apk" || true
           find . -type f -name "*.aab" || true
-          echo "===== LAST 120 LINES OF BUILD LOG ====="
-          tail -n 120 build.log || true
 
       - name: Upload APK
         if: always()
