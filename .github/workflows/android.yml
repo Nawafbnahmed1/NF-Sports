@@ -29,10 +29,10 @@ jobs:
 
       - name: Generate Production Keystore & Properties
         run: |
-          # 🔐 توليد مفتاح أمان رسمي ومستقر لمتجر بلاي مباشرة داخل السيرفر بأعلى مستويات التشفير
-          keytool -genkeypair -v -keystore android/app/upload-keystore.jks -keyalg RSA -keysize 2048 -validity 10000 -alias upload -storepass "${{ secrets.KEYSTORE_PASSWORD }}" -keypass "${{ secrets.KEYSTORE_PASSWORD }}" -dname "CN=Nawaf, O=NFSports, C=SA"
+          # 🔐 تم تصحيح المسار بحذف /app ليتطابق موضع المفتاح مع ملف التجميع للأندرويد
+          keytool -genkeypair -v -keystore android/upload-keystore.jks -keyalg RSA -keysize 2048 -validity 10000 -alias upload -storepass "${{ secrets.KEYSTORE_PASSWORD }}" -keypass "${{ secrets.KEYSTORE_PASSWORD }}" -dname "CN=Nawaf, O=NFSports, C=SA"
           
-          # 📝 إنشاء ملف الخصائص السري لكي يقرأه الأندرويد أثناء التجميع بسلام
+          # 📝 إنشاء ملف الخصائص السري لربط المفتاح أثناء التجميع بسلام
           cat > android/key.properties <<EOF
           storePassword=${{ secrets.KEYSTORE_PASSWORD }}
           keyPassword=${{ secrets.KEYSTORE_PASSWORD }}
