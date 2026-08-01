@@ -41,8 +41,8 @@ jobs:
       - name: Build APK
         run: |
           flutter pub get
+          chmod +x android/gradlew
           cd android
-          chmod +x gradlew
           ./gradlew assembleRelease --no-daemon
 
       - name: Upload APK
