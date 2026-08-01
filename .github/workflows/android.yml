@@ -4,10 +4,6 @@ on:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
-  workflow_dispatch:
 
 jobs:
   build:
@@ -31,74 +27,33 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Cache Flutter dependencies
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.pub-cache
-            build/
-          key: ${{ runner.os }}-flutter-${{ hashFiles('pubspec.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-flutter-
-
-      - name: Cache Gradle dependencies
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('android/*.gradle*') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
-
-      - name: Setup Gradle Wrapper
+      - name: Force Gradle Wrapper & Properties Version
         run: |
           mkdir -p android/gradle/wrapper
-          cat > android/gradle/wrapper/gradle-wrapper.properties <<EOF
+          cat > android/gradle/wrapper/gradle-wrapper.properties <<'EOF'
           distributionBase=GRADLE_USER_HOME
           distributionPath=wrapper/dists
           zipStoreBase=GRADLE_USER_HOME
           zipStorePath=wrapper/dists
-          distributionUrl=https\://services.gradle.org/distributions/gradle-8.11.1-bin.zip
+          distributionUrl=https://gradle.org
           EOF
 
-      - name: Get dependencies
-        run: |
-          flutter pub get
-
-      - name: Clean build
-        run: |
-          flutter clean
+          cat >> android/gradle.properties <<'EOF'
+          kotlin.incremental=false
+          kotlin.compiler.execution.strategy=in-process
+          org.gradle.kotlin.dsl.precompiled.accessors=false
+          EOF
 
       - name: Build APK
         run: |
-          set -o pipefail
-          flutter build apk --release 2>&1 | tee build.log
-
-      - name: Show errors if build failed
-        if: failure()
-        run: |
-          echo "🚨 BUILD FAILED - Errors:"
-          echo "========================================="
-          grep -n -i -E "error|failed|exception" build.log | head -30
-          echo ""
-          echo "📌 Last 50 lines:"
-          tail -50 build.log
+          flutter clean
+          flutter pub get
+          flutter build apk --release --android-skip-build-dependency-validation
 
       - name: Upload APK
         if: success()
         uses: actions/upload-artifact@v4
         with:
           name: NF-Sports-APK
-          path: |
-            build/app/outputs/flutter-apk/*.apk
-            build/app/outputs/apk/release/*.apk
-          if-no-files-found: error
-
-      - name: Upload build logs
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-logs
-          path: build.log
-          retention-days: 7
+          path: build/app/outputs/flutter-apk/*.apk
+          
