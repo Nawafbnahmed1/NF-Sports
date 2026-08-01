@@ -27,6 +27,19 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
+      - name: Generate Production Keystore & Properties
+        run: |
+          # 🔐 توليد مفتاح أمان رسمي ومستقر لمتجر بلاي مباشرة داخل السيرفر بأعلى مستويات التشفير
+          keytool -genkeypair -v -keystore android/app/upload-keystore.jks -keyalg RSA -keysize 2048 -validity 10000 -alias upload -storepass "${{ secrets.KEYSTORE_PASSWORD }}" -keypass "${{ secrets.KEYSTORE_PASSWORD }}" -dname "CN=Nawaf, O=NFSports, C=SA"
+          
+          # 📝 إنشاء ملف الخصائص السري لكي يقرأه الأندرويد أثناء التجميع بسلام
+          cat > android/key.properties <<EOF
+          storePassword=${{ secrets.KEYSTORE_PASSWORD }}
+          keyPassword=${{ secrets.KEYSTORE_PASSWORD }}
+          keyAlias=upload
+          storeFile=upload-keystore.jks
+          EOF
+
       - name: Build APK
         run: |
           flutter clean
@@ -37,5 +50,5 @@ jobs:
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: NF-Sports-APK
-          path: build/app/outputs/flutter-apk/*.apk
+          name: NF-Sports-Release-APK
+          path: build/app/outputs/flutter-apk/*-release.apk
