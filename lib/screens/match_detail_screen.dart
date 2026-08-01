@@ -331,7 +331,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                           left: 12,
                           right: 12,
                           child: GlassCard(
-                            borderRadius: BorderRadius.circular(24),
+                            borderRadius: 24,
                             child: Padding(
                               padding: const EdgeInsets.all(12),
                               child: Column(
@@ -437,6 +437,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                     ],
                   ),
                 ),
+              ),
               ),
             if (!_isOfficialLineupReleased)
               Padding(
