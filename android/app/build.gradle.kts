@@ -1,3 +1,5 @@
+import java.util.Properties // 👈 تم حقن الاستيراد الرسمي هنا في السطر الأول لحسم المشكلة للأبد
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -22,8 +24,8 @@ android {
         create("release") {
             val keystorePropertiesFile = rootProject.file("key.properties")
             if (keystorePropertiesFile.exists()) {
-                // ✓ تم تصحيح السطر هنا برمجياً لتجنب الكلمة المحجوزة في Kotlin DSL بنجاح ساحق
-                val keystoreProperties = java.util.Properties()
+                // ✓ تم تصحيح السطر هنا ليعتمد على الـ Import الصافي بدون كلمات محجوزة
+                val keystoreProperties = Properties()
                 keystoreProperties.load(keystorePropertiesFile.inputStream())
                 
                 storeFile = rootProject.file(keystoreProperties.getProperty("storeFile"))
