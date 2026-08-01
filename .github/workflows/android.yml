@@ -4,6 +4,10 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
 
 jobs:
   build:
@@ -17,8 +21,9 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: stable
+          flutter-version: '3.22.0'
 
-          - name: Set up JDK 21
+      - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -27,59 +32,128 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Force Gradle Wrapper & Properties Version
+      - name: Cache Flutter dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.pub-cache
+            build/
+          key: ${{ runner.os }}-flutter-${{ hashFiles('pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-flutter-
+
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('android/*.gradle*') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Verify project structure
+        run: |
+          if [ ! -f "pubspec.yaml" ]; then
+            echo "pubspec.yaml not found!"
+            exit 1
+          fi
+          if [ ! -d "android" ]; then
+            echo "android folder not found!"
+            exit 1
+          fi
+          echo "Project structure verified"
+
+      - name: Setup Gradle Wrapper
         run: |
           mkdir -p android/gradle/wrapper
-          cat > android/gradle/wrapper/gradle-wrapper.properties <<'EOF'
+          cat > android/gradle/wrapper/gradle-wrapper.properties <<EOF
           distributionBase=GRADLE_USER_HOME
           distributionPath=wrapper/dists
           zipStoreBase=GRADLE_USER_HOME
           zipStorePath=wrapper/dists
-          distributionUrl=https://services.gradle.org/distributions/gradle-8.11.1-bin.zip
+          distributionUrl=https\://services.gradle.org/distributions/gradle-8.11.1-bin.zip
           EOF
-
-          cat >> android/gradle.properties <<'EOF'
+          cat >> android/gradle.properties <<EOF
+          org.gradle.jvmargs=-Xmx4g
+          org.gradle.parallel=true
+          android.useAndroidX=true
+          android.enableJetifier=true
           kotlin.incremental=false
           kotlin.compiler.execution.strategy=in-process
           org.gradle.kotlin.dsl.precompiled.accessors=false
           EOF
+          echo "Gradle configuration complete"
+
+      - name: Clean and get dependencies
+        run: |
+          flutter clean
+          flutter pub get
 
       - name: Build APK
         run: |
           set -o pipefail
-          flutter clean
-          flutter pub get
-          flutter build apk --release --verbose 2>&1 | tee build.log
+          flutter build apk --release --split-per-abi --verbose 2>&1 | tee build.log
 
-      - name: Show build error
+      - name: Build App Bundle
+        run: |
+          flutter build appbundle --release 2>&1 | tee -a build.log
+        continue-on-error: true
+
+      - name: Show build error if any
+        if: failure()
+        run: |
+          echo "BUILD FAILED! Showing errors:"
+          echo "===== FIRST 100 ERROR LINES ====="
+          grep -n -i -E "what went wrong|error|failed|exception|caused by" build.log | head -n 100 || true
+          echo "===== LAST 300 LINES ====="
+          tail -n 300 build.log || true
+
+      - name: List generated files
         if: always()
         run: |
-          echo "===== FIRST ERROR LINES ====="
-          grep -n -i -E "what went wrong|error|failed|exception|caused by" build.log | head -n 80 || true
-          echo "===== LAST 200 LINES ====="
-          tail -n 200 build.log || true
-
-      - name: Show build status
-        if: always()
-        run: |
-          echo "===== CURRENT DIR ====="
+          echo "Current directory:"
           pwd
-          echo "===== ROOT FILES ====="
-          ls -la
-          echo "===== ANDROID FILES ====="
-          ls -la android || true
-          echo "===== BUILD FILES ====="
-          ls -la build || true
-          echo "===== APK SEARCH ====="
-          find . -type f -name "*.apk" || true
-          find . -type f -name "*.aab" || true
+          echo ""
+          echo "Generated APKs:"
+          find . -type f -name "*.apk" -exec ls -lh {} \; || echo "No APK found"
+          echo ""
+          echo "Generated AABs:"
+          find . -type f -name "*.aab" -exec ls -lh {} \; || echo "No AAB found"
+          echo ""
+          echo "Build size:"
+          du -sh build/ 2>/dev/null || echo "Build folder not found"
 
       - name: Upload APK
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: NF-Sports-APK
+          name: NF-Sports-APK-${{ github.sha }}
           path: |
             build/app/outputs/flutter-apk/*.apk
             build/app/outputs/apk/release/*.apk
           if-no-files-found: warn
+          retention-days: 30
+
+      - name: Upload App Bundle
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: NF-Sports-AAB-${{ github.sha }}
+          path: build/app/outputs/bundle/release/*.aab
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Upload build logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-logs
+          path: build.log
+          retention-days: 7
+
+      - name: Cleanup Gradle cache
+        if: always()
+        run: |
+          rm -rf ~/.gradle/caches/build-cache-*
+          echo "Cache cleaned"
