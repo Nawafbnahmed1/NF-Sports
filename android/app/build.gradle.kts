@@ -41,7 +41,7 @@ android {
     defaultConfig {
         applicationId = "com.example.nf_sports"
         // ✓ الحد الأدنى المستقر المستهدف بناءً على خطة المساعد
-        minSdk = 23
+        minSdk = 24
         // ✓ الإصدار المستهدف للمتجر بناءً على خطة المساعد
         targetSdk = 36
         
