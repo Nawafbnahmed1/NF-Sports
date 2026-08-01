@@ -27,23 +27,6 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Force Gradle Wrapper & Properties Version
-        run: |
-          mkdir -p android/gradle/wrapper
-          cat > android/gradle/wrapper/gradle-wrapper.properties <<'EOF'
-          distributionBase=GRADLE_USER_HOME
-          distributionPath=wrapper/dists
-          zipStoreBase=GRADLE_USER_HOME
-          zipStorePath=wrapper/dists
-          distributionUrl=https://gradle.org
-          EOF
-
-          cat >> android/gradle.properties <<'EOF'
-          kotlin.incremental=false
-          kotlin.compiler.execution.strategy=in-process
-          org.gradle.kotlin.dsl.precompiled.accessors=false
-          EOF
-
       - name: Build APK
         run: |
           flutter clean
@@ -56,4 +39,3 @@ jobs:
         with:
           name: NF-Sports-APK
           path: build/app/outputs/flutter-apk/*.apk
-          
