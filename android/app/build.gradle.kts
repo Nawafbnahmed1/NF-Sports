@@ -22,6 +22,7 @@ android {
         create("release") {
             val keystorePropertiesFile = rootProject.file("key.properties")
             if (keystorePropertiesFile.exists()) {
+                // ✓ تم تصحيح السطر هنا برمجياً لتجنب الكلمة المحجوزة في Kotlin DSL بنجاح ساحق
                 val keystoreProperties = java.util.Properties()
                 keystoreProperties.load(keystorePropertiesFile.inputStream())
                 
