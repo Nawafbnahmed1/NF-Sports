@@ -408,16 +408,17 @@ class _MoreScreenState extends State<MoreScreen> with TickerProviderStateMixin {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         child: Row(
           textDirection: TextDirection.rtl,
-          children: [
+                    children: [
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: color.withOpacity(0.06), // تم تعديلها للحفاظ على شفافية ألوان التصميم الفاخر
+                color: iconColor.withOpacity(0.06),
                 shape: BoxShape.circle,
               ),
               child: Icon(icon, color: iconColor, size: 20),
             ),
             const SizedBox(width: 14),
+                      
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
