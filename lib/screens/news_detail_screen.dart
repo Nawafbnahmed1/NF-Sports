@@ -374,7 +374,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with SingleTickerPr
                       hideUrlBar: true,
                       javaScriptEnabled: true,
                     ),
-                    android: AndroidInAppBrowserOptions(
+                    android: AndroidInAppBrowserOption(
                       showTitle: false,
                     ),
                   ),
