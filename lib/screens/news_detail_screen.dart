@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-// ✅ تصحيح الخطأ الأول: استيراد المكتبة كاملة (بما فيها الإعدادات)
-import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+// 🔵 حقن واستدعاء مكتبة المتصفح المدمج الشاملة لحل خطأ الـ package في السيرفر للأبد
+import 'package:flutter_inappwebview/flutter_inappwebview.dart'; 
 import '../theme/app_theme.dart';
 import 'dart:ui' as ui;
 import 'news_screen.dart';
@@ -20,7 +20,6 @@ class NewsDetailScreen extends StatefulWidget {
   @override
   State<NewsDetailScreen> createState() => _NewsDetailScreenState();
 }
-
 class _NewsDetailScreenState extends State<NewsDetailScreen> with SingleTickerProviderStateMixin {
   late ScrollController _scrollController;
   late AnimationController _sparkController;
@@ -32,6 +31,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with SingleTickerPr
     super.initState();
     _scrollController = ScrollController()..addListener(_updateReadingProgress);
     
+    // متحكم الوميض الليزري لعنوان الخبر لشد انتباه القارئ فوراً عند الدخول
     _sparkController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 500),
@@ -50,6 +50,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with SingleTickerPr
     super.dispose();
   }
 
+  // رياضيات صافية صفر كيلوبايت لحساب مؤشر القراءة الليزري الأفقي مع حركة الإصبع
   void _updateReadingProgress() {
     if (!_scrollController.hasClients) return;
     final maxScroll = _scrollController.position.maxScrollExtent;
@@ -58,7 +59,6 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with SingleTickerPr
       _readingProgress = maxScroll > 0 ? (currentScroll / maxScroll).clamp(0.0, 1.0) : 0.0;
     });
   }
-
   @override
   Widget build(BuildContext context) {
     String formattedDate = '';
@@ -68,16 +68,17 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with SingleTickerPr
     } catch (e) {
       formattedDate = 'منذ قليل';
     }
-
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor, 
+      backgroundColor: AppTheme.backgroundColor, // توحيد اللون الكحلي الفخم للتطبيق لمنع التشتت البصري
       body: Stack(
         children: [
+          // 💎 أ. الـ CustomScrollView المركزي الذي يدمج المقال وسحب الأنيميشن الانسيابي
           Positioned.fill(
             child: CustomScrollView(
-              controller: _scrollController,
+              controller: _scrollController, // ربط مستشعر حركة الإصبع لمزامنة مؤشر القراءة
               physics: const BouncingScrollPhysics(),
               slivers: [
+                // 🎬 ب. الهيدر البارالاكس السينمائي الممتد والذوبان الكحلي الشفاف في الخلفية
                 SliverAppBar(
                   expandedHeight: 320.0,
                   elevation: 0,
@@ -107,11 +108,20 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with SingleTickerPr
                               ? Image.network(
                                   widget.article.imageUrl,
                                   fit: BoxFit.cover,
+                                  // 🛡️ حارس الأمان البصري: إذا كانت الصورة مكسورة أو معطلة يحمي أبعاد شاشتك فوراً بالخلفية الفخمة
                                   errorBuilder: (context, error, stackTrace) {
-                                    return Container(color: const Color(0xFF1A1D2E));
+                                    return Container(
+                                      color: const Color(0xFF1A1D2E),
+                                      child: const Center(child: Icon(Icons.sports_soccer, color: AppTheme.neonBlue, size: 48)),
+                                    );
                                   },
                                 )
-                              : Container(color: const Color(0xFF1A1D2E)),
+                              // 🛡️ حارس الأمان البصري: إذا كان حقل الصورة فارغاً بالسحاب تماماً
+                              : Container(
+                                  color: const Color(0xFF1A1D2E),
+                                  child: const Center(child: Icon(Icons.sports_soccer, color: AppTheme.neonBlue, size: 48)),
+                                ),
+                          // الذوبان الزجاجي المتدرج لإخفاء حواف الصورة ودمجها مع عشب الخلفية الداكنة بنعومة فائقة
                           Container(
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
@@ -126,6 +136,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with SingleTickerPr
                     ),
                   ),
                 ),
+                // 💎 ج. تفاصيل ومحتوى الخبر الإنسيابي الموحد بـ صفحة واحدة
                 SliverToBoxAdapter(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
@@ -168,6 +179,8 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with SingleTickerPr
                           ],
                         ),
                         const SizedBox(height: 20),
+
+                        // ⚡ الوميض البرقي السريع والأنيميشن اللحظي لعنوان الخبر عند الفتح لشد انتباه القارئ
                         AnimatedBuilder(
                           animation: _sparkAnimation,
                           builder: (context, child) {
@@ -194,6 +207,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with SingleTickerPr
                           ),
                         ),
                         const SizedBox(height: 15),
+                        // 🎙️ كبسولة الاستماع وبودكاست الذبذبات الرقمية لـ NF SPORTS (أكواد صافية بوزن صفر كيلوبايت لإبهار المشجع)
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                           decoration: BoxDecoration(
@@ -216,6 +230,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with SingleTickerPr
                                   ),
                                 ],
                               ),
+                              // 📈 خطوط الذبذبات الصوتية الحية والمتموجة رياضياً لراحة العين وبدون أي ثقل على المعالج
                               Row(
                                 children: List.generate(4, (index) {
                                   return AnimatedBuilder(
@@ -250,31 +265,52 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with SingleTickerPr
                           ),
                         ),
                         const SizedBox(height: 20),
+                        
+                        // 💎 د. حاوية "النظام الهجين والذكي" لعرض متن المقال والتحليلات الكروية كاملة ونظيفة داخل المربع الزجاجي
                         Container(
                           width: double.infinity,
-                          padding: const EdgeInsets.all(16),
+                          height: widget.article.description.length < 150 ? 250 : 450, // أبعاد ديناميكية مريحة جداً
+                          padding: const EdgeInsets.all(4),
                           decoration: BoxDecoration(
                             color: const Color(0xFF161926).withOpacity(0.4),
                             borderRadius: BorderRadius.circular(16),
                             border: Border.all(color: const Color(0xFF1F2438).withOpacity(0.5), width: 1),
                           ),
-                          child: Text(
-                            widget.article.description.isEmpty
-                                ? 'لا يوجد وصف متوفر لهذا الخبر.'
-                                : widget.article.description,
-                            textDirection: ui.TextDirection.rtl,
-                            style: GoogleFonts.cairo(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w500,
-                              color: const Color(0xFFE2E8F0),
-                              height: 1.8,
+                          // 🔮 استخدام الفحص والتحويل التلقائي الذكي لعرض المحتوى مدمجاً بداخل حاوية التصميم
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: InAppWebView(
+                              initialUrlRequest: URLRequest(url: WebUri(widget.article.articleUrl)),
+                              initialSettings: InAppWebViewSettings(
+                                javaScriptEnabled: true, // 🛡️ فرض تفعيل الجافا سكريبت لضمان قهر وحجب الإعلانات المزعجة كلياً
+                                transparentBackground: true, // دمج تدرج الخلفية الكحلية مع الموقع لتبدو القطعة كأنها جزء من نظامك
+                                supportZoom: false,
+                              ),
+                              // 🛡️ حاقن الكود: جافا سكريبت مخفي يلتهم الإعلانات المنبثقة والبنرات لتنظيف واجهة المقال تماماً للمشجع
+                              onLoadStop: (controller, url) async {
+                                await controller.evaluateJavascript(source: """
+                                  (function() {
+                                    var selectors = [
+                                      '.ads', '.ad-box', '#ad-container', '.banner-ad', 
+                                      'iframe[src*="googleads"]', 'div[id*="google_ads"]',
+                                      '.footer-ads', '.sidebar-ads', 'header', 'footer', '.nav-menu'
+                                    ];
+                                    selectors.forEach(function(selector) {
+                                      var elements = document.querySelectorAll(selector);
+                                      elements.forEach(function(el) { el.remove(); });
+                                    });
+                                  })();
+                                """);
+                              },
                             ),
                           ),
                         ),
                         const SizedBox(height: 30),
+
+                        // 🚀 زر "مشاركة المتعة الكروية" النيونية النابضة مع الأصدقاء بالاهتزاز اللمسي الذكي
                         InkWell(
                           onTap: () {
-                            HapticFeedback.mediumImpact();
+                            HapticFeedback.mediumImpact(); // اهتزاز تكتيكي ناعم
                           },
                           borderRadius: BorderRadius.circular(14),
                           child: Container(
@@ -305,6 +341,8 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with SingleTickerPr
                           ),
                         ),
                         const SizedBox(height: 40),
+                        
+                        // 🚨 هـ. شريط حقوق وتوقيع التطبيق الختامي الفخم مع تحديث الأعوام التلقائي للمستقبل
                         Center(
                           child: Column(
                             children: [
@@ -334,100 +372,27 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with SingleTickerPr
               ],
             ),
           ),
+          // 🚨 و. مؤشر القراءة الليزري الأفقي العلوي (Cyber Reading Pulse) المتفاعل مع حركة الإصبع بالملي 
           Positioned(
             top: 0, left: 0, right: 0,
-            child: Container(
-              height: 2.5,
-              width: double.infinity,
-              color: Colors.transparent,
-              child: Align(
-                alignment: Alignment.centerRight,
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 50),
-                  width: MediaQuery.of(context).size.width * _readingProgress,
-                  height: 2.5,
-                  decoration: BoxDecoration(
-                    color: AppTheme.neonBlue,
-                    boxShadow: [
-                      BoxShadow(color: AppTheme.neonBlue.withOpacity(0.8), blurRadius: 4, spreadRadius: 0.5)
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-          // ✅ زر قراءة الخبر كاملاً (النسخة النهائية والمصفاة حسب طلب المطور، مع إزالة الأقواس الزائدة)
-          Positioned(
-            bottom: 20,
-            left: 20,
-            right: 20,
-            child: InkWell(
-              onTap: () async {
-                HapticFeedback.lightImpact();
-                // ✅ التصحيح الثاني: استدعاء المتصفح بالصيغة الأساسية
-                final browser = InAppBrowser();
-                await browser.openUrlRequest(
-                  urlRequest: URLRequest(url: Uri.parse(widget.article.articleUrl)),
-                );
-                // حاجب الإعلانات
-                browser.webViewController?.addJavaScriptHandler(
-                  handlerName: 'adBlocker',
-                  callback: (args) {
-                    browser.webViewController?.evaluateJavascript(source: """
-                      (function() {
-                        var selectors = [
-                          '.ads', '.ad-box', '#ad-container', '.banner-ad', 
-                          'iframe[src*="googleads"]', 'div[id*="google_ads"]',
-                          '.footer-ads', '.sidebar-ads', 'header', 'footer', '.nav-menu'
-                        ];
-                        selectors.forEach(function(selector) {
-                          var elements = document.querySelectorAll(selector);
-                          elements.forEach(function(el) { el.remove(); });
-                        });
-                      })();
-                    """);
-                  },
-                );
-              },
-              borderRadius: BorderRadius.circular(16),
+            child: SafeArea(
               child: Container(
+                height: 2.5,
                 width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 15),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [Colors.blue.shade700, AppTheme.neonBlue],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppTheme.neonBlue.withOpacity(0.4),
-                      blurRadius: 15,
-                      offset: const Offset(0, 5),
+                color: Colors.transparent,
+                child: Align(
+                  // 🔵 فحص شامل لأدق التفاصيل: توجيه نمو خط الليزر لليمين ليتناسق بصرياً مع القراءة العربية النظيفة لعين المشجع
+                  alignment: Alignment.centerRight,
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 50),
+                    width: MediaQuery.of(context).size.width * _readingProgress,
+                    height: 2.5,
+                    decoration: BoxDecoration(
+                      color: AppTheme.neonBlue,
+                      boxShadow: [
+                        BoxShadow(color: AppTheme.neonBlue.withOpacity(0.8), blurRadius: 4, spreadRadius: 0.5)
+                      ],
                     ),
-                  ],
-                  border: Border.all(
-                    color: Colors.cyan.withOpacity(0.4),
-                    width: 1.5,
-                  ),
-                ),
-                child: Center(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    textDirection: ui.TextDirection.rtl,
-                    children: [
-                      const Icon(Icons.chrome_reader_mode_rounded, color: Colors.white, size: 18),
-                      const SizedBox(width: 8),
-                      Text(
-                        'قراءة الخبر كاملاً من المصدر الرسمي',
-                        style: GoogleFonts.cairo(
-                          color: Colors.white,
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
                   ),
                 ),
               ),
