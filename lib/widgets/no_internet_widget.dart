@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart'; // 🔵 إضافة مكتبة التحكم بشريط النظام العلوى
+import 'package:flutter/services.dart';
 
 class NoInternetWidget extends StatefulWidget {
   final VoidCallback onRetry;
@@ -20,17 +20,14 @@ class _NoInternetWidgetState extends State<NoInternetWidget> with TickerProvider
   @override
   void initState() {
     super.initState();
-    
     _rotationController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 6),
     )..repeat();
-
     _pulseController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1500),
     )..repeat(reverse: true);
-
     _glowController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 2),
@@ -47,29 +44,28 @@ class _NoInternetWidgetState extends State<NoInternetWidget> with TickerProvider
 
   @override
   Widget build(BuildContext context) {
-    // 🔵 تحسين الصاحب: تلوين شريط الحالة (العلوي) والتحكم به ليتناسب مع عمق الفخامة السينمائية
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: const SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent, // شفاف مدمج بالكامل مع التطبيق
-        statusBarIconBrightness: Brightness.light, // أيقونات الساعة والبطارية بيضاء مضيئة
-        statusBarBrightness: Brightness.dark, // للـ iOS الفخم
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light,
+        statusBarBrightness: Brightness.dark,
       ),
       child: Scaffold(
-        backgroundColor: const Color(0xFF070D14), // عمق كوني داكن وفخم جداً للتطبيق
+        backgroundColor: const Color(0xFF070D14),
         body: AnimatedBuilder(
           animation: Listenable.merge([_rotationController, _pulseController, _glowController]),
           builder: (context, child) {
             return Stack(
               children: [
-                // ✨ تأثير هالة النيون المحيطية المخفية
+                // ✨ الهالة المحيطية
                 Positioned.fill(
                   child: Container(
-                    decoration: BoxDecoration(
-                      radialGradient: RadialGradient(
+                    decoration: const BoxDecoration(
+                      gradient: RadialGradient(
                         center: Alignment.center,
                         radius: 1.2,
                         colors: [
-                          Colors.blue.withOpacity(0.02 * _pulseController.value),
+                          Color(0x0500A3FF),
                           Colors.transparent,
                         ],
                       ),
@@ -77,66 +73,92 @@ class _NoInternetWidgetState extends State<NoInternetWidget> with TickerProvider
                   ),
                 ),
                 
+                // 🏷️ علامة NF SPORTS النيونية (إضافة جديدة)
+                Positioned(
+                  top: 60,
+                  right: 20,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.cyan.withOpacity(0.3), width: 0.5),
+                      borderRadius: BorderRadius.circular(4),
+                      color: Colors.black26,
+                    ),
+                    child: const Text(
+                      'NF SPORTS',
+                      style: TextStyle(
+                        color: Colors.cyan,
+                        fontSize: 9,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.2,
+                        shadows: [Shadow(color: Colors.cyan, blurRadius: 6)],
+                      ),
+                    ),
+                  ),
+                ),
+
                 Center(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 32.0),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        // 🔮 الهولوغرام الكروي المطور (3D Wireframe)
-                        Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            Transform.rotate(
-                              angle: _rotationController.value * 2 * math.pi,
-                              child: Container(
-                                width: 140,
-                                height: 140,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: Colors.blue.withOpacity(0.3 * _pulseController.value),
-                                    width: 2,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Transform.rotate(
-                              angle: -_rotationController.value * 2 * math.pi,
-                              child: Transform(
-                                transform: Matrix4.identity()..setEntry(3, 2, 0.002)..rotateY(math.pi / 3),
-                                alignment: Alignment.center,
+                        // 🔮 الهولوغرام الكروي (مع إصلاح الخطأ الرئيسي وتأثير Hero للانتقال السلس)
+                        Hero(
+                          tag: 'internet_globe',
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              Transform.rotate(
+                                angle: _rotationController.value * 2 * math.pi,
                                 child: Container(
-                                  width: 120,
-                                  height: 120,
+                                  width: 140,
+                                  height: 140,
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
                                     border: Border.all(
-                                      color: Colors.cyan.withOpacity(0.4),
-                                      width: 1.5,
+                                      color: Colors.blue.withOpacity(0.3 * _pulseController.value),
+                                      width: 2,
                                     ),
                                   ),
                                 ),
                               ),
-                            ),
-                            Icon(
-                              Icons.sports_soccer_rounded,
-                              size: 75,
-                              color: Colors.blue.lerp(Colors.cyan, _pulseController.value)?.withOpacity(0.85),
-                            ),
-                          ],
+                              Transform.rotate(
+                                angle: -_rotationController.value * 2 * math.pi,
+                                child: Transform(
+                                  transform: Matrix4.identity()..setEntry(3, 2, 0.002)..rotateY(math.pi / 3),
+                                  alignment: Alignment.center,
+                                  child: Container(
+                                    width: 120,
+                                    height: 120,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: Colors.cyan.withOpacity(0.4),
+                                        width: 1.5,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              // ✅ إصلاح الخطأ: استخدام Color.lerp الصحيح
+                              Icon(
+                                Icons.sports_soccer_rounded,
+                                size: 75,
+                                color: Color.lerp(Colors.blue, Colors.cyan, _pulseController.value)?.withOpacity(0.85),
+                              ),
+                            ],
+                          ),
                         ),
                         const SizedBox(height: 40),
                         
-                        // ⚠️ نص التنبيه الذي طلبته بحرفيته التامة ليلتزم به التطبيق
                         const Text(
-                          '⚠️تعذر الاتصال',
+                          '⚠️ تعذر الاتصال',
                           style: TextStyle(
                             fontSize: 26,
                             fontWeight: FontWeight.w900,
                             color: Colors.white,
-                            fontFamily: 'Tajawal', // خطك الفخم
-                            fontFamilyFallback: ['sans-serif', 'Roboto'], // 🔴 نظام الحماية في حال عدم وجود الخط
+                            fontFamily: 'Tajawal',
                             shadows: [
                               Shadow(color: Colors.blue, blurRadius: 12, offset: Offset(0, 0)),
                             ],
@@ -145,7 +167,6 @@ class _NoInternetWidgetState extends State<NoInternetWidget> with TickerProvider
                         ),
                         const SizedBox(height: 12),
                         
-                        // النص الإرشادي الثاني ليرشد القارئ وينبهه
                         const Text(
                           'تأكد من اتصالك بالإنترنت وحاول مره أخرى',
                           style: TextStyle(
@@ -153,13 +174,11 @@ class _NoInternetWidgetState extends State<NoInternetWidget> with TickerProvider
                             color: Color(0xFFC0C6CD),
                             height: 1.5,
                             fontFamily: 'Tajawal',
-                            fontFamilyFallback: ['sans-serif', 'Roboto'], // حماية الخط
                           ),
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 45),
                         
-                        // 🔘 المربع الفخم جداً المضيء (إعادة المحاولة)
                         GestureDetector(
                           onTapDown: (_) => setState(() => _isHovered = true),
                           onTapUp: (_) {
@@ -174,10 +193,10 @@ class _NoInternetWidgetState extends State<NoInternetWidget> with TickerProvider
                             transform: Matrix4.identity()..scale(_isHovered ? 0.96 : 1.0),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(16),
-                              gradient: LinearGradient(
+                              gradient: const LinearGradient(
                                 colors: [
-                                  const Color(0xFF0E5CAD).withOpacity(0.9),
-                                  const Color(0xFF00A3FF),
+                                  Color(0xFF0E5CAD),
+                                  Color(0xFF00A3FF),
                                 ],
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
@@ -203,7 +222,6 @@ class _NoInternetWidgetState extends State<NoInternetWidget> with TickerProvider
                                   fontWeight: FontWeight.bold,
                                   color: Colors.white,
                                   fontFamily: 'Tajawal',
-                                  fontFamilyFallback: ['sans-serif', 'Roboto'],
                                   letterSpacing: 0.5,
                                 ),
                               ),
