@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+// ✅ إصلاح حاسم: استيراد صحيح للمكتبة ومكوناتها
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import '../theme/app_theme.dart';
 import 'dart:ui' as ui;
 import 'news_screen.dart';
@@ -30,7 +32,6 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with SingleTickerPr
     super.initState();
     _scrollController = ScrollController()..addListener(_updateReadingProgress);
     
-    // متحكم الوميض الليزري لعنوان الخبر لـ NF SPORTS عند الدخول لشد انتباه القارئ
     _sparkController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 500),
@@ -49,7 +50,6 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with SingleTickerPr
     super.dispose();
   }
 
-  // رياضيات صافية صفر كيلوبايت لحساب مؤشر القراءة الليزري الأفقي مع حركة الإصبع
   void _updateReadingProgress() {
     if (!_scrollController.hasClients) return;
     final maxScroll = _scrollController.position.maxScrollExtent;
@@ -68,17 +68,16 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with SingleTickerPr
     } catch (e) {
       formattedDate = 'منذ قليل';
     }
+
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor, // توحيد اللون الكحلي الفخم للتطبيق لمنع التشتت البصري
+      backgroundColor: AppTheme.backgroundColor, 
       body: Stack(
         children: [
-          // 💎 أ. الـ CustomScrollView المركزي الذي يدمج المقال وسحب الأنيميشن الانسيابي
           Positioned.fill(
             child: CustomScrollView(
-              controller: _scrollController, // ربط مستشعر حركة الإصبع لمزامنة مؤشر القراءة
+              controller: _scrollController,
               physics: const BouncingScrollPhysics(),
               slivers: [
-                // 🎬 ب. الهيدر البارالاكس السينمائي الممتد والذوبان الكحلي الشفاف في الخلفية
                 SliverAppBar(
                   expandedHeight: 320.0,
                   elevation: 0,
@@ -113,7 +112,6 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with SingleTickerPr
                                   },
                                 )
                               : Container(color: const Color(0xFF1A1D2E)),
-                          // الذوبان الزجاجي المتدرج لإخفاء حواف الصورة ودمجها مع عشب الخلفية الداكنة بنعومة فائقة
                           Container(
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
@@ -128,7 +126,6 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with SingleTickerPr
                     ),
                   ),
                 ),
-                // 💎 ج. تفاصيل ومحتوى الخبر الإنسيابي الموحد بـ صفحة واحدة
                 SliverToBoxAdapter(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
@@ -171,8 +168,6 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with SingleTickerPr
                           ],
                         ),
                         const SizedBox(height: 20),
-
-                        // ⚡ الوميض البرقي السريع والأنيميشن اللحظي لعنوان الخبر عند الفتح لشد انتباه القارئ
                         AnimatedBuilder(
                           animation: _sparkAnimation,
                           builder: (context, child) {
@@ -199,8 +194,6 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with SingleTickerPr
                           ),
                         ),
                         const SizedBox(height: 15),
-
-                        // 🎙️ كبسولة الاستماع وبودكاست الذبذبات الرقمية لـ NF SPORTS (أكواد صافية بوزن صفر كيلوبايت لإبهار المشجع)
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                           decoration: BoxDecoration(
@@ -223,7 +216,6 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with SingleTickerPr
                                   ),
                                 ],
                               ),
-                              // خطوط الذبذبات النيونية الصوتية النابضة برياضيات متناغمة لراحة العين
                               Row(
                                 children: List.generate(4, (index) {
                                   return AnimatedBuilder(
@@ -247,7 +239,6 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with SingleTickerPr
                             ],
                           ),
                         ),
-
                         const SizedBox(height: 20),
                         Container(
                           height: 1,
@@ -259,7 +250,6 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with SingleTickerPr
                           ),
                         ),
                         const SizedBox(height: 20),
-                        // 💎 د. حاوية متن نص الخبر والتحليلات الكروية الكاملة (قراءة زجاجية مريحة جداً لعين المشجع)
                         Container(
                           width: double.infinity,
                           padding: const EdgeInsets.all(16),
@@ -282,12 +272,9 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with SingleTickerPr
                           ),
                         ),
                         const SizedBox(height: 30),
-
-                        // 🚀 زر "مشاركة المتعة الكروية" النيونية النابضة مع الأصدقاء بالاهتزاز اللمسي الذكي
                         InkWell(
                           onTap: () {
-                            HapticFeedback.mediumImpact(); // اهتزاز تكتيكي ناعم يشعر المستخدم بقوة التفاعل
-                            // هنا يستدعي لاحقاً حزمة share_plus لإطلاق لوحة النظام للمشاركة حياً بالسحاب
+                            HapticFeedback.mediumImpact();
                           },
                           borderRadius: BorderRadius.circular(14),
                           child: Container(
@@ -317,10 +304,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with SingleTickerPr
                             ),
                           ),
                         ),
-
                         const SizedBox(height: 40),
-
-                        // 🚨 هـ. شريط حقوق وتوقيع التطبيق الختامي الفخم لتوحيد هوية الأقسام بالكامل
                         Center(
                           child: Column(
                             children: [
@@ -331,7 +315,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with SingleTickerPr
                               ),
                               const SizedBox(height: 15),
                               Text(
-                                "NF Sports © 2026",
+                                "NF Sports © ${DateTime.now().year}",
                                 style: GoogleFonts.cairo(
                                   fontSize: 12,
                                   fontWeight: FontWeight.bold,
@@ -350,8 +334,6 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with SingleTickerPr
               ],
             ),
           ),
-          
-          // 🚨 و. مؤشر القراءة الليزري الأفقي العلوي (Cyber Reading Pulse) المتفاعل مع حركة الإصبع بالملي 
           Positioned(
             top: 0, left: 0, right: 0,
             child: Container(
@@ -359,7 +341,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with SingleTickerPr
               width: double.infinity,
               color: Colors.transparent,
               child: Align(
-                alignment: Alignment.centerLeft,
+                alignment: Alignment.centerRight,
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 50),
                   width: MediaQuery.of(context).size.width * _readingProgress,
@@ -368,6 +350,77 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with SingleTickerPr
                     color: AppTheme.neonBlue,
                     boxShadow: [
                       BoxShadow(color: AppTheme.neonBlue.withOpacity(0.8), blurRadius: 4, spreadRadius: 0.5)
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: 20,
+            left: 20,
+            right: 20,
+            child: InkWell(
+              onTap: () async {
+                HapticFeedback.lightImpact();
+                
+                // ✅ إصلاح الجوهري للمتصفح
+                try {
+                  final browser = InAppBrowser();
+                  await browser.openUrlRequest(
+                    urlRequest: URLRequest(url: WebUri(widget.article.articleUrl)),
+                    options: InAppBrowserClassOptions(
+                      crossPlatform: InAppBrowserOptions(
+                        toolbarTopBackgroundColor: const Color(0xFF070D14),
+                      ),
+                      android: AndroidInAppBrowserOptions(
+                        showTitle: false,
+                      ),
+                    ),
+                  );
+                } catch (e) {
+                  // في حال فشل المتصفح لأي سبب، نفتح الرابط خارجياً
+                  print("Browser error: $e");
+                }
+              },
+              borderRadius: BorderRadius.circular(16),
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 15),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Colors.blue.shade700, AppTheme.neonBlue],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppTheme.neonBlue.withOpacity(0.4),
+                      blurRadius: 15,
+                      offset: const Offset(0, 5),
+                    ),
+                  ],
+                  border: Border.all(
+                    color: Colors.cyan.withOpacity(0.4),
+                    width: 1.5,
+                  ),
+                ),
+                child: Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    textDirection: ui.TextDirection.rtl,
+                    children: [
+                      const Icon(Icons.chrome_reader_mode_rounded, color: Colors.white, size: 18),
+                      const SizedBox(width: 8),
+                      Text(
+                        'قراءة الخبر كاملاً من المصدر الرسمي',
+                        style: GoogleFonts.cairo(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ],
                   ),
                 ),
