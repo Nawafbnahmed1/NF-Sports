@@ -72,7 +72,7 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
       final data = await supabase
           .from('news')
           .select()
-          .order('published_at', descending: true) // ✅ تصحيح: جعل العرض من الأحدث للأقدم
+          .order('published_at', ascending: false) // ✅ تصحيح: جعل العرض من الأحدث للأقدم
           .limit(50);
 
       setState(() => _hasError = false);
