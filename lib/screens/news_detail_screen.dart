@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-// ✅ إصلاح حاسم: استيراد صحيح للمكتبة ومكوناتها
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import '../theme/app_theme.dart';
 import 'dart:ui' as ui;
@@ -364,24 +363,37 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with SingleTickerPr
               onTap: () async {
                 HapticFeedback.lightImpact();
                 
-                // ✅ إصلاح الجوهري للمتصفح
-                try {
-                  final browser = InAppBrowser();
-                  await browser.openUrlRequest(
-                    urlRequest: URLRequest(url: WebUri(widget.article.articleUrl)),
-                    options: InAppBrowserClassOptions(
-                      crossPlatform: InAppBrowserOptions(
-                        toolbarTopBackgroundColor: const Color(0xFF070D14),
-                      ),
-                      android: AndroidInAppBrowserOptions(
-                        showTitle: false,
-                      ),
+                final browser = InAppBrowser();
+                
+                await browser.openUrlRequest(
+                  urlRequest: URLRequest(url: WebUri(widget.article.articleUrl)),
+                  options: InAppBrowserOptions(
+                    crossPlatform: InAppBrowserSettings(
+                      toolbarTopBackgroundColor: const Color(0xFF070D14),
+                      hideUrlBar: true,
+                      javaScriptEnabled: true, // 🛡️ تعديل الصاحب: فرض تفعيل الجافا سكريبت
                     ),
-                  );
-                } catch (e) {
-                  // في حال فشل المتصفح لأي سبب، نفتح الرابط خارجياً
-                  print("Browser error: $e");
-                }
+                  ),
+                );
+
+                browser.webViewController?.addJavaScriptHandler(
+                  handlerName: 'adBlocker',
+                  callback: (args) {
+                    browser.webViewController?.evaluateJavascript(source: """
+                      (function() {
+                        var selectors = [
+                          '.ads', '.ad-box', '#ad-container', '.banner-ad', 
+                          'iframe[src*="googleads"]', 'div[id*="google_ads"]',
+                          '.footer-ads', '.sidebar-ads', 'header', 'footer', '.nav-menu'
+                        ];
+                        selectors.forEach(function(selector) {
+                          var elements = document.querySelectorAll(selector);
+                          elements.forEach(function(el) { el.remove(); });
+                        });
+                      })();
+                    """);
+                  },
+                );
               },
               borderRadius: BorderRadius.circular(16),
               child: Container(
