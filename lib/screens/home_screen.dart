@@ -2,7 +2,6 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-// 🔵 استدعاء السحاب الحقيقي والكامل لربط الشاشة بجداول قاعدة البيانات حياً وبدون نصوص تجريبية
 import 'package:supabase_flutter/supabase_flutter.dart'; 
 import '../theme/app_theme.dart';
 import '../widgets/glass_card.dart';
@@ -96,7 +95,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   late AnimationController _audioWaveController;
   final Set<String> _homeReadMemory = <String>{};
   
-  // 🔮 قوائم بث المحتوى السحابي المباشر لتوحيد الشاشات رسمياً لـ NF SPORTS لعام 2026
   List<HomeMatchModel> _liveMatches = [];
   List<HomeMediaModel> _latestNews = [];
   List<HomeMediaModel> _topHighlights = [];
@@ -118,16 +116,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     _fetchCentralSupaData();
   }
   
-  // 🛡️ فحص شامل: دالة سحب وجلب البيانات الموحدة لربط الأقسام الثلاثة بـ 3 جداول حية فوراً وبدون عزل
   Future<void> _fetchCentralSupaData() async {
     try {
       final supabase = Supabase.instance.client;
-      
-      // 1. جلب مباريات اليوم من جدول matches حياً
       final matchesData = await supabase.from('matches').select().order('time', ascending: true);
-      // 2. جلب آخر الأخبار العربية النظيفة من جدول news حياً
       final newsData = await supabase.from('news').select().order('published_at', ascending: false).limit(10);
-      // 3. جلب ملخصات الأهداف الفخمة من جدول highlights حياً
       final highlightsData = await supabase.from('highlights').select().order('published_at', ascending: false).limit(10);
 
       if (mounted) {
@@ -152,7 +145,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     super.dispose();
   }
 
-  // رياضيات صافية بوزن صفر كيلوبايت لإنشاء عدادات مشاهدة حية ومتصاعدة مع الوقت
   String _generateDynamicViewsForHome(HomeMediaModel media) {
     final int seed = media.videoUrl.hashCode.abs() + media.title.hashCode.abs();
     final int baseViews = 450 + (seed % 250);
@@ -353,10 +345,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         child: _isLoading
             ? const Center(child: CircularProgressIndicator(color: AppTheme.neonBlue))
             : StreamBuilder(
-                // 🔮 التطوير العالمي: ربط الشاشة ببث سحابي حي وتلقائي يتحدث أولاً بأول بدون سحب يدوياً نهائياً
                 stream: Supabase.instance.client.from('matches').stream(primaryKey: ['id']).order('time', ascending: true),
                 builder: (context, snapshot) {
-                  // تحديث قائمة المباريات تلقائياً في الخلفية فور حدوث أي تعديل في السحاب
                   if (snapshot.hasData) {
                     _liveMatches = (snapshot.data as List).map((m) => HomeMatchModel.fromMap(m)).toList();
                   }
@@ -389,7 +379,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                   ),
                                 ],
                               ),
-                              // 🔔 جرس الإشعارات الذكي الجاهز لاستقبال العواجل تلقائياً بالتوازي مع بث السحاب
                               IconButton(
                                 icon: const Icon(Icons.notifications_active, color: AppTheme.neonBlue, size: 32),
                                 onPressed: () {
@@ -615,7 +604,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   Widget _buildHorizontalList({required bool isNews}) {
-    // 🔮 المزامنة السحابية الحية: توجيه القسم لقراءة صفحة الملخصات أو الأخبار تلقائياً وبثاً حياً من السحاب
     final listData = isNews ? _latestNews : _topHighlights;
     
     return SizedBox(
@@ -629,7 +617,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               itemCount: listData.length,
               itemBuilder: (context, index) {
                 final media = listData[index];
-                // مستشعر التتبع والذاكرة الذكية لتخفيت الألوان تلقائياً بعد اللمس
                 final bool isRead = _homeReadMemory.contains(media.videoUrl);
                 final bool isHot = index % 3 == 0;
 
@@ -638,9 +625,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     setState(() {
                       _homeReadMemory.add(media.videoUrl);
                     });
-                    HapticFeedback.mediumImpact(); // اهتزاز لمسي تكتيكي يشعر المشجع بقوة التفاعل
+                    HapticFeedback.mediumImpact();
                     if (isNews) {
-                      // الطيران بالبيانات الحية المترجمة مباشرة إلى شاشة تفاصيل الأخبار الرسمية المحدثة
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -657,7 +643,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         ),
                       );
                     } else {
-                      // إطلاق المشغل السينمائي المحكم لـ صفحة الملخصات والأهداف الحاسمة فوراً
                       _openFullscreenVideoPlayer(context, media);
                     }
                   },
