@@ -280,7 +280,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with SingleTickerPr
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(12),
                             child: InAppWebView(
-                              initialUrlRequest: URLRequest(url: WebUri(widget.article.articleUrl)),
+                              initialUrlRequest: URLRequest(url: Uri.parse(widget.article.articleUrl)),
                               initialSettings: InAppWebViewSettings(
                                 javaScriptEnabled: true, // 🛡️ فرض تفعيل الجافا سكريبت لضمان قهر وحجب الإعلانات المزعجة كلياً
                                 transparentBackground: true, // دمج تدرج الخلفية الكحلية مع الموقع لتبدو القطعة كأنها جزء من نظامك
