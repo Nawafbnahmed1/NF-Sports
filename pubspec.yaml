@@ -19,6 +19,7 @@ dependencies:
   http: ^1.2.2
   shared_preferences: ^2.2.3
   glass_kit: ^4.0.2
+    flutter_inappwebview: ^5.8.0
 
 dev_dependencies:
   flutter_test:
