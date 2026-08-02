@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+// 🔵 البث السحابي المباشر لتوحيد الشاشات رسمياً لـ NF SPORTS لعام 2026 تلقائياً
 import 'package:supabase_flutter/supabase_flutter.dart'; 
 import '../theme/app_theme.dart';
 import '../widgets/glass_card.dart';
@@ -37,6 +38,7 @@ class HomeMatchModel {
     required this.f1,
     required this.f2,
   });
+
   factory HomeMatchModel.fromMap(Map<String, dynamic> map) {
     return HomeMatchModel(
       id: (map['id'] ?? '').toString(),
@@ -115,17 +117,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
     _fetchCentralSupaData();
   }
-  
+
   Future<void> _fetchCentralSupaData() async {
     try {
       final supabase = Supabase.instance.client;
-      final matchesData = await supabase.from('matches').select().order('time', ascending: true);
+      // سحب وجلب البيانات حياً للأخبار والملخصات لتوحيد الشاشات
       final newsData = await supabase.from('news').select().order('published_at', ascending: false).limit(10);
       final highlightsData = await supabase.from('highlights').select().order('published_at', ascending: false).limit(10);
 
       if (mounted) {
         setState(() {
-          _liveMatches = (matchesData as List).map((m) => HomeMatchModel.fromMap(m)).toList();
           _latestNews = (newsData as List).map((n) => HomeMediaModel.fromMap(n, true)).toList();
           _topHighlights = (highlightsData as List).map((h) => HomeMediaModel.fromMap(h, false)).toList();
           _isLoading = false;
@@ -157,8 +158,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     }
     return '$totalViews';
   }
-
-  void _openFullscreenVideoPlayer(BuildContext context, HomeMediaModel media) {
+    void _openFullscreenVideoPlayer(BuildContext context, HomeMediaModel media) {
     HapticFeedback.vibrate();
     setState(() {
       _homeReadMemory.add(media.videoUrl);
@@ -336,7 +336,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     });
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -345,6 +344,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         child: _isLoading
             ? const Center(child: CircularProgressIndicator(color: AppTheme.neonBlue))
             : StreamBuilder(
+                // 🔮 البث السحابي التلقائي: استماع حي ومفتوح لجدول المباريات وصفحة النتائج ليتحدث التطبيق تلقائياً بدون سحب يدوياً نهائياً
                 stream: Supabase.instance.client.from('matches').stream(primaryKey: ['id']).order('time', ascending: true),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
@@ -379,6 +379,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                   ),
                                 ],
                               ),
+                              // 🔔 جرس الإشعارات عالي الجودة والجاهز لبث العواجل بالتوازي اللحظي التلقائي مع السحاب
                               IconButton(
                                 icon: const Icon(Icons.notifications_active, color: AppTheme.neonBlue, size: 32),
                                 onPressed: () {
@@ -489,7 +490,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                                                             decoration: BoxDecoration(color: const Color(0x4D00B4FF), borderRadius: BorderRadius.circular(6), border: Border.all(color: AppTheme.neonBlue, width: 1)),
                                                             child: Text(match.time, style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
-                                                          ),
+                                                        ),
                                                     const SizedBox(height: 4),
                                                   ],
                                                 ),
@@ -585,7 +586,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                     );
                                   },
                                 ),
-                          ),
                         ),
                         const SizedBox(height: 20),
                         const SectionTitle(title: 'آخر الأخبار'),
@@ -596,14 +596,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         const SizedBox(height: 120),
                       ],
                     ),
-                  );
-                },
-              ),
+                  ),
+                );
+              },
+            ),
       ),
     );
   }
-
   Widget _buildHorizontalList({required bool isNews}) {
+    // 🔮 المزامنة السحابية اللحظية: توجيه التحديث التلقائي لقراءة صفحة الملخصات أو الأخبار حياً من السحاب
     final listData = isNews ? _latestNews : _topHighlights;
     
     return SizedBox(
@@ -625,8 +626,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     setState(() {
                       _homeReadMemory.add(media.videoUrl);
                     });
-                    HapticFeedback.mediumImpact();
+                    HapticFeedback.mediumImpact(); // اهتزاز تكتيكي ناعم
                     if (isNews) {
+                      // الانتقال الفوري والمضمون إلى شاشة تفاصيل الأخبار الرسمية لقراءة الخبر من المربع الزجاجي
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -643,6 +645,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         ),
                       );
                     } else {
+                      // إطلاق المشغل السينمائي المحكم لـ صفحة الملخصات والأهداف الحاسمة فوراً
                       _openFullscreenVideoPlayer(context, media);
                     }
                   },
