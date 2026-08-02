@@ -367,15 +367,12 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with SingleTickerPr
                 
                 await browser.openUrlRequest(
                   urlRequest: URLRequest(url: WebUri(widget.article.articleUrl)),
-                  // ✅ التعديل الصحيح ليتماشى مع تحديثات المكتبة الجديدة
-                  options: InAppBrowserClassOptions(
-                    crossPlatform: InAppBrowserOptions(
+                  // ✅ التعديل النهائي المصفى: حذف أسطر الأندرويد والآيفون المنفصلة
+                  options: InAppBrowserOptions(
+                    crossPlatform: InAppBrowserSettings(
                       toolbarTopBackgroundColor: const Color(0xFF070D14),
                       hideUrlBar: true,
                       javaScriptEnabled: true,
-                    ),
-                    android: AndroidInAppBrowserOption(
-                      showTitle: false,
                     ),
                   ),
                 );
