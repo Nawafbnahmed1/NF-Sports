@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+// 🔴 [تم الحذف بناءً على تعليمات متجر بلاي] : تم حذف مكتبة inappwebview لأنها غير مستخدمة وتسبب رفض النشر
 import '../theme/app_theme.dart';
 import '../widgets/glass_card.dart';
+import '../widgets/no_internet_widget.dart';
 import 'news_detail_screen.dart';
 
 class NewsArticleModel {
@@ -25,11 +27,11 @@ class NewsArticleModel {
   factory NewsArticleModel.fromMap(Map<String, dynamic> map) {
     return NewsArticleModel(
       title: (map['title_ar'] ?? map['title'] ?? '').toString(),
-      description: (map['description_ar'] ?? map['description'] ?? '').toString(),
+      description: (map['description_ar'] ?? map['description'] ?? 'اضغط على تفاصيل الخبر لقراءة المقال كاملاً من المصدر.').toString(),
       imageUrl: (map['image_url'] ?? '').toString(),
-      source: (map['source'] ?? '').toString(),
+      source: (map['source'] ?? 'NF Sports').toString(),
       articleUrl: (map['article_url'] ?? '').toString(),
-      publishedAt: DateTime.parse(map['published_at']),
+      publishedAt: DateTime.parse(map['published_at'] ?? DateTime.now().toIso8601String()),
     );
   }
 }
@@ -47,6 +49,7 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
   bool _isVideosTab = false;
   late AnimationController _pulseController;
   final Set<String> _readArticlesMemory = <String>{};
+  bool _hasError = false;
 
   @override
   void initState() {
@@ -65,15 +68,20 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
   }
 
   Future<List<NewsArticleModel>> fetchNews() async {
-    final data = await supabase
-        .from('news')
-        .select()
-        .order('published_at', ascending: false)
-        .limit(50);
+    try {
+      final data = await supabase
+          .from('news')
+          .select()
+          .order('published_at', descending: true) // ✅ تصحيح: جعل العرض من الأحدث للأقدم
+          .limit(50);
 
-    return (data as List)
-        .map((e) => NewsArticleModel.fromMap(e))
-        .toList();
+      setState(() => _hasError = false);
+      return (data as List).map((e) => NewsArticleModel.fromMap(e)).toList();
+    } catch (e) {
+      print('❌ NF Sports Database Error: $e');
+      setState(() => _hasError = true);
+      return [];
+    }
   }
 
   String _getFormatedTimeAgo(DateTime dateTime) {
@@ -285,6 +293,17 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
+    if (_hasError) {
+      return NoInternetWidget(
+        onRetry: () {
+          setState(() {
+            _hasError = false;
+            newsFuture = fetchNews();
+          });
+        },
+      );
+    }
+
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
       body: SafeArea(
@@ -367,7 +386,12 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
                       );
                     }
                     if (snapshot.hasError) {
-                      return Center(child: Text(snapshot.error.toString(), style: const TextStyle(color: Colors.white24)));
+                      return Center(
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 80.0),
+                          child: Text("تعذر جلب البيانات الحالية", style: TextStyle(color: Colors.white24, fontFamily: 'Cairo')),
+                        ),
+                      );
                     }
                     final articles = snapshot.data ?? [];
                     if (articles.isEmpty) {
@@ -504,7 +528,11 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
 
   Widget _buildMainArticleCard(BuildContext context, NewsArticleModel article) {
     final bool isRead = _readArticlesMemory.contains(article.articleUrl);
-    final bool isHotMatch = RegExp(r'classico|derby|real madrid|barcelona|final|urgent', caseSensitive: false).hasMatch(article.title);
+    
+    final bool isHotMatch = RegExp(
+      r'classico|derby|real madrid|barcelona|final|urgent|كلاسيكو|ديربي|ريال مدريد|برشلونة|نهائي|عاجل', 
+      caseSensitive: false
+    ).hasMatch(article.title);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -679,7 +707,11 @@ class _NewsScreenState extends State<NewsScreen> with SingleTickerProviderStateM
 
   Widget _buildSubArticleCard(BuildContext context, NewsArticleModel article) {
     final bool isRead = _readArticlesMemory.contains(article.articleUrl);
-    final bool isHotMatch = RegExp(r'classico|derby|real madrid|barcelona|final|urgent', caseSensitive: false).hasMatch(article.title);
+    
+    final bool isHotMatch = RegExp(
+      r'classico|derby|real madrid|barcelona|final|urgent|كلاسيكو|ديربي|ريال مدريد|برشلونة|نهائي|عاجل', 
+      caseSensitive: false
+    ).hasMatch(article.title);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
