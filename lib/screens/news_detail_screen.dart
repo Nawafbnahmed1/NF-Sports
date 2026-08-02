@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+// ✅ تصحيح الخطأ الأول: استيراد المكتبة كاملة (بما فيها الإعدادات)
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import '../theme/app_theme.dart';
 import 'dart:ui' as ui;
@@ -355,6 +356,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with SingleTickerPr
               ),
             ),
           ),
+          // ✅ زر قراءة الخبر كاملاً (النسخة النهائية والمصفاة حسب طلب المطور، مع إزالة الأقواس الزائدة)
           Positioned(
             bottom: 20,
             left: 20,
@@ -362,21 +364,12 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with SingleTickerPr
             child: InkWell(
               onTap: () async {
                 HapticFeedback.lightImpact();
-                
+                // ✅ التصحيح الثاني: استدعاء المتصفح بالصيغة الأساسية
                 final browser = InAppBrowser();
-                
                 await browser.openUrlRequest(
                   urlRequest: URLRequest(url: Uri.parse(widget.article.articleUrl)),
-                  options: InAppBrowserXmlOptions(
-                    crossPlatform: InAppBrowserOptions(
-                      toolbarTopBackgroundColor: const Color(0xFF070D14),
-                    ),
-                    android: AndroidInAppBrowserOptions(
-                      showTitle: false,
-                    ),
-                  ),
                 );
-
+                // حاجب الإعلانات
                 browser.webViewController?.addJavaScriptHandler(
                   handlerName: 'adBlocker',
                   callback: (args) {
