@@ -154,11 +154,11 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 16),
-                    // ⭕ شريط دوائر الستوري الأفقية
+                    // ⭕ شريط دوائر الستوري الأفقية (تم تكبير الحجم)
                     Directionality(
                       textDirection: TextDirection.rtl,
                       child: SizedBox(
-                        height: 110,
+                        height: 130, // ✅ تم تكبير ارتفاع الحاوية ليتسع للدوائر الأكبر
                         child: ListView.builder(
                           scrollDirection: Axis.horizontal,
                           padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -178,8 +178,8 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
                                 child: Column(
                                   children: [
                                     Container(
-                                      width: 65,
-                                      height: 65,
+                                      width: 78, // ✅ تم تكبير الحجم من 65 إلى 78
+                                      height: 78, // ✅ تم تكبير الحجم من 65 إلى 78
                                       decoration: BoxDecoration(
                                         shape: BoxShape.circle,
                                         border: Border.all(color: isRead ? Colors.white24 : const Color(0xFF00A3FF), width: 2),
@@ -192,7 +192,7 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
                                             : Container(color: AppTheme.surfaceColor, child: const Icon(Icons.flash_on, color: Color(0xFF00A3FF))),
                                       ),
                                     ),
-                                    const SizedBox(height: 6),
+                                    const SizedBox(height: 8),
                                     Row(
                                       children: [
                                         Icon(Icons.visibility, size: 10, color: isRead ? Colors.white24 : const Color(0xFF00A3FF).withOpacity(0.7)),
@@ -212,15 +212,15 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
                       ),
                     ),
                     const SizedBox(height: 5),
-                    // 🛸 مستطيل الإعلانات الفاخر (تم تكبيره وإضافة النص الرياضي الخرافي)
+                    // 🛸 مستطيل الإعلانات الفاخر
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                       child: Container(
-                        height: 70, // ✅ تم تكبير الحجم أكثر
+                        height: 70,
                         padding: const EdgeInsets.symmetric(horizontal: 14),
                         decoration: BoxDecoration(
                           color: AppTheme.surfaceColor.withOpacity(0.85),
-                          borderRadius: BorderRadius.circular(20), // ✅ انحناء حواف أكبر
+                          borderRadius: BorderRadius.circular(20),
                           border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.3), width: 1.5),
                           boxShadow: [
                             BoxShadow(
@@ -245,8 +245,8 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
                                         TextSpan(
                                           text: ' NF',
                                           style: GoogleFonts.cairo(
-                                            color: const Color(0xFF00A3FF), // ✅ أزرق داكن لامع
-                                            fontSize: 20, // ✅ حجم أكبر
+                                            color: const Color(0xFF00A3FF),
+                                            fontSize: 20,
                                             fontWeight: FontWeight.w900,
                                             shadows: [
                                               Shadow(color: const Color(0xFF00A3FF).withOpacity(0.6), blurRadius: 8)
@@ -256,16 +256,16 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
                                         TextSpan(
                                           text: ' SPORTS',
                                           style: GoogleFonts.cairo(
-                                            color: Colors.white, // ✅ أبيض ناصع
-                                            fontSize: 20, // ✅ حجم أكبر
+                                            color: Colors.white,
+                                            fontSize: 20,
                                             fontWeight: FontWeight.w900,
                                           ),
                                         ),
                                         TextSpan(
                                           text: ' NEWS',
                                           style: GoogleFonts.cairo(
-                                            color: Colors.redAccent, // ✅ أحمر نيوني
-                                            fontSize: 20, // ✅ حجم أكبر
+                                            color: Colors.redAccent,
+                                            fontSize: 20,
                                             fontWeight: FontWeight.w900,
                                             shadows: [
                                               Shadow(color: Colors.redAccent.withOpacity(0.6), blurRadius: 8)
@@ -291,7 +291,7 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                         decoration: BoxDecoration(
-                          color: const Color(0x1A00A3FF), // تم تغيير الخلفية للأزرق
+                          color: const Color(0x1A00A3FF),
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.2), width: 1),
                         ),
@@ -343,7 +343,7 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
     );
   }
 
-  // 🎬 الكرت الرئيسي
+  // 🎬 الكرت الرئيسي (تم تقليص حجمه قليلاً)
   Widget _buildMainArticleCard(BuildContext context, NewsArticleModel article) {
     final bool isRead = _readArticlesMemory.contains(article.articleUrl);
     
@@ -371,7 +371,7 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
                   children: [
                     Container(
                       width: double.infinity,
-                      height: 155,
+                      height: 145, // ✅ تم تقليل الحجم من 155 إلى 145
                       decoration: const BoxDecoration(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
                       child: ClipRRect(
                         borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
