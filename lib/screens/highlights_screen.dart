@@ -359,7 +359,7 @@ class _HighlightsScreenState extends State<HighlightsScreen> with TickerProvider
                     Directionality(
                       textDirection: TextDirection.rtl,
                       child: SizedBox(
-                        height: 110,
+                        height: 130, // ✅ تم تكبير الحجم
                         child: ListView.builder(
                           scrollDirection: Axis.horizontal,
                           padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -378,8 +378,8 @@ class _HighlightsScreenState extends State<HighlightsScreen> with TickerProvider
                                 child: Column(
                                   children: [
                                     Container(
-                                      width: 65,
-                                      height: 65,
+                                      width: 78, // ✅ تم تكبير الحجم
+                                      height: 78, // ✅ تم تكبير الحجم
                                       decoration: BoxDecoration(
                                         shape: BoxShape.circle,
                                         border: Border.all(color: isRead ? Colors.white24 : const Color(0xFF00A3FF), width: 2),
@@ -392,7 +392,7 @@ class _HighlightsScreenState extends State<HighlightsScreen> with TickerProvider
                                             : Container(color: AppTheme.surfaceColor, child: const Icon(Icons.play_circle_outline, color: Color(0xFF00A3FF))),
                                       ),
                                     ),
-                                    const SizedBox(height: 6),
+                                    const SizedBox(height: 8),
                                     Row(
                                       children: [
                                         Icon(Icons.play_arrow, size: 10, color: isRead ? Colors.white24 : const Color(0xFF00A3FF).withOpacity(0.7)),
@@ -412,7 +412,7 @@ class _HighlightsScreenState extends State<HighlightsScreen> with TickerProvider
                       ),
                     ),
                     const SizedBox(height: 5),
-                    // 🛸 مستطيل الإعلانات الأزرق الفاخر (نفس تنسيق قسم الأخبار)
+                    // 🛸 مستطيل الإعلانات الأزرق الفاخر
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                       child: Container(
@@ -420,7 +420,7 @@ class _HighlightsScreenState extends State<HighlightsScreen> with TickerProvider
                         padding: const EdgeInsets.symmetric(horizontal: 14),
                         decoration: BoxDecoration(
                           color: AppTheme.surfaceColor.withOpacity(0.85),
-                          borderRadius: BorderRadius.circular(20), // انحناء حواف أكبر
+                          borderRadius: BorderRadius.circular(20),
                           border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.3), width: 1.5),
                           boxShadow: [
                             BoxShadow(
@@ -564,7 +564,7 @@ class _HighlightsScreenState extends State<HighlightsScreen> with TickerProvider
                   children: [
                     Container(
                       width: double.infinity,
-                      height: 155,
+                      height: 145, // ✅ تم تصغير الحجم قليلاً
                       decoration: const BoxDecoration(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
                       child: ClipRRect(
                         borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
