@@ -251,7 +251,6 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
                                   child: Text(
                                     '⚡ NF SPORTS NEWS ⚡',
                                     maxLines: 1,
-                                    whiteSpace: WhiteSpace.noWrap,
                                     style: GoogleFonts.cairo(
                                       color: const Color(0xFF00FF66),
                                       fontSize: 13,
@@ -372,7 +371,7 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                         decoration: BoxDecoration(
-                          color: Colors.black60,
+                          color: Colors.black.withOpacity(0.6),
                           borderRadius: BorderRadius.circular(6),
                           border: Border.all(color: const Color(0xFF00FF66).withOpacity(0.2)),
                         ),
