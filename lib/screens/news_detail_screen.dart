@@ -588,7 +588,6 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
       ),
     );
   }
-}
 
   // ⏱️ الدالة المفقودة: رياضيات صافية لحساب وقت نزول التعليق لحظياً باللغة العربية النظيفة
   String _getFormatedTimeAgo(DateTime dateTime) {
