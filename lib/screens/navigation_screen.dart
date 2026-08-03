@@ -3,8 +3,10 @@ import 'package:flutter/services.dart';
 import '../theme/app_theme.dart';
 import 'home_screen.dart';
 import 'matches_screen.dart';
+import 'results_screen.dart';
 import 'news_screen.dart';
-import 'more_screen.dart'; // 👑 حقن جوهرة شاشة المزيد المستقلة والجديدة لسهولة التعديل المستقبلي
+import 'highlights_screen.dart';
+import 'more_screen.dart';
 
 class NavigationScreen extends StatefulWidget {
   const NavigationScreen({super.key});
@@ -16,17 +18,18 @@ class NavigationScreen extends StatefulWidget {
 class _NavigationScreenState extends State<NavigationScreen> with SingleTickerProviderStateMixin {
   int _selectedIndex = 0;
 
-  // 🌟 ترقية وإعادة توجيه مصفوفة الشاشات الأربعة لفتح التحفة الفنية لقسم المزيد الجديد
   final List<Widget> _screens = [
     const HomeScreen(), 
     const MatchesScreen(),
+    const ResultsScreen(),
     const NewsScreen(),
-    const MoreScreen(), // الربط الهندسي الناجح بدلاً من الشاشات القديمة المستغنى عنها
+    const HighlightsScreen(),
+    const MoreScreen(),
   ];
 
   void _onItemTapped(int index) {
     if (_selectedIndex != index) {
-      HapticFeedback.selectionClick(); // اهتزاز تكتيكي فخم فائق الخفة عند الانتقال بين التبويبات
+      HapticFeedback.selectionClick();
       setState(() {
         _selectedIndex = index;
       });
@@ -37,7 +40,6 @@ class _NavigationScreenState extends State<NavigationScreen> with SingleTickerPr
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
-      // تفعيل وضعية تمدد الشاشات خلف البار العائم ليعطي عمق زجاجي أسطوري ثلاثي الأبعاد
       extendBody: true, 
       body: IndexedStack(
         index: _selectedIndex,
@@ -46,21 +48,19 @@ class _NavigationScreenState extends State<NavigationScreen> with SingleTickerPr
       bottomNavigationBar: Directionality(
         textDirection: TextDirection.rtl,
         child: Padding(
-          padding: const EdgeInsets.only(bottom: 24.0, left: 16.0, right: 16.0), // رفع البار برمجياً ليصبح عائماً بشكل رائع
+          padding: const EdgeInsets.only(bottom: 24.0, left: 16.0, right: 16.0),
           child: Container(
             height: 68,
             decoration: BoxDecoration(
-              // مظهر زجاجي شفاف كالكريستال الفخم يعكس محتوى التطبيق من خلفه بنقاء
               color: AppTheme.surfaceColor.withOpacity(0.85),
               borderRadius: BorderRadius.circular(22),
-              // إطار نيون رفيع ومشع يدمج لونك الرسمي لتوحيد البراند
               border: Border.all(
-                color: AppTheme.neonBlue.withOpacity(0.25),
+                color: const Color(0xFF00FF66).withOpacity(0.25),
                 width: 1.5,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: AppTheme.glowBlue.withOpacity(0.12),
+                  color: const Color(0xFF00FF66).withOpacity(0.12),
                   blurRadius: 16,
                   spreadRadius: 1,
                   offset: const Offset(0, 4),
@@ -72,8 +72,10 @@ class _NavigationScreenState extends State<NavigationScreen> with SingleTickerPr
               children: [
                 _buildNavItem(0, Icons.home_outlined, Icons.home, 'الرئيسية'),
                 _buildNavItem(1, Icons.sports_soccer_outlined, Icons.sports_soccer, 'المباريات'),
-                _buildNavItem(2, Icons.newspaper_outlined, Icons.newspaper, 'الأخبار'),
-                _buildNavItem(3, Icons.more_horiz_outlined, Icons.more_horiz, 'المزيد'),
+                _buildNavItem(2, Icons.analytics_outlined, Icons.analytics, 'النتائج'),
+                _buildNavItem(3, Icons.newspaper_outlined, Icons.newspaper, 'الأخبار'),
+                _buildNavItem(4, Icons.play_circle_outline, Icons.play_circle_filled, 'الملخصات'),
+                _buildNavItem(5, Icons.more_horiz_outlined, Icons.more_horiz, 'المزيد'),
               ],
             ),
           ),
@@ -81,8 +83,6 @@ class _NavigationScreenState extends State<NavigationScreen> with SingleTickerPr
       ),
     );
   }
-
-  // 🛠️ دالة هندسية ذكية لبناء الأيقونات التفاعلية مع تأثير كبسولة الموجة السائلة المنزلقة
   Widget _buildNavItem(int index, IconData unselectedIcon, IconData selectedIcon, String label) {
     final bool isSelected = _selectedIndex == index;
 
@@ -93,19 +93,18 @@ class _NavigationScreenState extends State<NavigationScreen> with SingleTickerPr
         child: Stack(
           alignment: Alignment.center,
           children: [
-            // 🌊 كبسولة الموجة السائلة المضيئة: تتحرك وتستقر خلف الأيقونة النشطة بنعومة فائقة (تم تصحيح الحرف الزائد الخاطئ)
+            // 🌊 كبسولة الموجة السائلة المضيئة: صب اللون الأخضر النيوني المضيء الفخم المتناسق مع الهوية الجديدة
             AnimatedContainer(
               duration: const Duration(milliseconds: 250),
-              curve: Curves.easeInOut, // ✓ استخدام المنحنى الرسمي المستقر والآمن كلياً لمنع توقف التجميع
+              curve: Curves.easeInOut, 
               width: isSelected ? 55 : 0,
               height: isSelected ? 38 : 0,
               decoration: BoxDecoration(
-                color: AppTheme.neonBlue.withOpacity(0.15),
+                color: const Color(0xFF00FF66).withOpacity(0.12),
                 borderRadius: BorderRadius.circular(12),
-                border: isSelected ? Border.all(color: AppTheme.neonBlue.withOpacity(0.2), width: 1) : null,
+                border: isSelected ? Border.all(color: const Color(0xFF00FF66).withOpacity(0.25), width: 1) : null,
               ),
             ),
-            // محتوى الزر (الأيقونة والنص) مع تأثير التكبير واللمعان الانسيابي
             AnimatedScale(
               duration: const Duration(milliseconds: 200),
               scale: isSelected ? 1.05 : 1.0,
@@ -114,10 +113,10 @@ class _NavigationScreenState extends State<NavigationScreen> with SingleTickerPr
                 children: [
                   Icon(
                     isSelected ? selectedIcon : unselectedIcon,
-                    color: isSelected ? AppTheme.neonBlue : Colors.white38,
+                    color: isSelected ? const Color(0xFF00FF66) : Colors.white38,
                     size: isSelected ? 22 : 20,
                     shadows: isSelected ? [
-                      Shadow(color: AppTheme.neonBlue.withOpacity(0.6), blurRadius: 10)
+                      Shadow(color: const Color(0xFF00FF66).withOpacity(0.6), blurRadius: 10)
                     ] : null,
                   ),
                   const SizedBox(height: 3),
