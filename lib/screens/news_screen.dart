@@ -212,15 +212,15 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
                       ),
                     ),
                     const SizedBox(height: 5),
-                    // 🛸 مستطيل الإعلانات الأزرق الفاخر (تم تكبيره وتعديل النص لأبيض مع أزرق)
+                    // 🛸 مستطيل الإعلانات الفاخر (تم تكبيره وإضافة النص الرياضي الخرافي)
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                       child: Container(
-                        height: 62, // تم تكبير الحجم
+                        height: 70, // ✅ تم تكبير الحجم أكثر
                         padding: const EdgeInsets.symmetric(horizontal: 14),
                         decoration: BoxDecoration(
                           color: AppTheme.surfaceColor.withOpacity(0.85),
-                          borderRadius: BorderRadius.circular(16), // زيادة انحناء الحواف ليكون أكثر فخامة
+                          borderRadius: BorderRadius.circular(20), // ✅ انحناء حواف أكبر
                           border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.3), width: 1.5),
                           boxShadow: [
                             BoxShadow(
@@ -231,26 +231,51 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
                           ],
                         ),
                         child: ClipRRect(
-                          borderRadius: BorderRadius.circular(14),
+                          borderRadius: BorderRadius.circular(18),
                           child: AnimatedBuilder(
                             animation: _marqueeController,
                             builder: (context, child) {
                               return FractionalTranslation(
                                 translation: Offset(-1.0 + (_marqueeController.value * 2.0), 0.0),
                                 child: Center(
-                                  child: Text(
-                                    '⚽ NF SPORTS NEWS 🗞️',
-                                    maxLines: 1,
-                                    style: GoogleFonts.cairo(
-                                      // دمج الأبيض مع الأزرق اللامع: النص أبيض مع توهج أزرق
-                                      color: Colors.white,
-                                      fontSize: 16, // تم تكبير حجم النص
-                                      fontWeight: FontWeight.w900,
-                                      letterSpacing: 1.5,
-                                      shadows: [
-                                        Shadow(color: const Color(0xFF00A3FF).withOpacity(0.6), blurRadius: 8)
+                                  child: Text.rich(
+                                    TextSpan(
+                                      children: [
+                                        const WidgetSpan(child: Padding(padding: EdgeInsets.only(right: 4), child: Icon(Icons.sports_soccer, color: Colors.white, size: 24))),
+                                        TextSpan(
+                                          text: ' NF',
+                                          style: GoogleFonts.cairo(
+                                            color: const Color(0xFF00A3FF), // ✅ أزرق داكن لامع
+                                            fontSize: 20, // ✅ حجم أكبر
+                                            fontWeight: FontWeight.w900,
+                                            shadows: [
+                                              Shadow(color: const Color(0xFF00A3FF).withOpacity(0.6), blurRadius: 8)
+                                            ],
+                                          ),
+                                        ),
+                                        TextSpan(
+                                          text: ' SPORTS',
+                                          style: GoogleFonts.cairo(
+                                            color: Colors.white, // ✅ أبيض ناصع
+                                            fontSize: 20, // ✅ حجم أكبر
+                                            fontWeight: FontWeight.w900,
+                                          ),
+                                        ),
+                                        TextSpan(
+                                          text: ' NEWS',
+                                          style: GoogleFonts.cairo(
+                                            color: Colors.redAccent, // ✅ أحمر نيوني
+                                            fontSize: 20, // ✅ حجم أكبر
+                                            fontWeight: FontWeight.w900,
+                                            shadows: [
+                                              Shadow(color: Colors.redAccent.withOpacity(0.6), blurRadius: 8)
+                                            ],
+                                          ),
+                                        ),
+                                        const WidgetSpan(child: Padding(padding: EdgeInsets.only(left: 4), child: Icon(Icons.newspaper, color: Colors.white, size: 24))),
                                       ],
                                     ),
+                                    textAlign: TextAlign.center,
                                   ),
                                 ),
                               );
