@@ -623,6 +623,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         MaterialPageRoute(
                           builder: (context) => NewsDetailScreen(
                             article: NewsArticleModel(
+                              id: (media.id ?? '').toString(),
                               title: media.title,
                               description: media.description,
                               imageUrl: media.imageUrl,
