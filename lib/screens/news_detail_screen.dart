@@ -45,7 +45,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
     _scrollController = ScrollController()..addListener(_updateReadingProgress);
     
     _sparkController = AnimationController(
-      withVsync: this,
+      Vsync: this,
       duration: const Duration(milliseconds: 500),
     )..forward();
 
@@ -407,7 +407,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
                             if (allComments.isEmpty) {
                               return Padding(
                                 padding: const EdgeInsets.symmetric(vertical: 20),
-                                child: Center(child: Text('كن أول من يترك بصمته ويعلق على هذا الخبر الكوني ⚽', style: GoogleFonts.cairo(color: Colors.white28, fontSize: 11, fontWeight: FontWeight.bold))),
+                                child: Center(child: Text('كن أول من يترك بصمته ويعلق على هذا الخبر الكوني ⚽', style: GoogleFonts.cairo(color: Colors.white.withOpacity(0.28), fontSize: 11, fontWeight: FontWeight.bold))),
                               );
                             }
 
@@ -600,7 +600,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
       margin: const EdgeInsets.symmetric(vertical: 4),
       child: GlassCard(
         // استخدام الألواح الزجاجية الزرقاء الداكنة كقاعدة وتطعيم الحواف بالأخضر النيوني المعتم الغامض المعتمد
-        backgroundColor: const Color(0xFF161926).withOpacity(isReply ? 0.3 : 0.6),
+        color: const Color(0xFF161926).withOpacity(isReply ? 0.3 : 0.6),
         borderRadius: 16,
         padding: const EdgeInsets.all(12),
         borderColor: const Color(0xFF00FF66).withOpacity(isReply ? 0.1 : 0.18),
@@ -632,7 +632,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
                     const SizedBox(width: 8),
                     Text(
                       userName,
-                      style: GoogleFonts.cairo(color: Colors.whitee70, fontSize: 12, fontWeight: FontWeight.bold),
+                      style: GoogleFonts.cairo(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold),
                     ),
                     if (isReply)
                       Container(
