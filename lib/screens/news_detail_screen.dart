@@ -34,7 +34,6 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
   String? _replyingToCommentId;
   String? _replyingToUserName;
 
-  // حارس المنصة الذكي لحظر الألفاظ المسيئة (فلترة صارمة وفورية داخل المعالج قبل الإرسال)
   final List<String> _toxicityFilter = [
     'كلب', 'حمار', 'غبي', 'حيوان', 'يلعن', 'تفو', 'ياكلب', 'ياحمار', 'منيوك', 'كس'
   ];
@@ -71,12 +70,10 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
     });
   }
 
-  // 🤖 دالة إرسال التعليق المحمية بحارس الفلترة الذكي لمنع الألفاظ المسيئة وتطهير المنصة
   Future<void> _postComment() async {
     final text = _commentController.text.trim();
     if (text.isEmpty) return;
 
-    // فحص النص مجهرياً ضد قائمة الكلمات المحظورة لمنع تخزين الإساءات في السحاب
     bool isToxic = false;
     for (var word in _toxicityFilter) {
       if (text.toLowerCase().contains(word)) {
@@ -86,7 +83,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
     }
 
     if (isToxic) {
-      HapticFeedback.vibrate(); // اهتزاز تحذيري صارم
+      HapticFeedback.vibrate();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           backgroundColor: Colors.redAccent,
@@ -105,12 +102,11 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
       final user = supabase.auth.currentUser;
       final String userName = user?.email?.split('@').first ?? 'مشجع عابر';
 
-      // ضخ البيانات حياً داخل السحاب لتوزع فوراً عبر الـ Realtime
       await supabase.from('comments').insert({
         'article_url': widget.article.articleUrl,
         'user_name': userName,
         'comment_text': text,
-        'parent_id': _replyingToCommentId, // ربط هندسي متداخل للردود لتكون تحت تعليق الأب بالملي
+        'parent_id': _replyingToCommentId,
         'created_at': DateTime.now().toIso8601String(),
       });
 
@@ -124,7 +120,6 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
     }
   }
 
-  // ❤️ دالة كبس زر القلب وتفجير الومضات التفاعلية اللمسية الحية
   Future<void> _likeComment(String commentId, int currentLikes) async {
     HapticFeedback.selectionClick();
     try {
@@ -155,7 +150,6 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
               controller: _scrollController,
               physics: const BouncingScrollPhysics(),
               slivers: [
-                // 🎬 الهيدر البارالاكس السينمائي الممتد والذوبان الزجاجي في الخلفية
                 SliverAppBar(
                   expandedHeight: 320.0,
                   elevation: 0,
@@ -169,8 +163,8 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
                       child: Container(
                         color: const Color(0xFF161926).withOpacity(0.8),
                         child: IconButton(
-                          // تطعيم زر العودة باللون الأخضر النيوني المضيء المعتم لمنح البرستيج الملكي للمنصة
-                          icon: const Icon(Icons.arrow_back_ios_new, color: Color(0xFF00FF66), size: 20),
+                          // ✅ تم استبدال اللون إلى الأزرق اللامع
+                          icon: const Icon(Icons.arrow_back_ios_new, color: Color(0xFF00A3FF), size: 20),
                           onPressed: () => Navigator.pop(context),
                         ),
                       ),
@@ -189,13 +183,15 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
                                   errorBuilder: (context, error, stackTrace) {
                                     return Container(
                                       color: const Color(0xFF1A1D2E),
-                                      child: const Center(child: Icon(Icons.sports_soccer, color: Color(0xFF00FF66), size: 48)),
+                                      // ✅ تم استبدال اللون إلى الأزرق اللامع
+                                      child: const Center(child: Icon(Icons.sports_soccer, color: Color(0xFF00A3FF), size: 48)),
                                     );
                                   },
                                 )
                               : Container(
                                   color: const Color(0xFF1A1D2E),
-                                  child: const Center(child: Icon(Icons.sports_soccer, color: Color(0xFF00FF66), size: 48)),
+                                  // ✅ تم استبدال اللون إلى الأزرق اللامع
+                                  child: const Center(child: Icon(Icons.sports_soccer, color: Color(0xFF00A3FF), size: 48)),
                                 ),
                           Container(
                             decoration: BoxDecoration(
@@ -211,7 +207,6 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
                     ),
                   ),
                 ),
-                // 💎 تفاصيل ومحتوى الخبر الإنسيابي الموحد بـ صفحة واحدة
                 SliverToBoxAdapter(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
@@ -224,16 +219,18 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                               decoration: BoxDecoration(
-                                color: const Color(0xFF00FF66).withOpacity(0.12),
+                                // ✅ تم تغيير اللون للأزرق
+                                color: const Color(0xFF00A3FF).withOpacity(0.12),
                                 borderRadius: BorderRadius.circular(8),
-                                border: Border.all(color: const Color(0xFF00FF66).withOpacity(0.3), width: 1),
+                                border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.3), width: 1),
                               ),
                               child: Text(
                                 widget.article.source,
                                 style: GoogleFonts.cairo(
                                   fontSize: 12,
                                   fontWeight: FontWeight.bold,
-                                  color: const Color(0xFF00FF66),
+                                  // ✅ نص أزرق
+                                  color: const Color(0xFF00A3FF),
                                 ),
                               ),
                             ),
@@ -257,7 +254,6 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
                         ),
                         const SizedBox(height: 20),
 
-                        // الأنيميشن اللحظي لعنوان الخبر عند الفتح لشد انتباه القارئ بتوجيه عربي لليمين بالمسطرة
                         AnimatedBuilder(
                           animation: _sparkAnimation,
                           builder: (context, child) {
@@ -279,8 +275,9 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
                                   fontWeight: FontWeight.bold,
                                   color: Colors.white,
                                   height: 1.4,
+                                  // ✅ توهج أزرق
                                   shadows: [
-                                    Shadow(color: const Color(0xFF00FF66).withOpacity(0.2), blurRadius: 15)
+                                    Shadow(color: const Color(0xFF00A3FF).withOpacity(0.2), blurRadius: 15)
                                   ],
                                 ),
                               ),
@@ -288,13 +285,13 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
                           ),
                           const SizedBox(height: 15),
 
-                          // 🎙️ كبسولة الاستماع وبودكاست الذبذبات الرقمية لـ NF SPORTS (أكواد صافية بوزن صفر كيلوبايت لإبهار المشجع)
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                             decoration: BoxDecoration(
                               color: const Color(0x0FFFFFFF),
                               borderRadius: BorderRadius.circular(14),
-                              border: Border.all(color: const Color(0xFF00FF66).withOpacity(0.15), width: 1),
+                              // ✅ حواف زرقاء
+                              border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.15), width: 1),
                             ),
                             child: Row(
                               textDirection: ui.TextDirection.rtl,
@@ -303,7 +300,8 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
                                 Row(
                                   textDirection: ui.TextDirection.rtl,
                                   children: [
-                                    const Icon(Icons.mic_external_on_rounded, color: Color(0xFF00FF66), size: 18),
+                                    // ✅ أيقونة زرقاء
+                                    const Icon(Icons.mic_external_on_rounded, color: Color(0xFF00A3FF), size: 18),
                                     const SizedBox(width: 8),
                                     Text(
                                       'الاستماع الذكي للخبر والتحليل اللحظي',
@@ -311,7 +309,6 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
                                     ),
                                   ],
                                 ),
-                                // 📈 خطوط الذبذبات الصوتية الحية والمتموجة هولوغرافياً بين الأزرق الكوني والنيون الأخضر
                                 Row(
                                   children: List.generate(4, (index) {
                                     return AnimatedBuilder(
@@ -324,7 +321,8 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
                                           width: 2.5,
                                           height: heightValue,
                                           decoration: BoxDecoration(
-                                            color: index % 2 == 0 ? const Color(0xFF00FF66) : AppTheme.neonBlue,
+                                            // ✅ ألوان زرقاء
+                                            color: index % 2 == 0 ? const Color(0xFF00A3FF) : AppTheme.neonBlue,
                                             borderRadius: BorderRadius.circular(2),
                                           ),
                                         );
@@ -340,13 +338,13 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
                             height: 1,
                             width: double.infinity,
                             decoration: BoxDecoration(
+                              // ✅ تدرج أزرق
                               gradient: LinearGradient(
-                                colors: [const Color(0xFF00FF66).withOpacity(0.3), Colors.transparent],
+                                colors: [const Color(0xFF00A3FF).withOpacity(0.3), Colors.transparent],
                               ),
                             ),
                           ),
                           const SizedBox(height: 20),
-                        // 💎 د. حاوية "النظام الهجين والذكي" لعرض متن المقال والتحليلات الكروية كاملة ونظيفة داخل المربع الزجاجي لحل مشكلة الفراغ
                         Container(
                           width: double.infinity,
                           height: widget.article.description.length < 150 ? 250 : 450,
@@ -354,18 +352,18 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
                           decoration: BoxDecoration(
                             color: AppTheme.surfaceColor.withOpacity(0.4),
                             borderRadius: BorderRadius.circular(16),
-                            border: Border.all(color: const Color(0xFF00FF66).withOpacity(0.15), width: 1.5),
+                            // ✅ حواف زرقاء
+                            border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.15), width: 1.5),
                           ),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(12),
                             child: InAppWebView(
                               initialUrlRequest: URLRequest(url: WebUri(widget.article.articleUrl)),
                               initialSettings: InAppWebViewSettings(
-                                javaScriptEnabled: true, // فرض تفعيل الجافا سكريبت لضمان قهر وحجب الإعلانات المزعجة كلياً
-                                transparentBackground: true, // دمج تدرج الخلفية الكحلية مع الموقع لتبدو القطعة كأنها جزء من نظامك
+                                javaScriptEnabled: true,
+                                transparentBackground: true,
                                 supportZoom: false,
                               ),
-                              // 🛡️ حاقن الكود: جافا سكريبت مخفي يلتهم الإعلانات المنبثقة والبنرات لتنظيف واجهة المقال تماماً للمشجع
                               onLoadStop: (controller, url) async {
                                 await controller.evaluateJavascript(source: """
                                   (function() {
@@ -385,14 +383,12 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
                           ),
                         ),
                         const SizedBox(height: 25),
-                        // 🌐 هـ. مستشعر الاستماع السحابي اللحظي المتداخل للتعليقات والردود الحية (The Comments Nexus)
                         Text(
                           'ساحة النقاش والتفاعل الحية',
                           style: GoogleFonts.cairo(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 12),
                         StreamBuilder<List<Map<String, dynamic>>>(
-                          // بث حي ومستمر من السحاب لجدول التعليقات المصفى برابط هذا المقال بالذات عبر الـ Realtime
                           stream: supabase
                               .from('comments')
                               .stream(primaryKey: ['id'])
@@ -401,7 +397,8 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
                               .map((maps) => List<Map<String, dynamic>>.from(maps)),
                           builder: (context, snapshot) {
                             if (snapshot.connectionState == ConnectionState.waiting) {
-                              return const Center(child: Padding(padding: EdgeInsets.all(16.0), child: CircularProgressIndicator(color: Color(0xFF00FF66))));
+                              // ✅ مؤشر تحميل أزرق
+                              return const Center(child: Padding(padding: EdgeInsets.all(16.0), child: CircularProgressIndicator(color: Color(0xFF00A3FF))));
                             }
                             final allComments = snapshot.data ?? [];
                             if (allComments.isEmpty) {
@@ -411,7 +408,6 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
                               );
                             }
 
-                            // فك وتصفية هندسية لفصل التعليقات الأساسية عن الردود المتداخلة بالذاكرة الحية
                             final rootComments = allComments.where((c) => c['parent_id'] == null).toList();
                             final replies = allComments.where((c) => c['parent_id'] != null).toList();
 
@@ -423,15 +419,14 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
                                 final comment = rootComments[index];
                                 final commentId = comment['id'].toString();
                                 
-                                // تصفية ذكية لجلب كافة الردود التي تنتمي لهذا التعليق الأب بالملي
                                 final commentReplies = replies.where((r) => r['parent_id'].toString() == commentId).toList();
 
                                 return Column(
                                   children: [
-                                    _buildCommentCard(comment, false), // رسم كرت التعليق الأساسي الفخم
+                                    _buildCommentCard(comment, false),
                                     if (commentReplies.isNotEmpty)
                                       Padding(
-                                        padding: const EdgeInsets.only(right: 24), // إزاحة داخلية منسقة للردود لتبدو متداخلة
+                                        padding: const EdgeInsets.only(right: 24),
                                         child: Column(
                                           children: commentReplies.map((reply) => _buildCommentCard(reply, true)).toList(),
                                         ),
@@ -444,13 +439,13 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
                           },
                         ),
                         const SizedBox(height: 25),
-                        // 💬 و. واجهة كتابة وتوجيه التعليقات والردود الحية المباشرة
                         if (_replyingToCommentId != null)
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                             margin: const EdgeInsets.only(bottom: 8),
                             decoration: BoxDecoration(
-                              color: const Color(0xFF00FF66).withOpacity(0.1),
+                              // ✅ خلفية زرقاء شفافة
+                              color: const Color(0xFF00A3FF).withOpacity(0.1),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Row(
@@ -459,7 +454,8 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
                               children: [
                                 Text(
                                   'جاري الرد على تعليق: ${_replyingToUserName}',
-                                  style: GoogleFonts.cairo(color: const Color(0xFF00FF66), fontSize: 11, fontWeight: FontWeight.bold),
+                                  // ✅ نص أزرق
+                                  style: GoogleFonts.cairo(color: const Color(0xFF00A3FF), fontSize: 11, fontWeight: FontWeight.bold),
                                 ),
                                 IconButton(
                                   icon: const Icon(Icons.cancel, color: Colors.white38, size: 16),
@@ -486,7 +482,8 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
                                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
                                   focusedBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(14),
-                                    borderSide: BorderSide(color: const Color(0xFF00FF66).withOpacity(0.4), width: 1.5),
+                                    // ✅ حواف زرقاء عند الكتابة
+                                    borderSide: BorderSide(color: const Color(0xFF00A3FF).withOpacity(0.4), width: 1.5),
                                   ),
                                 ),
                               ),
@@ -494,12 +491,14 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
                             const SizedBox(width: 10),
                             Container(
                               decoration: BoxDecoration(
-                                color: const Color(0xFF00FF66).withOpacity(0.15),
+                                // ✅ خلفية زرقاء شفافة
+                                color: const Color(0xFF00A3FF).withOpacity(0.15),
                                 shape: BoxShape.circle,
-                                border: Border.all(color: const Color(0xFF00FF66).withOpacity(0.4), width: 1),
+                                border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.4), width: 1),
                               ),
                               child: IconButton(
-                                icon: const Icon(Icons.send_rounded, color: Color(0xFF00FF66), size: 20),
+                                // ✅ أيقونة زرقاء
+                                icon: const Icon(Icons.send_rounded, color: Color(0xFF00A3FF), size: 20),
                                 onPressed: _postComment,
                               ),
                             ),
@@ -507,7 +506,6 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
                         ),
                         const SizedBox(height: 30),
 
-                        // 🚀 زر مشاركة المتعة الكروية المطور والمطعم بإطار نيونى ناعم بالأخضر المعتم
                         InkWell(
                           onTap: () => HapticFeedback.mediumImpact(),
                           borderRadius: BorderRadius.circular(14),
@@ -517,8 +515,9 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
                             decoration: BoxDecoration(
                               color: const Color(0xFF161926).withOpacity(0.4),
                               borderRadius: BorderRadius.circular(14),
-                              border: Border.all(color: const Color(0xFF00FF66).withOpacity(0.25)),
-                              boxShadow: [BoxShadow(color: const Color(0xFF00FF66).withOpacity(0.05), blurRadius: 10)],
+                              // ✅ حواف زرقاء
+                              border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.25)),
+                              boxShadow: [BoxShadow(color: const Color(0xFF00A3FF).withOpacity(0.05), blurRadius: 10)],
                             ),
                             child: Center(
                               child: Row(
@@ -538,7 +537,6 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
                         ),
                         const SizedBox(height: 40),
 
-                        // شريط حقوق وتوقيع التطبيق الختامي الفخم مع تحديث الأعوام التلقائي للمستقبل
                         Center(
                           child: Column(
                             children: [
@@ -559,7 +557,6 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
               ],
             ),
           ),
-          // 🚨 مؤشر القراءة الليزري الأفقي العلوي المتفاعل مع حركة الإصبع بالملي وموجه لليمين للنقاء البصري العربي
           Positioned(
             top: 0, left: 0, right: 0,
             child: SafeArea(
@@ -574,9 +571,10 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
                     width: MediaQuery.of(context).size.width * _readingProgress,
                     height: 2.5,
                     decoration: BoxDecoration(
-                      color: const Color(0xFF00FF66),
+                      // ✅ مؤشر قراءة أزرق
+                      color: const Color(0xFF00A3FF),
                       boxShadow: [
-                        BoxShadow(color: const Color(0xFF00FF66).withOpacity(0.8), blurRadius: 4, spreadRadius: 0.5)
+                        BoxShadow(color: const Color(0xFF00A3FF).withOpacity(0.8), blurRadius: 4, spreadRadius: 0.5)
                       ],
                     ),
                   ),
@@ -589,7 +587,6 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
     );
   }
 
-  // ⏱️ الدالة المفقودة: رياضيات صافية لحساب وقت نزول التعليق لحظياً باللغة العربية النظيفة
   String _getFormatedTimeAgo(DateTime dateTime) {
     final duration = DateTime.now().difference(dateTime);
     if (duration.inMinutes < 1) return 'الآن';
@@ -610,7 +607,8 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
         color: Color(0xFF161926).withOpacity(isReply ? 0.3 : 0.6),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: Color(0xFF00FF66).withOpacity(isReply ? 0.1 : 0.18),
+          // ✅ حواف زرقاء
+          color: Color(0xFF00A3FF).withOpacity(isReply ? 0.1 : 0.18),
           width: 1,
         ),
       ),
@@ -631,14 +629,16 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
                       width: 28,
                       height: 28,
                       decoration: BoxDecoration(
-                        color: const Color(0xFF00FF66).withOpacity(0.15),
+                        // ✅ خلفية وحواف زرقاء
+                        color: const Color(0xFF00A3FF).withOpacity(0.15),
                         shape: BoxShape.circle,
-                        border: Border.all(color: const Color(0xFF00FF66).withOpacity(0.3), width: 1),
+                        border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.3), width: 1),
                       ),
                       child: Center(
                         child: Text(
                           userName.substring(0, 1).toUpperCase(),
-                          style: GoogleFonts.cairo(color: const Color(0xFF00FF66), fontSize: 11, fontWeight: FontWeight.bold),
+                          // ✅ نص أزرق
+                          style: GoogleFonts.cairo(color: const Color(0xFF00A3FF), fontSize: 11, fontWeight: FontWeight.bold),
                         ),
                       ),
                     ),
@@ -651,12 +651,12 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
                       Container(
                         margin: const EdgeInsets.only(right: 6),
                         padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
-                        decoration: BoxDecoration(color: const Color(0x3300FF66), borderRadius: BorderRadius.circular(4)),
-                        child: Text('رد', style: GoogleFonts.cairo(color: const Color(0xFF00FF66), fontSize: 8, fontWeight: FontWeight.bold)),
+                        // ✅ خلفية زرقاء شفافة
+                        decoration: BoxDecoration(color: const Color(0x3300A3FF), borderRadius: BorderRadius.circular(4)),
+                        child: Text('رد', style: GoogleFonts.cairo(color: const Color(0xFF00A3FF), fontSize: 8, fontWeight: FontWeight.bold)),
                       ),
                   ],
                 ),
-                // ⏱️ حساب وقت نزول التعليق لحظياً وبصيغة عربية نظيفة لعين المشجع
                 Text(
                   comment['created_at'] != null ? _getFormatedTimeAgo(DateTime.parse(comment['created_at'])) : 'الآن',
                   style: GoogleFonts.cairo(color: Colors.white24, fontSize: 9.5),
@@ -676,24 +676,24 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
             Row(
               textDirection: ui.TextDirection.rtl,
               children: [
-                // ❤️ أزرار ومضات الإعجاب اللمسية السحابية لرفع العدادات حياً
                 InkWell(
                   onTap: () => _likeComment(commentId, likes),
                   child: Row(
                     textDirection: ui.TextDirection.rtl,
                     children: [
-                      const Icon(Icons.favorite_rounded, color: Color(0xFF00FF66), size: 14),
+                      // ✅ أيقونة قلب زرقاء
+                      const Icon(Icons.favorite_rounded, color: Color(0xFF00A3FF), size: 14),
                       const SizedBox(width: 4),
                       Text(
                         likes.toString(),
-                        style: GoogleFonts.cairo(color: const Color(0xFF00FF66), fontSize: 10, fontWeight: FontWeight.bold),
+                        // ✅ نص أزرق
+                        style: GoogleFonts.cairo(color: const Color(0xFF00A3FF), fontSize: 10, fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
                 ),
                 if (!isReply) ...[
                   const SizedBox(width: 16),
-                  // 💬 زر تفعيل الرد المتداخل وربطه هندسياً تحت الأب بالملي
                   InkWell(
                     onTap: () {
                       HapticFeedback.lightImpact();
