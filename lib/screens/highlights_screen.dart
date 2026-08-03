@@ -76,28 +76,25 @@ class _HighlightsScreenState extends State<HighlightsScreen> with TickerProvider
     super.dispose();
   }
 
-  // 📡 محرك التمويه التفاعلي الذكي: حساب مشاهدات عشوائية متباينة للأهداف تبدأ فوق الـ 200 وتنمو عشوائياً كل 2-6 دقائق
+  // 📡 محرك التمويه التفاعلي الذكي
   String _generateStealthViews(HighlightMediaModel media) {
     final String key = media.id.isNotEmpty ? media.id : media.videoUrl;
     
-    // 1️⃣ الطبقة الأولى: تحديد رقم البداية العشوائي الفريد لكل لقطة فوق الـ 200 مشاهدة لكسر التماثل العشوائي
     if (!_baseViewsMap.containsKey(key)) {
       final int seed = key.hashCode.abs();
-      _baseViewsMap[key] = 200 + (seed % 190); // مئات الخيارات اللامتناهية تبدأ من 200 إلى 390 مشاهدة أولية للقطة
-      _timeOffsetMap[key] = 2 + (seed % 5);    // توزيع تفاوت أوقات تحديث المشاهدات عشوائياً (كل 2 أو 3 أو 4 أو 5 أو 6 دقائق)
+      _baseViewsMap[key] = 200 + (seed % 190);
+      _timeOffsetMap[key] = 2 + (seed % 5);
     }
 
     final int baseViews = _baseViewsMap[key]!;
     final int minutesInterval = _timeOffsetMap[key]!;
     
-    // 2️⃣ الطبقة الثانية: حساب الوقت المنقضي منذ نزول الملخص وتوليد قفزات نمو عشوائية فوق الـ 100 مشاهدة
     final duration = DateTime.now().difference(media.publishedAt);
     final int passedIntervals = duration.inMinutes ~/ minutesInterval;
     
     int growth = 0;
     if (passedIntervals > 0) {
       final int cryptoSeed = key.hashCode.abs() + passedIntervals;
-      // قفزة نمو عشوائية ومستقلة لكل فيديو تتراوح بين 100 إلى 220 مشاهدة إضافية لكل نبضة وقت
       final int stepValue = 100 + (cryptoSeed % 120); 
       growth = passedIntervals * stepValue;
     }
@@ -124,7 +121,7 @@ class _HighlightsScreenState extends State<HighlightsScreen> with TickerProvider
       setState(() {});
     }
   }
-  // 🎬 المشغل السينمائي المتكامل (The Quantum Video Engine) المزود بأزرار القفز الزمني وعناصر التحكم الهيدروليكية
+
   void _openFullscreenVideoPlayer(BuildContext context, HighlightMediaModel media) {
     HapticFeedback.vibrate();
     if (mounted) {
@@ -141,7 +138,7 @@ class _HighlightsScreenState extends State<HighlightsScreen> with TickerProvider
 
     double localVolume = 0.8;
     double localBrightness = 0.6;
-    double currentProgress = 0.3; // محاكاة لمؤشر شريط التقدم السائل للفيديو الحقيقي
+    double currentProgress = 0.3;
 
     showGeneralDialog(
       context: context,
@@ -165,7 +162,6 @@ class _HighlightsScreenState extends State<HighlightsScreen> with TickerProvider
                             if (media.imageUrl.isNotEmpty)
                               Positioned.fill(child: Image.network(media.imageUrl, fit: BoxFit.cover)),
                             Container(color: Colors.black54),
-                            // 🏷️ نظام وسم الحقوق التلقائي والمحمي لـ NF SPORTS داخل شاشة المشغل السينمائي
                             Positioned(
                               top: 16,
                               right: 16,
@@ -176,11 +172,11 @@ class _HighlightsScreenState extends State<HighlightsScreen> with TickerProvider
                                   decoration: BoxDecoration(
                                     color: Colors.black38,
                                     borderRadius: BorderRadius.circular(6),
-                                    border: Border.all(color: const Color(0xFF00FF66).withOpacity(0.3)),
+                                    border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.3)),
                                   ),
                                   child: const Text(
                                     "NF SPORTS",
-                                    style: TextStyle(color: Color(0xFF00FF66), fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 1.0),
+                                    style: TextStyle(color: Color(0xFF00A3FF), fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 1.0),
                                   ),
                                 ),
                               ),
@@ -193,12 +189,11 @@ class _HighlightsScreenState extends State<HighlightsScreen> with TickerProvider
                                 decoration: BoxDecoration(
                                   color: Colors.black54,
                                   borderRadius: BorderRadius.circular(4),
-                                  border: Border.all(color: const Color(0xFF00FF66), width: 1),
+                                  border: Border.all(color: const Color(0xFF00A3FF), width: 1),
                                 ),
-                                child: const Text("1080p HD", style: TextStyle(color: Color(0xFF00FF66), fontSize: 9, fontWeight: FontWeight.bold)),
+                                child: const Text("1080p HD", style: TextStyle(color: Color(0xFF00A3FF), fontSize: 9, fontWeight: FontWeight.bold)),
                               ),
                             ),
-                            // 🛸 كبسولة القفز الزمني اللمسي التفاعلية في منتصف المشغل (+10ث / -10ث)
                             Center(
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -213,7 +208,7 @@ class _HighlightsScreenState extends State<HighlightsScreen> with TickerProvider
                                     },
                                   ),
                                   const SizedBox(width: 40),
-                                  const Icon(Icons.play_arrow_rounded, color: Color(0xFF00FF66), size: 64),
+                                  const Icon(Icons.play_arrow_rounded, color: Color(0xFF00A3FF), size: 64),
                                   const SizedBox(width: 40),
                                   IconButton(
                                     icon: const Icon(Icons.forward_10_rounded, color: Colors.white, size: 36),
@@ -248,7 +243,7 @@ class _HighlightsScreenState extends State<HighlightsScreen> with TickerProvider
                               padding: const EdgeInsets.only(left: 20),
                               child: localBrightness < 0.5
                                   ? const Icon(Icons.brightness_low, color: Colors.white24)
-                                  : const Icon(Icons.brightness_high, color: Color(0xFF00FF66)),
+                                  : const Icon(Icons.brightness_high, color: Color(0xFF00A3FF)),
                             ),
                           ),
                         ),
@@ -265,7 +260,7 @@ class _HighlightsScreenState extends State<HighlightsScreen> with TickerProvider
                               padding: const EdgeInsets.only(right: 20),
                               child: localVolume == 0
                                   ? const Icon(Icons.volume_off, color: Colors.white24)
-                                  : const Icon(Icons.volume_up, color: Color(0xFF00FF66)),
+                                  : const Icon(Icons.volume_up, color: Color(0xFF00A3FF)),
                             ),
                           ),
                         ),
@@ -281,12 +276,12 @@ class _HighlightsScreenState extends State<HighlightsScreen> with TickerProvider
                       decoration: BoxDecoration(
                         color: AppTheme.surfaceColor.withOpacity(0.75),
                         borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: const Color(0xFF00FF66).withOpacity(0.2)),
+                        border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.2)),
                       ),
                       child: Row(
                         textDirection: TextDirection.rtl,
                         children: [
-                          const Icon(Icons.pause_circle_filled, color: Color(0xFF00FF66), size: 28),
+                          const Icon(Icons.pause_circle_filled, color: Color(0xFF00A3FF), size: 28),
                           const SizedBox(width: 12),
                           Expanded(
                             child: Text(
@@ -299,7 +294,7 @@ class _HighlightsScreenState extends State<HighlightsScreen> with TickerProvider
                           ),
                           const SizedBox(width: 12),
                           IconButton(
-                            icon: const Icon(Icons.download_for_offline, color: Color(0xFF00FF66), size: 24),
+                            icon: const Icon(Icons.download_for_offline, color: Color(0xFF00A3FF), size: 24),
                             onPressed: () {
                               HapticFeedback.mediumImpact();
                               ScaffoldMessenger.of(context).showSnackBar(
@@ -335,11 +330,10 @@ class _HighlightsScreenState extends State<HighlightsScreen> with TickerProvider
       backgroundColor: AppTheme.backgroundColor,
       body: SafeArea(
         child: StreamBuilder(
-          // 🔮 ربط ليزري مباشر وحي بجدول الملخصات المستقل ليتنفس البيانات اللحظية أولاً بأول وحسب ترتيب الأحدث
           stream: supabase.from('highlights').stream(primaryKey: ['id']).order('published_at', ascending: false),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator(color: Color(0xFF00FF66)));
+              return const Center(child: CircularProgressIndicator(color: Color(0xFF00A3FF)));
             }
             if (snapshot.hasError) {
               return const Center(child: Text("تعذر جلب البيانات الحالية", style: TextStyle(color: Colors.white24, fontFamily: 'Cairo')));
@@ -352,7 +346,7 @@ class _HighlightsScreenState extends State<HighlightsScreen> with TickerProvider
               return const Center(child: Text("لا توجد لقطات متوفرة حالياً", style: TextStyle(color: Colors.white38, fontFamily: 'Cairo')));
             }
             return RefreshIndicator(
-              color: const Color(0xFF00FF66),
+              color: const Color(0xFF00A3FF),
               backgroundColor: const Color(0xFF0A1220),
               strokeWidth: 3,
               onRefresh: _handleRefresh,
@@ -362,7 +356,6 @@ class _HighlightsScreenState extends State<HighlightsScreen> with TickerProvider
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 16),
-                    // ⭕ شريط دوائر الستوري الأفقية اللانهائية الممتدة لتبث التفاعل المرئي اللامحدود لآلاف اللقطات والأهداف
                     Directionality(
                       textDirection: TextDirection.rtl,
                       child: SizedBox(
@@ -389,23 +382,23 @@ class _HighlightsScreenState extends State<HighlightsScreen> with TickerProvider
                                       height: 65,
                                       decoration: BoxDecoration(
                                         shape: BoxShape.circle,
-                                        border: Border.all(color: isRead ? Colors.white24 : const Color(0xFF00FF66), width: 2),
-                                        boxShadow: !isRead ? [BoxShadow(color: const Color(0xFF00FF66).withOpacity(0.3), blurRadius: 6)] : null,
+                                        border: Border.all(color: isRead ? Colors.white24 : const Color(0xFF00A3FF), width: 2),
+                                        boxShadow: !isRead ? [BoxShadow(color: const Color(0xFF00A3FF).withOpacity(0.3), blurRadius: 6)] : null,
                                       ),
                                       child: ClipRRect(
                                         borderRadius: BorderRadius.circular(40),
                                         child: highlightsList[i].imageUrl.isNotEmpty
                                             ? Image.network(highlightsList[i].imageUrl, fit: BoxFit.cover)
-                                            : Container(color: AppTheme.surfaceColor, child: const Icon(Icons.play_circle_outline, color: Color(0xFF00FF66))),
+                                            : Container(color: AppTheme.surfaceColor, child: const Icon(Icons.play_circle_outline, color: Color(0xFF00A3FF))),
                                       ),
                                     ),
                                     const SizedBox(height: 6),
                                     Row(
                                       children: [
-                                        Icon(Icons.play_arrow, size: 10, color: isRead ? Colors.white24 : const Color(0xFF00FF66).withOpacity(0.7)),
+                                        Icon(Icons.play_arrow, size: 10, color: isRead ? Colors.white24 : const Color(0xFF00A3FF).withOpacity(0.7)),
                                         const SizedBox(width: 2),
                                         Text(
-                                          _generateStealthViews(highlightsList[i]), // ربط فوري بمحرك التمويه اللامتناهي فوق الـ 200 مشاهدة عشوائية
+                                          _generateStealthViews(highlightsList[i]),
                                           style: TextStyle(color: isRead ? Colors.white24 : Colors.white60, fontSize: 9.5, fontWeight: FontWeight.bold, fontFamily: 'Cairo'),
                                         ),
                                       ],
@@ -419,26 +412,26 @@ class _HighlightsScreenState extends State<HighlightsScreen> with TickerProvider
                       ),
                     ),
                     const SizedBox(height: 5),
-                    // 🛸 مستطيل الإعلانات الخرافي المذهللللل والمتحرك سحابياً بالكامل لقسم الملخصات (Zero-GitHub Deployment)
+                    // 🛸 مستطيل الإعلانات الأزرق الفاخر (تم تكبيره وتعديل النص لأبيض مع أزرق)
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                       child: Container(
-                        height: 50,
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        height: 62, // ✅ تم تكبير الحجم
+                        padding: const EdgeInsets.symmetric(horizontal: 14),
                         decoration: BoxDecoration(
                           color: AppTheme.surfaceColor.withOpacity(0.85),
-                          borderRadius: BorderRadius.circular(14),
-                          border: Border.all(color: const Color(0xFF00FF66).withOpacity(0.3), width: 1.5),
+                          borderRadius: BorderRadius.circular(16), // ✅ زيادة انحناء الحواف
+                          border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.3), width: 1.5),
                           boxShadow: [
                             BoxShadow(
-                              color: const Color(0xFF00FF66).withOpacity(0.12),
+                              color: const Color(0xFF00A3FF).withOpacity(0.12),
                               blurRadius: 10,
                               spreadRadius: 0,
                             )
                           ],
                         ),
                         child: ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(14),
                           child: AnimatedBuilder(
                             animation: _marqueeController,
                             builder: (context, child) {
@@ -446,15 +439,15 @@ class _HighlightsScreenState extends State<HighlightsScreen> with TickerProvider
                                 translation: Offset(-1.0 + (_marqueeController.value * 2.0), 0.0),
                                 child: Center(
                                   child: Text(
-                                    '⚽ NF SPORTS HIGHLIGHTS 🎬', // ترويسة البراند المخصصة لقسم الملخصات بنقاء عالمي
+                                    '⚽ NF SPORTS HIGHLIGHTS 🎬', 
                                     maxLines: 1,
                                     style: GoogleFonts.cairo(
-                                      color: const Color(0xFF00FF66),
-                                      fontSize: 13,
+                                      color: Colors.white, // ✅ نص أبيض
+                                      fontSize: 16, // ✅ تم تكبير حجم النص
                                       fontWeight: FontWeight.w900,
                                       letterSpacing: 1.5,
                                       shadows: [
-                                        Shadow(color: const Color(0xFF00FF66).withOpacity(0.6), blurRadius: 8)
+                                        Shadow(color: const Color(0xFF00A3FF).withOpacity(0.6), blurRadius: 8) // ✅ توهج أزرق
                                       ],
                                     ),
                                   ),
@@ -466,15 +459,14 @@ class _HighlightsScreenState extends State<HighlightsScreen> with TickerProvider
                       ),
                     ),
                     const SizedBox(height: 5),
-                    // 🚨 ترويسة العنوان الرئيسي لقسم اللقطات والأهداف المباشرة حياً
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                         decoration: BoxDecoration(
-                          color: const Color(0x1A00FF66),
+                          color: const Color(0x1A00A3FF),
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: const Color(0xFF00FF66).withOpacity(0.2), width: 1),
+                          border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.2), width: 1),
                         ),
                         child: Row(
                           textDirection: TextDirection.rtl,
@@ -497,7 +489,7 @@ class _HighlightsScreenState extends State<HighlightsScreen> with TickerProvider
                               style: GoogleFonts.cairo(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w900),
                             ),
                             const Spacer(),
-                            const Text("LIVE", style: TextStyle(color: Color(0xFF00FF66), fontSize: 11, fontWeight: FontWeight.bold)),
+                            const Text("LIVE", style: TextStyle(color: Color(0xFF00A3FF), fontSize: 11, fontWeight: FontWeight.bold)),
                           ],
                         ),
                       ),
@@ -524,7 +516,6 @@ class _HighlightsScreenState extends State<HighlightsScreen> with TickerProvider
     );
   }
 
-  // 🎬 تشييد كرت الملخص السينمائي الكبير والأول بالألوان النيونية الخضراء والألواح الزجاجية لـ NF SPORTS
   Widget _buildMainHighlightCard(BuildContext context, HighlightMediaModel media) {
     final bool isRead = _readHighlightsMemory.contains(media.videoUrl);
 
@@ -536,7 +527,7 @@ class _HighlightsScreenState extends State<HighlightsScreen> with TickerProvider
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(24),
-            boxShadow: !isRead ? [BoxShadow(color: const Color(0xFF00FF66).withOpacity(0.12), blurRadius: 16)] : null,
+            boxShadow: !isRead ? [BoxShadow(color: const Color(0xFF00A3FF).withOpacity(0.12), blurRadius: 16)] : null,
           ),
           child: GlassCard(
             padding: EdgeInsets.zero,
@@ -556,7 +547,6 @@ class _HighlightsScreenState extends State<HighlightsScreen> with TickerProvider
                             : Container(color: Colors.black26, child: const Center(child: Icon(Icons.image, color: Colors.white24, size: 48))),
                       ),
                     ),
-                    // 🏷️ نظام وسم الحقوق التلقائي والمحمي لـ NF SPORTS على غلاف الملخص الكبير
                     Positioned(
                       bottom: 10,
                       left: 12,
@@ -565,15 +555,14 @@ class _HighlightsScreenState extends State<HighlightsScreen> with TickerProvider
                         decoration: BoxDecoration(
                           color: Colors.black.withOpacity(0.6),
                           borderRadius: BorderRadius.circular(6),
-                          border: Border.all(color: const Color(0xFF00FF66).withOpacity(0.2)),
+                          border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.2)),
                         ),
                         child: const Text(
                           "NF SPORTS",
-                          style: TextStyle(color: Color(0xFF00FF66), fontSize: 9, fontWeight: FontWeight.bold, letterSpacing: 0.5),
+                          style: TextStyle(color: Color(0xFF00A3FF), fontSize: 9, fontWeight: FontWeight.bold, letterSpacing: 0.5),
                         ),
                       ),
                     ),
-                    // زر تشغيل نيون نبضي فخم في منتصف الصورة
                     Positioned.fill(
                       child: Center(
                         child: FadeTransition(
@@ -583,22 +572,21 @@ class _HighlightsScreenState extends State<HighlightsScreen> with TickerProvider
                             decoration: BoxDecoration(
                               color: Colors.black45,
                               shape: BoxShape.circle,
-                              border: Border.all(color: isRead ? Colors.white38 : const Color(0xFF00FF66), width: 2),
-                              boxShadow: !isRead ? [BoxShadow(color: const Color(0xFF00FF66).withOpacity(0.4), blurRadius: 12)] : null,
+                              border: Border.all(color: isRead ? Colors.white38 : const Color(0xFF00A3FF), width: 2),
+                              boxShadow: !isRead ? [BoxShadow(color: const Color(0xFF00A3FF).withOpacity(0.4), blurRadius: 12)] : null,
                             ),
-                            child: Icon(Icons.play_arrow_rounded, color: isRead ? Colors.white38 : const Color(0xFF00FF66), size: 36),
+                            child: Icon(Icons.play_arrow_rounded, color: isRead ? Colors.white38 : const Color(0xFF00A3FF), size: 36),
                           ),
                         ),
                       ),
                     ),
-                    // أيقونة شارة الجودة العالية المشعة في الزاوية
                     Positioned(
                       top: 12,
                       left: 12,
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                        decoration: BoxDecoration(color: Colors.black87, borderRadius: BorderRadius.circular(6), border: Border.all(color: const Color(0xFF00FF66), width: 1)),
-                        child: const Text("HD", style: TextStyle(color: Color(0xFF00FF66), fontSize: 9, fontWeight: FontWeight.bold)),
+                        decoration: BoxDecoration(color: Colors.black87, borderRadius: BorderRadius.circular(6), border: Border.all(color: const Color(0xFF00A3FF), width: 1)),
+                        child: const Text("HD", style: TextStyle(color: Color(0xFF00A3FF), fontSize: 9, fontWeight: FontWeight.bold)),
                       ),
                     ),
                   ],
@@ -631,9 +619,9 @@ class _HighlightsScreenState extends State<HighlightsScreen> with TickerProvider
                             height: 34,
                             padding: const EdgeInsets.symmetric(horizontal: 16),
                             decoration: BoxDecoration(
-                              color: isRead ? Colors.white10 : const Color(0x1A00FF66),
+                              color: isRead ? Colors.white10 : const Color(0x1A00A3FF),
                               borderRadius: BorderRadius.circular(10),
-                              border: Border.all(color: isRead ? Colors.white24 : const Color(0xFF00FF66), width: 1.5),
+                              border: Border.all(color: isRead ? Colors.white24 : const Color(0xFF00A3FF), width: 1.5),
                             ),
                             child: InkWell(
                               onTap: () => _openFullscreenVideoPlayer(context, media),
@@ -646,7 +634,7 @@ class _HighlightsScreenState extends State<HighlightsScreen> with TickerProvider
                           Row(
                             textDirection: TextDirection.rtl,
                             children: [
-                              const Icon(Icons.play_arrow, color: Color(0xFF00FF66), size: 13),
+                              const Icon(Icons.play_arrow, color: Color(0xFF00A3FF), size: 13),
                               const SizedBox(width: 4),
                               Text(
                                 _generateStealthViews(media),
@@ -666,7 +654,7 @@ class _HighlightsScreenState extends State<HighlightsScreen> with TickerProvider
       ),
     );
   }
-  // 📺 تشييد كروت الملخصات الفرعية والمنتظمة بالأسفل بألوان السايبر نيون والألواح الزجاجية الفاخرة
+
   Widget _buildSubHighlightCard(BuildContext context, HighlightMediaModel media) {
     final bool isRead = _readHighlightsMemory.contains(media.videoUrl);
 
@@ -710,9 +698,9 @@ class _HighlightsScreenState extends State<HighlightsScreen> with TickerProvider
                         decoration: BoxDecoration(
                           color: Colors.black45,
                           shape: BoxShape.circle,
-                          border: Border.all(color: isRead ? Colors.white38 : const Color(0xFF00FF66), width: 1.5),
+                          border: Border.all(color: isRead ? Colors.white38 : const Color(0xFF00A3FF), width: 1.5),
                         ),
-                        child: Icon(Icons.play_arrow_rounded, color: isRead ? Colors.white38 : const Color(0xFF00FF66), size: 18),
+                        child: Icon(Icons.play_arrow_rounded, color: isRead ? Colors.white38 : const Color(0xFF00A3FF), size: 18),
                       ),
                     ),
                   ),
@@ -747,9 +735,9 @@ class _HighlightsScreenState extends State<HighlightsScreen> with TickerProvider
                           height: 30,
                           padding: const EdgeInsets.symmetric(horizontal: 12),
                           decoration: BoxDecoration(
-                            color: isRead ? Colors.white10 : const Color(0x1A00FF66),
+                            color: isRead ? Colors.white10 : const Color(0x1A00A3FF),
                             borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: isRead ? Colors.white24 : const Color(0xFF00FF66).withOpacity(0.5), width: 1),
+                            border: Border.all(color: isRead ? Colors.white24 : const Color(0xFF00A3FF).withOpacity(0.5), width: 1),
                           ),
                           child: InkWell(
                             onTap: () => _openFullscreenVideoPlayer(context, media),
