@@ -585,7 +585,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                   },
                                 ),
                           ),
-                        ),
+                       ),
                         const SizedBox(height: 20),
                         const SectionTitle(title: 'آخر الأخبار'),
                         _buildHorizontalList(isNews: true),
@@ -595,13 +595,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         const SizedBox(height: 120),
                       ],
                     ),
-                  );
-                },
-              ),
-      ),
-    );
-  }
-
+                  ),
+                );
+              },
+            ),
+        
   Widget _buildHorizontalList({required bool isNews}) {
     final listData = isNews ? _latestNews : _topHighlights;
     
