@@ -596,13 +596,19 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
     final String text = comment['comment_text'] ?? '';
     final int likes = int.tryParse(comment['likes'].toString()) ?? 0;
 
-    return Container(
+        return Container(
       margin: const EdgeInsets.symmetric(vertical: 4),
+      decoration: BoxDecoration(
+        color: Color(0xFF161926).withOpacity(isReply ? 0.3 : 0.6),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: Color(0xFF00FF66).withOpacity(isReply ? 0.1 : 0.18),
+          width: 1,
+        ),
+      ),
       child: GlassCard(
-        // استخدام الألواح الزجاجية الزرقاء الداكنة كقاعدة وتطعيم الحواف بالأخضر النيوني المعتم الغامض المعتمد
         borderRadius: 16,
         padding: const EdgeInsets.all(12),
-        borderColor: const Color(0xFF00FF66).withOpacity(isReply ? 0.1 : 0.18),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
