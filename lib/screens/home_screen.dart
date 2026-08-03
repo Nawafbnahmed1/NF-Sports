@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+// 🔵 نظام البث السحابي المباشر لتوحيد الشاشات وصفحة النتائج تلقائياً لـ NF SPORTS لعام 2026 حياً
 import 'package:supabase_flutter/supabase_flutter.dart'; 
 import '../theme/app_theme.dart';
 import '../widgets/glass_card.dart';
@@ -83,7 +84,6 @@ class HomeMediaModel {
     );
   }
 }
-
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -156,7 +156,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     }
     return '$totalViews';
   }
-
   void _openFullscreenVideoPlayer(BuildContext context, HomeMediaModel media) {
     HapticFeedback.vibrate();
     setState(() {
@@ -179,163 +178,154 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       barrierColor: Colors.black.withOpacity(0.95),
       transitionDuration: const Duration(milliseconds: 300),
       pageBuilder: (context, anim1, anim2) {
-        return StatefulBuilder(
-          builder: (context, setPlayerState) {
-            return Scaffold(
-              backgroundColor: Colors.black,
-              body: Stack(
-                children: [
-                  Positioned.fill(
-                    child: Center(
-                      child: AspectRatio(
-                        aspectRatio: 16 / 9,
-                        child: Stack(
-                          children: [
-                            if (media.imageUrl.isNotEmpty)
-                              Positioned.fill(child: Image.network(media.imageUrl, fit: BoxFit.cover)),
-                            Container(color: Colors.black45),
-                            Positioned(
-                              top: 16,
-                              right: 16,
-                              child: FadeTransition(
-                                opacity: _pulseController,
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                  decoration: BoxDecoration(
-                                    color: Colors.black38,
-                                    borderRadius: BorderRadius.circular(6),
-                                    border: Border.all(color: AppTheme.neonBlue.withOpacity(0.3)),
-                                  ),
-                                  child: const Text(
-                                    "NF SPORTS",
-                                    style: TextStyle(
-                                      color: Colors.white70,
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.bold,
-                                      letterSpacing: 1.0,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Positioned(
-                              top: 16,
-                              left: 16,
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                decoration: BoxDecoration(
-                                  color: Colors.black54,
-                                  borderRadius: BorderRadius.circular(4),
-                                  border: Border.all(color: const Color(0xFF00F0FF), width: 1),
-                                ),
-                                child: const Text("1080p HD", style: TextStyle(color: Color(0xFF00F0FF), fontSize: 9, fontWeight: FontWeight.bold)),
-                              ),
-                            ),
-                            const Center(
-                              child: Icon(Icons.play_arrow_rounded, color: AppTheme.neonBlue, size: 64),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  Positioned.fill(
-                    child: Row(
+        return Scaffold(
+          backgroundColor: Colors.black,
+          body: Stack(
+            children: [
+              Positioned.fill(
+                child: Center(
+                  child: AspectRatio(
+                    aspectRatio: 16 / 9,
+                    child: Stack(
                       children: [
-                        Expanded(
-                          child: GestureDetector(
-                            onVerticalDragUpdate: (details) {
-                              setPlayerState(() {
-                                localBrightness = (localBrightness - details.primaryDelta! / 200).clamp(0.0, 1.0);
-                              });
-                            },
+                        if (media.imageUrl.isNotEmpty)
+                          Positioned.fill(child: Image.network(media.imageUrl, fit: BoxFit.cover)),
+                        Container(color: Colors.black45),
+                        Positioned(
+                          top: 16,
+                          right: 16,
+                          child: FadeTransition(
+                            opacity: _pulseController,
                             child: Container(
-                              color: Colors.transparent,
-                              alignment: Alignment.centerLeft,
-                              padding: const EdgeInsets.only(left: 20),
-                              child: localBrightness < 0.5
-                                  ? const Icon(Icons.brightness_low, color: Colors.white24)
-                                  : const Icon(Icons.brightness_high, color: AppTheme.neonBlue),
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: Colors.black38,
+                                borderRadius: BorderRadius.circular(6),
+                                border: Border.all(color: AppTheme.neonBlue.withOpacity(0.3)),
+                              ),
+                              child: const Text(
+                                "NF SPORTS",
+                                style: TextStyle(
+                                  color: Colors.white70,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 1.0,
+                                ),
+                              ),
                             ),
                           ),
                         ),
-                        Expanded(
-                          child: GestureDetector(
-                            onVerticalDragUpdate: (details) {
-                              setPlayerState(() {
-                                localVolume = (localVolume - details.primaryDelta! / 200).clamp(0.0, 1.0);
-                              });
-                            },
-                            child: Container(
-                              color: Colors.transparent,
-                              alignment: Alignment.centerRight,
-                              padding: const EdgeInsets.only(right: 20),
-                              child: localVolume == 0
-                                  ? const Icon(Icons.volume_off, color: Colors.white24)
-                                  : const Icon(Icons.volume_up, color: AppTheme.neonBlue),
+                        Positioned(
+                          top: 16,
+                          left: 16,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: Colors.black54,
+                              borderRadius: BorderRadius.circular(4),
+                              border: Border.all(color: const Color(0xFF00F0FF), width: 1),
                             ),
+                            child: const Text("1080p HD", style: TextStyle(color: Color(0xFF00F0FF), fontSize: 9, fontWeight: FontWeight.bold)),
                           ),
+                        ),
+                        const Center(
+                          child: Icon(Icons.play_arrow_rounded, color: AppTheme.neonBlue, size: 64),
                         ),
                       ],
                     ),
                   ),
-                  Positioned(
-                    bottom: 30,
-                    left: 20,
-                    right: 20,
-                    child: Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: AppTheme.surfaceColor.withOpacity(0.75),
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: AppTheme.neonBlue.withOpacity(0.2)),
-                      ),
-                      child: Row(
-                        textDirection: TextDirection.rtl,
-                        children: [
-                          const Icon(Icons.pause_circle_filled, color: AppTheme.neonBlue, size: 28),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Text(
-                              media.title.isNotEmpty ? media.title : "أبرز لقطات المباراة",
-                              textDirection: TextDirection.rtl,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold, fontFamily: 'Cairo'),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          IconButton(
-                            icon: const Icon(Icons.download_for_offline, color: AppTheme.neonBlue, size: 24),
-                            onPressed: () {
-                              HapticFeedback.mediumImpact();
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('جاري تحميل المقطع بحقوق NF SPORTS المثبتة...', style: TextStyle(fontFamily: 'Cairo'))),
-                              );
-                            },
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.fullscreen_exit, color: Colors.white, size: 24),
-                            onPressed: () {
-                              SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-                              Navigator.pop(context);
-                            },
-                          ),
-                        ],
+                ),
+              ),
+              Positioned.fill(
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: GestureDetector(
+                        onVerticalDragUpdate: (details) {
+                          localBrightness = (localBrightness - details.primaryDelta! / 200).clamp(0.0, 1.0);
+                        },
+                        child: Container(
+                          color: Colors.transparent,
+                          alignment: Alignment.centerLeft,
+                          padding: const EdgeInsets.only(left: 20),
+                          child: localBrightness < 0.5
+                              ? const Icon(Icons.brightness_low, color: Colors.white24)
+                              : const Icon(Icons.brightness_high, color: AppTheme.neonBlue),
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                    Expanded(
+                      child: GestureDetector(
+                        onVerticalDragUpdate: (details) {
+                          localVolume = (localVolume - details.primaryDelta! / 200).clamp(0.0, 1.0);
+                        },
+                        child: Container(
+                          color: Colors.transparent,
+                          alignment: Alignment.centerRight,
+                          padding: const EdgeInsets.only(right: 20),
+                          child: localVolume == 0
+                              ? const Icon(Icons.volume_off, color: Colors.white24)
+                              : const Icon(Icons.volume_up, color: AppTheme.neonBlue),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            );
-          },
+              Positioned(
+                bottom: 30,
+                left: 20,
+                right: 20,
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: AppTheme.surfaceColor.withOpacity(0.75),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: AppTheme.neonBlue.withOpacity(0.2)),
+                  ),
+                  child: Row(
+                    textDirection: TextDirection.rtl,
+                    children: [
+                      const Icon(Icons.pause_circle_filled, color: AppTheme.neonBlue, size: 28),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          media.title.isNotEmpty ? media.title : "أبرز لقطات المباراة",
+                          textDirection: TextDirection.rtl,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold, fontFamily: 'Cairo'),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      IconButton(
+                        icon: const Icon(Icons.download_for_offline, color: AppTheme.neonBlue, size: 24),
+                        onPressed: () {
+                          HapticFeedback.mediumImpact();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('جاري تحميل المقطع بحقوق NF SPORTS المثبتة...', style: TextStyle(fontFamily: 'Cairo'))),
+                          );
+                        },
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.fullscreen_exit, color: Colors.white, size: 24),
+                        onPressed: () {
+                          SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+                          Navigator.pop(context);
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         );
       },
     ).then((_) {
       SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     });
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -344,6 +334,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         child: _isLoading
             ? const Center(child: CircularProgressIndicator(color: AppTheme.neonBlue))
             : StreamBuilder(
+                // 🔮 البث السحابي التلقائي اللحظي: استماع حي ومفتوح لجدول المباريات وصفحة النتائج ليتحدث التطبيق تلقائياً بدون سحب يدوياً نهائياً
                 stream: Supabase.instance.client.from('matches').stream(primaryKey: ['id']).order('time', ascending: true),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
@@ -378,6 +369,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                   ),
                                 ],
                               ),
+                              // 🔔 جرس الإشعارات عالي الجودة والجاهز لبث العواجل بالتوازي اللحظي التلقائي مع السحاب
                               IconButton(
                                 icon: const Icon(Icons.notifications_active, color: AppTheme.neonBlue, size: 32),
                                 onPressed: () {
@@ -584,8 +576,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                     );
                                   },
                                 ),
-                          ),
-                       ),
+                        ),
                         const SizedBox(height: 20),
                         const SectionTitle(title: 'آخر الأخبار'),
                         _buildHorizontalList(isNews: true),
@@ -599,19 +590,17 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 );
               },
             ),
-        
+      ),
+    );
+  }
   Widget _buildHorizontalList({required bool isNews}) {
+    // 🔮 المزامنة السحابية اللحظية: توجيه التحديث التلقائي لقراءة صفحة الملخصات أو الأخبار حياً من السحاب
     final listData = isNews ? _latestNews : _topHighlights;
     
     return SizedBox(
       height: isNews ? 165 : 175,
       child: listData.isEmpty
-          ? Center(
-              child: Text(
-                isNews ? 'لا توجد أخبار طازجة حالياً' : 'لا توجد لقطات متوفرة حالياً',
-                style: GoogleFonts.cairo(color: Colors.white24, fontSize: 12)
-              )
-            )
+          ? Center(child: Text(isNews ? 'لا توجد أخبار طازجة حالياً' : 'لا توجد لقطات متوفرة حالياً', style: GoogleFonts.cairo(color: Colors.white24, fontSize: 12)))
           : ListView.builder(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               scrollDirection: Axis.horizontal,
@@ -627,8 +616,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     setState(() {
                       _homeReadMemory.add(media.videoUrl);
                     });
-                    HapticFeedback.mediumImpact();
+                    HapticFeedback.mediumImpact(); // اهتزاز تكتيكي ناعم يشعر المستخدم بقوة التطبيق
                     if (isNews) {
+                      // الانتقال الفوري والمضمون إلى شاشة تفاصيل الأخبار الرسمية لقراءة الخبر من المربع الزجاجي
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -645,6 +635,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         ),
                       );
                     } else {
+                      // إطلاق المشغل السينمائي المحكم لـ صفحة الملخصات والأهداف الحاسمة فوراً
                       _openFullscreenVideoPlayer(context, media);
                     }
                   },
