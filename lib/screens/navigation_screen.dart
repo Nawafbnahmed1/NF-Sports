@@ -127,7 +127,7 @@ class _NavigationScreenState extends State<NavigationScreen> with SingleTickerPr
                     color: isSelected ? const Color(0xFF00A3FF) : Colors.white38,
                     size: isSelected ? 22 : 20,
                     shadows: isSelected ? [
-                      const Shadow(color: Color(0xFF00A3FF).withOpacity(0.6), blurRadius: 10)
+                     Shadow(color: Color(0xFF00A3FF).withOpacity(0.6), blurRadius: 10)
                     ] : null,
                   ),
                   const SizedBox(height: 3),
