@@ -448,7 +448,6 @@ class _HighlightsScreenState extends State<HighlightsScreen> with TickerProvider
                                   child: Text(
                                     '⚽ NF SPORTS HIGHLIGHTS 🎬', // ترويسة البراند المخصصة لقسم الملخصات بنقاء عالمي
                                     maxLines: 1,
-                                    whiteSpace: WhiteSpace.noWrap,
                                     style: GoogleFonts.cairo(
                                       color: const Color(0xFF00FF66),
                                       fontSize: 13,
@@ -564,7 +563,7 @@ class _HighlightsScreenState extends State<HighlightsScreen> with TickerProvider
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                         decoration: BoxDecoration(
-                          color: Colors.black60,
+                          color: Colors.black.withOpacity(0.6),
                           borderRadius: BorderRadius.circular(6),
                           border: Border.all(color: const Color(0xFF00FF66).withOpacity(0.2)),
                         ),
