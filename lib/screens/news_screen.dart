@@ -54,7 +54,6 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
   late AnimationController _marqueeController;
   final Set<String> _readArticlesMemory = <String>{};
   
-  // مصفوفات لإدارة وتثبيت الذاكرة الحية لمستشعر التمويه التفاعلي الذكي للأرقام العشوائية المتنفسة
   final Map<String, int> _baseViewsMap = {};
   final Map<String, int> _timeOffsetMap = {};
   @override
@@ -78,28 +77,24 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
     super.dispose();
   }
 
-  // 📡 محرك التمويه التفاعلي الذكي: حساب مشاهدات عشوائية متباينة تبدأ فوق الـ 200 وتنمو عشوائياً كل 2-6 دقائق
   String _generateStealthViews(NewsArticleModel article) {
     final String key = article.id.isNotEmpty ? article.id : article.articleUrl;
     
-    // 1️⃣ الطبقة الأولى: تحديد رقم البداية العشوائي الفريد لكل خبر فوق الـ 200 مشاهدة
     if (!_baseViewsMap.containsKey(key)) {
       final int seed = key.hashCode.abs();
-      _baseViewsMap[key] = 200 + (seed % 190); // خيارات لامتناهية تبدأ من 200 إلى 390 مشاهدة أولية
-      _timeOffsetMap[key] = 2 + (seed % 5);    // توزيع تفاوت أوقات التحديث عشوائياً (كل 2 أو 3 أو 4 أو 5 أو 6 دقائق)
+      _baseViewsMap[key] = 200 + (seed % 190);
+      _timeOffsetMap[key] = 2 + (seed % 5);
     }
 
     final int baseViews = _baseViewsMap[key]!;
     final int minutesInterval = _timeOffsetMap[key]!;
     
-    // 2️⃣ الطبقة الثانية: حساب الوقت المنقضي منذ نشر الخبر وتوليد قفزات نمو عشوائية فوق الـ 100 مشاهدة
     final duration = DateTime.now().difference(article.publishedAt);
     final int passedIntervals = duration.inMinutes ~/ minutesInterval;
     
     int growth = 0;
     if (passedIntervals > 0) {
       final int cryptoSeed = key.hashCode.abs() + passedIntervals;
-      // قفزة نمو عشوائية تماماً ومستقلة لكل خبر تتراوح بين 100 إلى 220 مشاهدة إضافية لكل نبضة وقت
       final int stepValue = 100 + (cryptoSeed % 120); 
       growth = passedIntervals * stepValue;
     }
@@ -132,11 +127,10 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
       backgroundColor: AppTheme.backgroundColor,
       body: SafeArea(
         child: StreamBuilder(
-          // 🔮 بث السحاب اللحظي المفتوح: استماع حي وتلقائي لجدول الأخبار المستقل ليتحدث التطبيق في الأجزاء من الثانية وبوزن صفر كيلوبايت
           stream: supabase.from('news').stream(primaryKey: ['id']).order('published_at', ascending: false),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator(color: Color(0xFF00FF66)));
+              return const Center(child: CircularProgressIndicator(color: Color(0xFF00A3FF)));
             }
             if (snapshot.hasError) {
               return const Center(child: Text("تعذر جلب البيانات الحالية", style: TextStyle(color: Colors.white24, fontFamily: 'Cairo')));
@@ -150,7 +144,7 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
             }
 
             return RefreshIndicator(
-              color: const Color(0xFF00FF66),
+              color: const Color(0xFF00A3FF),
               backgroundColor: const Color(0xFF0A1220),
               strokeWidth: 3,
               onRefresh: _handleRefresh,
@@ -160,7 +154,7 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 16),
-                    // ⭕ شريط دوائر الستوري الأفقية اللانهائية الممتدة لتبث التفاعل المرئي اللامحدود لآلاف الأخبار
+                    // ⭕ شريط دوائر الستوري الأفقية
                     Directionality(
                       textDirection: TextDirection.rtl,
                       child: SizedBox(
@@ -169,7 +163,7 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
                           scrollDirection: Axis.horizontal,
                           padding: const EdgeInsets.symmetric(horizontal: 20),
                           physics: const BouncingScrollPhysics(),
-                          itemCount: articles.length, // تم إلغاء الحصار القديم لـ 8 دوائر لتصبح قائمة ممتدة لانهائية
+                          itemCount: articles.length,
                           itemBuilder: (context, i) {
                             final bool isRead = _readArticlesMemory.contains(articles[i].articleUrl);
 
@@ -188,24 +182,23 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
                                       height: 65,
                                       decoration: BoxDecoration(
                                         shape: BoxShape.circle,
-                                        // حواف نيونية مشعة باللون الأخضر المضيء المعتمد
-                                        border: Border.all(color: isRead ? Colors.white24 : const Color(0xFF00FF66), width: 2),
-                                        boxShadow: !isRead ? [BoxShadow(color: const Color(0xFF00FF66).withOpacity(0.3), blurRadius: 6)] : null,
+                                        border: Border.all(color: isRead ? Colors.white24 : const Color(0xFF00A3FF), width: 2),
+                                        boxShadow: !isRead ? [BoxShadow(color: const Color(0xFF00A3FF).withOpacity(0.3), blurRadius: 6)] : null,
                                       ),
                                       child: ClipRRect(
                                         borderRadius: BorderRadius.circular(40),
                                         child: articles[i].imageUrl.isNotEmpty
                                             ? Image.network(articles[i].imageUrl, fit: BoxFit.cover)
-                                            : Container(color: AppTheme.surfaceColor, child: const Icon(Icons.flash_on, color: Color(0xFF00FF66))),
+                                            : Container(color: AppTheme.surfaceColor, child: const Icon(Icons.flash_on, color: Color(0xFF00A3FF))),
                                       ),
                                     ),
                                     const SizedBox(height: 6),
                                     Row(
                                       children: [
-                                        Icon(Icons.visibility, size: 10, color: isRead ? Colors.white24 : const Color(0xFF00FF66).withOpacity(0.7)),
+                                        Icon(Icons.visibility, size: 10, color: isRead ? Colors.white24 : const Color(0xFF00A3FF).withOpacity(0.7)),
                                         const SizedBox(width: 2),
                                         Text(
-                                          _generateStealthViews(articles[i]), // ربط فوري بمحرك التمويه التفاعلي اللامتناهي
+                                          _generateStealthViews(articles[i]),
                                           style: TextStyle(color: isRead ? Colors.white24 : Colors.white60, fontSize: 9.5, fontWeight: FontWeight.bold, fontFamily: 'Cairo'),
                                         ),
                                       ],
@@ -219,45 +212,43 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
                       ),
                     ),
                     const SizedBox(height: 5),
-                    // 🛸 مستطيل الإعلانات الخرافي المذهللللل والمتحرك سحابياً بالكامل (Zero-GitHub Deployment)
+                    // 🛸 مستطيل الإعلانات الأزرق الفاخر (تم تكبيره وتعديل النص لأبيض مع أزرق)
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                       child: Container(
-                        height: 50,
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        height: 62, // تم تكبير الحجم
+                        padding: const EdgeInsets.symmetric(horizontal: 14),
                         decoration: BoxDecoration(
-                          // مظهر أزرق زجاجي فاخر مشع (Glassmorphism Midnight)
                           color: AppTheme.surfaceColor.withOpacity(0.85),
-                          borderRadius: BorderRadius.circular(14),
-                          // حواف نيونية مشعة باللون الأخضر المضيء المعتمد لتوحيد الواجهات السداسية
-                          border: Border.all(color: const Color(0xFF00FF66).withOpacity(0.3), width: 1.5),
+                          borderRadius: BorderRadius.circular(16), // زيادة انحناء الحواف ليكون أكثر فخامة
+                          border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.3), width: 1.5),
                           boxShadow: [
                             BoxShadow(
-                              color: const Color(0xFF00FF66).withOpacity(0.12),
+                              color: const Color(0xFF00A3FF).withOpacity(0.12),
                               blurRadius: 10,
                               spreadRadius: 0,
                             )
                           ],
                         ),
                         child: ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(14),
                           child: AnimatedBuilder(
                             animation: _marqueeController,
                             builder: (context, child) {
                               return FractionalTranslation(
-                                // تحريك النص وانسيابه أفقياً بنعومة فائقة من جهة إلى جهة كشاشات البث العالمية
                                 translation: Offset(-1.0 + (_marqueeController.value * 2.0), 0.0),
                                 child: Center(
                                   child: Text(
-                                    '⚽ NF SPORTS NEWS🗞️',
+                                    '⚽ NF SPORTS NEWS 🗞️',
                                     maxLines: 1,
                                     style: GoogleFonts.cairo(
-                                      color: const Color(0xFF00FF66),
-                                      fontSize: 13,
+                                      // دمج الأبيض مع الأزرق اللامع: النص أبيض مع توهج أزرق
+                                      color: Colors.white,
+                                      fontSize: 16, // تم تكبير حجم النص
                                       fontWeight: FontWeight.w900,
                                       letterSpacing: 1.5,
                                       shadows: [
-                                        Shadow(color: const Color(0xFF00FF66).withOpacity(0.6), blurRadius: 8)
+                                        Shadow(color: const Color(0xFF00A3FF).withOpacity(0.6), blurRadius: 8)
                                       ],
                                     ),
                                   ),
@@ -269,15 +260,15 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
                       ),
                     ),
                     const SizedBox(height: 5),
-                    // 🚨 ترويسة العنوان الرئيسي المضيء لقسم الأخبار الصافي
+                    // 🚨 ترويسة العنوان الرئيسي المضيء
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                         decoration: BoxDecoration(
-                          color: const Color(0x1A00FF66),
+                          color: const Color(0x1A00A3FF), // تم تغيير الخلفية للأزرق
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: const Color(0xFF00FF66).withOpacity(0.2), width: 1),
+                          border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.2), width: 1),
                         ),
                         child: Row(
                           textDirection: TextDirection.rtl,
@@ -300,7 +291,7 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
                               style: GoogleFonts.cairo(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w900),
                             ),
                             const Spacer(),
-                            const Text("LIVE", style: TextStyle(color: Color(0xFF00FF66), fontSize: 11, fontWeight: FontWeight.bold)),
+                            const Text("LIVE", style: TextStyle(color: Color(0xFF00A3FF), fontSize: 11, fontWeight: FontWeight.bold)),
                           ],
                         ),
                       ),
@@ -327,7 +318,7 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
     );
   }
 
-  // 🎬 تشييد كرت الخبر الرئيسي والسينمائي الكبير بالألوان النيونية الخضراء والألواح الزجاجية
+  // 🎬 الكرت الرئيسي
   Widget _buildMainArticleCard(BuildContext context, NewsArticleModel article) {
     final bool isRead = _readArticlesMemory.contains(article.articleUrl);
     
@@ -344,7 +335,7 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(24),
-            boxShadow: !isRead ? [BoxShadow(color: const Color(0xFF00FF66).withOpacity(0.12), blurRadius: 16)] : null,
+            boxShadow: !isRead ? [BoxShadow(color: const Color(0xFF00A3FF).withOpacity(0.12), blurRadius: 16)] : null,
           ),
           child: GlassCard(
             padding: EdgeInsets.zero,
@@ -364,7 +355,6 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
                             : Container(color: Colors.black26, child: const Center(child: Icon(Icons.image, color: Colors.white24, size: 48))),
                       ),
                     ),
-                    // 🏷️ نظام وسم الحقوق التلقائي والمحمي السينمائي لـ NF SPORTS على غلاف غلاف الكرت
                     Positioned(
                       bottom: 10,
                       left: 12,
@@ -373,11 +363,11 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
                         decoration: BoxDecoration(
                           color: Colors.black.withOpacity(0.6),
                           borderRadius: BorderRadius.circular(6),
-                          border: Border.all(color: const Color(0xFF00FF66).withOpacity(0.2)),
+                          border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.2)),
                         ),
                         child: const Text(
                           "NF SPORTS",
-                          style: TextStyle(color: Color(0xFF00FF66), fontSize: 9, fontWeight: FontWeight.bold, letterSpacing: 0.5),
+                          style: TextStyle(color: Color(0xFF00A3FF), fontSize: 9, fontWeight: FontWeight.bold, letterSpacing: 0.5),
                         ),
                       ),
                     ),
@@ -426,9 +416,9 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
                             height: 34,
                             padding: const EdgeInsets.symmetric(horizontal: 16),
                             decoration: BoxDecoration(
-                              color: isRead ? Colors.white10 : const Color(0x1A00FF66),
+                              color: isRead ? Colors.white10 : const Color(0x1A00A3FF),
                               borderRadius: BorderRadius.circular(10),
-                              border: Border.all(color: isRead ? Colors.white24 : const Color(0xFF00FF66), width: 1.5),
+                              border: Border.all(color: isRead ? Colors.white24 : const Color(0xFF00A3FF), width: 1.5),
                             ),
                             child: InkWell(
                               onTap: () {
@@ -464,7 +454,8 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
       ),
     );
   }
-  // 📰 تشييد كروت الأخبار الفرعية والمنتظمة بالألوان النيونية الخضراء والألواح الزجاجية
+  
+  // 📰 الكروت الفرعية
   Widget _buildSubArticleCard(BuildContext context, NewsArticleModel article) {
     final bool isRead = _readArticlesMemory.contains(article.articleUrl);
     
@@ -497,7 +488,6 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
                           : Container(color: Colors.black26, child: const Center(child: Icon(Icons.image, color: Colors.white10, size: 28))),
                     ),
                   ),
-                  // 🏷️ نظام وسم الحقوق التلقائي والمحمي لـ NF على زاوية الصورة الفرعية المصغرة
                   Positioned(
                     bottom: 4,
                     left: 4,
@@ -553,10 +543,9 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
                           height: 30,
                           padding: const EdgeInsets.symmetric(horizontal: 12),
                           decoration: BoxDecoration(
-                            color: isRead ? Colors.white10 : const Color(0x1A00FF66),
+                            color: isRead ? Colors.white10 : const Color(0x1A00A3FF),
                             borderRadius: BorderRadius.circular(8),
-                            // حواف نيونية مشعة باللون الأخضر المضيء للزر التفاعلي الفرعي
-                            border: Border.all(color: isRead ? Colors.white24 : const Color(0xFF00FF66).withOpacity(0.5), width: 1),
+                            border: Border.all(color: isRead ? Colors.white24 : const Color(0xFF00A3FF).withOpacity(0.5), width: 1),
                           ),
                           child: InkWell(
                             onTap: () {
