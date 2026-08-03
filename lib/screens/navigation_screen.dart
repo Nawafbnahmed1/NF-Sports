@@ -52,19 +52,28 @@ class _NavigationScreenState extends State<NavigationScreen> with SingleTickerPr
           child: Container(
             height: 68,
             decoration: BoxDecoration(
-              color: AppTheme.surfaceColor.withOpacity(0.85),
+              // 🟢 التعديل الأول: الخلفية الكحلية الغامضة الزجاجية
+              color: const Color(0xFF0B162C).withOpacity(0.92),
               borderRadius: BorderRadius.circular(22),
+              // 🟢 التعديل الثاني: الحواف المضيئة باللون الأزرق
               border: Border.all(
-                color: const Color(0xFF00FF66).withOpacity(0.25),
+                color: const Color(0xFF00A3FF).withOpacity(0.4),
                 width: 1.5,
               ),
+              // 🟢 التعديل الثالث: توهج نجمي أزرق للحواف
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF00FF66).withOpacity(0.12),
-                  blurRadius: 16,
+                  color: const Color(0xFF00A3FF).withOpacity(0.25),
+                  blurRadius: 20,
                   spreadRadius: 1,
                   offset: const Offset(0, 4),
-                )
+                ),
+                BoxShadow(
+                  color: const Color(0xFF00A3FF).withOpacity(0.1),
+                  blurRadius: 40,
+                  spreadRadius: 2,
+                  offset: const Offset(0, 0),
+                ),
               ],
             ),
             child: Row(
@@ -93,16 +102,17 @@ class _NavigationScreenState extends State<NavigationScreen> with SingleTickerPr
         child: Stack(
           alignment: Alignment.center,
           children: [
-            // 🌊 كبسولة الموجة السائلة المضيئة: صب اللون الأخضر النيوني المضيء الفخم المتناسق مع الهوية الجديدة
+            // 🌊 كبسولة الموجة السائلة المضيئة المتوهجة بالأزرق
             AnimatedContainer(
               duration: const Duration(milliseconds: 250),
               curve: Curves.easeInOut, 
               width: isSelected ? 55 : 0,
               height: isSelected ? 38 : 0,
               decoration: BoxDecoration(
-                color: const Color(0xFF00FF66).withOpacity(0.12),
+                // 🟢 الخلفية الزرقاء الشفافة المضيئة
+                color: const Color(0xFF00A3FF).withOpacity(0.12),
                 borderRadius: BorderRadius.circular(12),
-                border: isSelected ? Border.all(color: const Color(0xFF00FF66).withOpacity(0.25), width: 1) : null,
+                border: isSelected ? Border.all(color: const Color(0xFF00A3FF).withOpacity(0.25), width: 1) : null,
               ),
             ),
             AnimatedScale(
@@ -113,10 +123,11 @@ class _NavigationScreenState extends State<NavigationScreen> with SingleTickerPr
                 children: [
                   Icon(
                     isSelected ? selectedIcon : unselectedIcon,
-                    color: isSelected ? const Color(0xFF00FF66) : Colors.white38,
+                    // 🟢 أيقونة نيون زرقاء فخمة
+                    color: isSelected ? const Color(0xFF00A3FF) : Colors.white38,
                     size: isSelected ? 22 : 20,
                     shadows: isSelected ? [
-                      Shadow(color: const Color(0xFF00FF66).withOpacity(0.6), blurRadius: 10)
+                      const Shadow(color: Color(0xFF00A3FF).withOpacity(0.6), blurRadius: 10)
                     ] : null,
                   ),
                   const SizedBox(height: 3),
