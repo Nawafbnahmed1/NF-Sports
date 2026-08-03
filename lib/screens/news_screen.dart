@@ -249,7 +249,7 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
                                 translation: Offset(-1.0 + (_marqueeController.value * 2.0), 0.0),
                                 child: Center(
                                   child: Text(
-                                    '⚡ NF SPORTS NEWS ⚡',
+                                    '⚽ NF SPORTS NEWS🗞️',
                                     maxLines: 1,
                                     style: GoogleFonts.cairo(
                                       color: const Color(0xFF00FF66),
