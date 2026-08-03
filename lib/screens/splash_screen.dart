@@ -1,6 +1,9 @@
+import 'dart:async';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+// 🔵 حقن حزمة المستشعر التلقائي لفحص ذكاء الشبكة الفعلي وتأمين جداول السحاب حياً 100%
+import 'package:connectivity_plus/connectivity_plus.dart'; 
 import '../theme/app_theme.dart';
 import 'navigation_screen.dart';
 
@@ -45,7 +48,6 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
 
     _startAppInitializationGate();
   }
-
   @override
   void dispose() {
     _logoPulseController.dispose();
@@ -55,33 +57,40 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
     super.dispose();
   }
 
+  // 🔮 تطوير بوابة المستشعر التلقائي لفحص قوة وذكاء الشبكة الفعلي حياً وبدون نصوص وهمية ثابته
   Future<void> _startAppInitializationGate() async {
     setState(() {
       _isChecking = true;
       _isOffline = false;
     });
     
+    // منح المعالج ثانيتين كاملتين لعرض الوميض والنبض السينمائي للشعار لهيبة وتأمين التطبيق
     await Future.delayed(const Duration(seconds: 2));
     
     try {
-      bool isFullyDisconnected = false; 
+      // الفحص اللحظي الفعلي لنوع وقوة الشبكة بجوال المشجع عبر المستشعر التلقائي
+      final List<ConnectivityResult> connectivityResults = await Connectivity().checkConnectivity();
       
-      if (!isFullyDisconnected) {
-        setState(() {
-          _isOffline = false;
-          _isChecking = false;
-        });
-        HapticFeedback.lightImpact();
-        if (mounted) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const NavigationScreen()),
-          );
-        }
-      } else {
+      // إذا كان جوال المشجع غير متصل بأي شبكة (واي فاي أو بيانات) يتدخل حارس الإنترنت فوراً
+      if (connectivityResults.isEmpty || connectivityResults.contains(ConnectivityResult.none)) {
         _activateOfflineLockMode();
+        return;
+      }
+
+      // النت مستقر وقوي: الدخول الفخم والفوري للواجهات المربوطة بالسحاب تلقائياً
+      setState(() {
+        _isOffline = false;
+        _isChecking = false;
+      });
+      HapticFeedback.lightImpact();
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const NavigationScreen()),
+        );
       }
     } catch (_) {
+      // حارس الأمان يتدخل عند حدوث أي ثقل أو انقطاع غير متوقع بالشبكة حماية للتصميم
       _activateOfflineLockMode();
     }
   }
@@ -151,7 +160,6 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
               ),
             ),
           ),
-
           Positioned.fill(
             child: Center(
               child: AnimatedBuilder(
@@ -217,7 +225,6 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
               ),
             ),
           ),
-
           Positioned(
             bottom: 60,
             left: 40,
