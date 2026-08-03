@@ -588,8 +588,17 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
       ),
     );
   }
+}
 
-  // 💬 كرت التصميم الهيدروليكي الموحد للتعليقات والردود بالألواح الزجاجية الزرقاء والحواف الخضراء المضيئة المعتمة
+  // ⏱️ الدالة المفقودة: رياضيات صافية لحساب وقت نزول التعليق لحظياً باللغة العربية النظيفة
+  String _getFormatedTimeAgo(DateTime dateTime) {
+    final duration = DateTime.now().difference(dateTime);
+    if (duration.inMinutes < 1) return 'الآن';
+    if (duration.inMinutes < 60) return 'منذ ${duration.inMinutes} د';
+    if (duration.inHours < 24) return 'قبل ${duration.inHours} ساعة';
+    return 'قبل ${duration.inDays} يوم';
+  }
+
   Widget _buildCommentCard(Map<String, dynamic> comment, bool isReply) {
     final String commentId = comment['id'].toString();
     final String userName = comment['user_name'] ?? 'مشجع';
