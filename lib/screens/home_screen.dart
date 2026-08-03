@@ -583,7 +583,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         const SizedBox(height: 20),
                         const SectionTitle(title: 'أبرز اللقطات'),
                         _buildHorizontalList(isNews: false),
-                        const SizedBox(height: 120),
+                        const SizedBox(height: 120)
                       ],
                     ),
                   ),
