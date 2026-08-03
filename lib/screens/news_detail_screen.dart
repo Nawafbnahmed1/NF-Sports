@@ -600,7 +600,6 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
       margin: const EdgeInsets.symmetric(vertical: 4),
       child: GlassCard(
         // استخدام الألواح الزجاجية الزرقاء الداكنة كقاعدة وتطعيم الحواف بالأخضر النيوني المعتم الغامض المعتمد
-        backgroundColor: const Color(0xFF161926).withOpacity(isReply ? 0.3 : 0.6),
         borderRadius: 16,
         padding: const EdgeInsets.all(12),
         borderColor: const Color(0xFF00FF66).withOpacity(isReply ? 0.1 : 0.18),
