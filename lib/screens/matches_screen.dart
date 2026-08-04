@@ -471,26 +471,20 @@ class _MatchesScreenState extends State<MatchesScreen> with TickerProviderStateM
   Widget buildLiveCard(BuildContext context, MatchModel match) {
     final bool isHotMatch = match.leagueName.contains('كأس') || match.leagueName.contains('دوري أبطال') || match.isLive;
 
-    return Padding(
+        return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          // هالة الأدرينالين النبّاضة المرتعشة في الخلفية باللون الأخضر النيوني المعتم للمباريات الحية
           boxShadow: (isHotMatch && match.isLive) ? [
-            BoxShadow(color: const Color(0xFF00FF66).withOpacity(0.12), blurRadius: 12, spreadRadius: 1),
-            BoxShadow(color: const Color(0xFF00FF66).withOpacity(0.06), blurRadius: 6, spreadRadius: 0)
+            BoxShadow(color: Color(0xFF00FF66).withOpacity(0.12), blurRadius: 12, spreadRadius: 1),
+            BoxShadow(color: Color(0xFF00FF66).withOpacity(0.06), blurRadius: 6, spreadRadius: 0)
           ] : null,
-        ),
-                child: Container(
-          decoration: BoxDecoration(
-            color: Color(0xFF161926).withOpacity(0.6),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: Color(0xFF00FF66).withOpacity(0.15), width: 1),
-          ),
-          child: GlassCard(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-            borderRadius: 20,
+          color: Color(0xFF161926).withOpacity(0.6),
+          border: Border.all(color: Color(0xFF00FF66).withOpacity(0.15), width: 1),
+        child: GlassCard(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          borderRadius: 20,
           child: Column(
             children: [
               Row(
