@@ -360,10 +360,10 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
                               // عرض متن نص الخبر الصافي العربي المجلوب من خادمك السحابي الفخم
                               Align(
                                 alignment: Alignment.centerRight,
-                                child: Text(
-                                  widget.article.content.isNotEmpty 
-                                      ? widget.article.content 
-                                      : (widget.article.description.isNotEmpty ? widget.article.description : 'جاري تجميع بقية السطور الكروية الحية من المصدر...'),
+                                 child: Text(
+                                  widget.article.description.isNotEmpty 
+                                      ? widget.article.description 
+                                     : '📊 جاري تحديث ومزامنة تفاصيل التقرير الرياضي حياً من المصدر.. يرجى الانتظار قليلاً ⏳',                    
                                   textDirection: ui.TextDirection.rtl,
                                   style: GoogleFonts.cairo(
                                     color: Colors.white.withOpacity(0.9),
