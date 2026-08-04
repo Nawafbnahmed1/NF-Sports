@@ -356,10 +356,11 @@ class _HighlightsScreenState extends State<HighlightsScreen> with TickerProvider
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 16),
+                    // ⭕ شريط دوائر الستوري الأفقية (تم التكبير الأخير ليصبح 86)
                     Directionality(
                       textDirection: TextDirection.rtl,
                       child: SizedBox(
-                        height: 130, // ✅ تم تكبير الحجم
+                        height: 140, // ✅ تم رفع الارتفاع
                         child: ListView.builder(
                           scrollDirection: Axis.horizontal,
                           padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -378,8 +379,8 @@ class _HighlightsScreenState extends State<HighlightsScreen> with TickerProvider
                                 child: Column(
                                   children: [
                                     Container(
-                                      width: 78, // ✅ تم تكبير الحجم
-                                      height: 78, // ✅ تم تكبير الحجم
+                                      width: 86, // ✅ تم التكبير الأخير
+                                      height: 86, // ✅ تم التكبير الأخير
                                       decoration: BoxDecoration(
                                         shape: BoxShape.circle,
                                         border: Border.all(color: isRead ? Colors.white24 : const Color(0xFF00A3FF), width: 2),
@@ -412,26 +413,26 @@ class _HighlightsScreenState extends State<HighlightsScreen> with TickerProvider
                       ),
                     ),
                     const SizedBox(height: 5),
-                    // 🛸 مستطيل الإعلانات الأزرق الفاخر
+                    // 🛸 مستطيل الإعلانات الأزرق الفاخر (نفس تنسيق قسم الأخبار)
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                       child: Container(
-                        height: 70,
-                        padding: const EdgeInsets.symmetric(horizontal: 14),
+                        height: 76, // ✅ تم تكبير الحجم
+                        padding: const EdgeInsets.symmetric(horizontal: 18),
                         decoration: BoxDecoration(
-                          color: AppTheme.surfaceColor.withOpacity(0.85),
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.3), width: 1.5),
+                          color: AppTheme.surfaceColor.withOpacity(0.90),
+                          borderRadius: BorderRadius.circular(24), // ✅ انحناء حواف أكبر
+                          border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.4), width: 2),
                           boxShadow: [
                             BoxShadow(
-                              color: const Color(0xFF00A3FF).withOpacity(0.12),
-                              blurRadius: 10,
-                              spreadRadius: 0,
+                              color: const Color(0xFF00A3FF).withOpacity(0.2),
+                              blurRadius: 15,
+                              spreadRadius: 1,
                             )
                           ],
                         ),
                         child: ClipRRect(
-                          borderRadius: BorderRadius.circular(18),
+                          borderRadius: BorderRadius.circular(22),
                           child: AnimatedBuilder(
                             animation: _marqueeController,
                             builder: (context, child) {
@@ -441,12 +442,12 @@ class _HighlightsScreenState extends State<HighlightsScreen> with TickerProvider
                                   child: Text.rich(
                                     TextSpan(
                                       children: [
-                                        const WidgetSpan(child: Padding(padding: EdgeInsets.only(right: 4), child: Icon(Icons.movie_creation_outlined, color: Colors.white, size: 24))),
+                                        const WidgetSpan(child: Padding(padding: EdgeInsets.only(right: 4), child: Icon(Icons.movie_creation_outlined, color: Colors.white, size: 28))),
                                         TextSpan(
                                           text: ' NF',
                                           style: GoogleFonts.cairo(
                                             color: const Color(0xFF00A3FF),
-                                            fontSize: 20,
+                                            fontSize: 22, // ✅ حجم أكبر
                                             fontWeight: FontWeight.w900,
                                             shadows: [
                                               Shadow(color: const Color(0xFF00A3FF).withOpacity(0.6), blurRadius: 8)
@@ -457,7 +458,7 @@ class _HighlightsScreenState extends State<HighlightsScreen> with TickerProvider
                                           text: ' SPORTS',
                                           style: GoogleFonts.cairo(
                                             color: Colors.white,
-                                            fontSize: 20,
+                                            fontSize: 22, // ✅ حجم أكبر
                                             fontWeight: FontWeight.w900,
                                           ),
                                         ),
@@ -465,14 +466,14 @@ class _HighlightsScreenState extends State<HighlightsScreen> with TickerProvider
                                           text: ' HIGHLIGHTS',
                                           style: GoogleFonts.cairo(
                                             color: Colors.redAccent,
-                                            fontSize: 20,
+                                            fontSize: 22, // ✅ حجم أكبر
                                             fontWeight: FontWeight.w900,
                                             shadows: [
                                               Shadow(color: Colors.redAccent.withOpacity(0.6), blurRadius: 8)
                                             ],
                                           ),
                                         ),
-                                        const WidgetSpan(child: Padding(padding: EdgeInsets.only(left: 4), child: Icon(Icons.sports_soccer, color: Colors.white, size: 24))),
+                                        const WidgetSpan(child: Padding(padding: EdgeInsets.only(left: 4), child: Icon(Icons.sports_soccer, color: Colors.white, size: 28))),
                                       ],
                                     ),
                                     textAlign: TextAlign.center,
@@ -542,6 +543,7 @@ class _HighlightsScreenState extends State<HighlightsScreen> with TickerProvider
     );
   }
 
+  // 🎬 الكرت الرئيسي (تم التصغير إلى 112 وإضافة الحواف المشعة)
   Widget _buildMainHighlightCard(BuildContext context, HighlightMediaModel media) {
     final bool isRead = _readHighlightsMemory.contains(media.videoUrl);
 
@@ -553,7 +555,17 @@ class _HighlightsScreenState extends State<HighlightsScreen> with TickerProvider
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(24),
-            boxShadow: !isRead ? [BoxShadow(color: const Color(0xFF00A3FF).withOpacity(0.12), blurRadius: 16)] : null,
+            boxShadow: !isRead ? [
+              BoxShadow(
+                color: const Color(0xFF00A3FF).withOpacity(0.25),
+                blurRadius: 20,
+                spreadRadius: 0,
+              )
+            ] : null,
+            border: Border.all(
+              color: const Color(0xFF00A3FF).withOpacity(0.6),
+              width: 1.5,
+            ),
           ),
           child: GlassCard(
             padding: EdgeInsets.zero,
@@ -564,7 +576,7 @@ class _HighlightsScreenState extends State<HighlightsScreen> with TickerProvider
                   children: [
                     Container(
                       width: double.infinity,
-                      height: 145, // ✅ تم تصغير الحجم قليلاً
+                      height: 112, // ✅ تم التصغير إلى 112
                       decoration: const BoxDecoration(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
                       child: ClipRRect(
                         borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
@@ -618,7 +630,7 @@ class _HighlightsScreenState extends State<HighlightsScreen> with TickerProvider
                   ],
                 ),
                 Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.all(14.0), // تم تقليل البادينج
                   child: Column(
                     children: [
                       Align(
@@ -681,6 +693,7 @@ class _HighlightsScreenState extends State<HighlightsScreen> with TickerProvider
     );
   }
 
+  // 📰 الكروت الفرعية
   Widget _buildSubHighlightCard(BuildContext context, HighlightMediaModel media) {
     final bool isRead = _readHighlightsMemory.contains(media.videoUrl);
 
