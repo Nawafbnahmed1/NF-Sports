@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:url_launcher/url_launcher.dart'; // المكتبة السريعة والخفيفة كالبث الليزري لفتح المصدر بنقاء
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../theme/app_theme.dart';
 import '../widgets/glass_card.dart';
@@ -52,7 +52,6 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
       CurvedAnimation(parent: _sparkController, curve: Curves.easeOut),
     );
   }
-
   @override
   void dispose() {
     _scrollController.removeListener(_updateReadingProgress);
@@ -61,6 +60,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
     _commentController.dispose();
     super.dispose();
   }
+
   void _updateReadingProgress() {
     if (!_scrollController.hasClients) return;
     final maxScroll = _scrollController.position.maxScrollExtent;
@@ -163,7 +163,6 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
                       child: Container(
                         color: const Color(0xFF161926).withOpacity(0.8),
                         child: IconButton(
-                          // ✅ تم استبدال اللون إلى الأزرق اللامع
                           icon: const Icon(Icons.arrow_back_ios_new, color: Color(0xFF00A3FF), size: 20),
                           onPressed: () => Navigator.pop(context),
                         ),
@@ -183,14 +182,12 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
                                   errorBuilder: (context, error, stackTrace) {
                                     return Container(
                                       color: const Color(0xFF1A1D2E),
-                                      // ✅ تم استبدال اللون إلى الأزرق اللامع
                                       child: const Center(child: Icon(Icons.sports_soccer, color: Color(0xFF00A3FF), size: 48)),
                                     );
                                   },
                                 )
                               : Container(
                                   color: const Color(0xFF1A1D2E),
-                                  // ✅ تم استبدال اللون إلى الأزرق اللامع
                                   child: const Center(child: Icon(Icons.sports_soccer, color: Color(0xFF00A3FF), size: 48)),
                                 ),
                           Container(
@@ -219,7 +216,6 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                               decoration: BoxDecoration(
-                                // ✅ تم تغيير اللون للأزرق
                                 color: const Color(0xFF00A3FF).withOpacity(0.12),
                                 borderRadius: BorderRadius.circular(8),
                                 border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.3), width: 1),
@@ -229,7 +225,6 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
                                 style: GoogleFonts.cairo(
                                   fontSize: 12,
                                   fontWeight: FontWeight.bold,
-                                  // ✅ نص أزرق
                                   color: const Color(0xFF00A3FF),
                                 ),
                               ),
@@ -271,118 +266,166 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
                               widget.article.title,
                               textDirection: ui.TextDirection.rtl,
                               style: GoogleFonts.cairo(
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                  height: 1.4,
-                                  // ✅ توهج أزرق
-                                  shadows: [
-                                    Shadow(color: const Color(0xFF00A3FF).withOpacity(0.2), blurRadius: 15)
-                                  ],
-                                ),
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                                height: 1.4,
+                                shadows: [
+                                  Shadow(color: const Color(0xFF00A3FF).withOpacity(0.2), blurRadius: 15)
+                                ],
                               ),
-                            ),
-                          ),
-                          const SizedBox(height: 15),
-
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                            decoration: BoxDecoration(
-                              color: const Color(0x0FFFFFFF),
-                              borderRadius: BorderRadius.circular(14),
-                              // ✅ حواف زرقاء
-                              border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.15), width: 1),
-                            ),
-                            child: Row(
-                              textDirection: ui.TextDirection.rtl,
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Row(
-                                  textDirection: ui.TextDirection.rtl,
-                                  children: [
-                                    // ✅ أيقونة زرقاء
-                                    const Icon(Icons.mic_external_on_rounded, color: Color(0xFF00A3FF), size: 18),
-                                    const SizedBox(width: 8),
-                                    Text(
-                                      'الاستماع الذكي للخبر والتحليل اللحظي',
-                                      style: GoogleFonts.cairo(color: Colors.white70, fontSize: 11, fontWeight: FontWeight.bold),
-                                    ),
-                                  ],
-                                ),
-                                Row(
-                                  children: List.generate(4, (index) {
-                                    return AnimatedBuilder(
-                                      animation: _sparkAnimation,
-                                      builder: (context, _) {
-                                        final double sine = math.sin((_sparkAnimation.value * math.pi * 2) + (index * 0.5));
-                                        final double heightValue = 4.0 + (sine.abs() * 14.0);
-                                        return Container(
-                                          margin: const EdgeInsets.symmetric(horizontal: 1.5),
-                                          width: 2.5,
-                                          height: heightValue,
-                                          decoration: BoxDecoration(
-                                            // ✅ ألوان زرقاء
-                                            color: index % 2 == 0 ? const Color(0xFF00A3FF) : AppTheme.neonBlue,
-                                            borderRadius: BorderRadius.circular(2),
-                                          ),
-                                        );
-                                      },
-                                    );
-                                  }),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 20),
-                          Container(
-                            height: 1,
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              // ✅ تدرج أزرق
-                              gradient: LinearGradient(
-                                colors: [const Color(0xFF00A3FF).withOpacity(0.3), Colors.transparent],
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 20),
-                        Container(
-                          width: double.infinity,
-                          height: widget.article.description.length < 150 ? 250 : 450,
-                          padding: const EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                            color: AppTheme.surfaceColor.withOpacity(0.4),
-                            borderRadius: BorderRadius.circular(16),
-                            // ✅ حواف زرقاء
-                            border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.15), width: 1.5),
-                          ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(12),
-                            child: InAppWebView(
-                              initialUrlRequest: URLRequest(url: WebUri(widget.article.articleUrl)),
-                              initialSettings: InAppWebViewSettings(
-                                javaScriptEnabled: true,
-                                transparentBackground: true,
-                                supportZoom: false,
-                              ),
-                              onLoadStop: (controller, url) async {
-                                await controller.evaluateJavascript(source: """
-                                  (function() {
-                                    var selectors = [
-                                      '.ads', '.ad-box', '#ad-container', '.banner-ad', 
-                                      'iframe[src*="googleads"]', 'div[id*="google_ads"]',
-                                      '.footer-ads', '.sidebar-ads', 'header', 'footer', '.nav-menu'
-                                    ];
-                                    selectors.forEach(function(selector) {
-                                      var elements = document.querySelectorAll(selector);
-                                      elements.forEach(function(el) { el.remove(); });
-                                    });
-                                  })();
-                                """);
-                              },
                             ),
                           ),
                         ),
-                        const SizedBox(height: 25),
+                        const SizedBox(height: 15),
+
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                          decoration: BoxDecoration(
+                            color: const Color(0x0FFFFFFF),
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.15), width: 1),
+                          ),
+                          child: Row(
+                            textDirection: ui.TextDirection.rtl,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                textDirection: ui.TextDirection.rtl,
+                                children: [
+                                  const Icon(Icons.mic_external_on_rounded, color: Color(0xFF00A3FF), size: 18),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    'الاستماع الذكي للخبر والتحليل اللحظي',
+                                    style: GoogleFonts.cairo(color: Colors.white70, fontSize: 11, fontWeight: FontWeight.bold),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                children: List.generate(4, (index) {
+                                  return AnimatedBuilder(
+                                    animation: _sparkAnimation,
+                                    builder: (context, _) {
+                                      final double sine = math.sin((_sparkAnimation.value * math.pi * 2) + (index * 0.5));
+                                      final double heightValue = 4.0 + (sine.abs() * 14.0);
+                                      return Container(
+                                        margin: const EdgeInsets.symmetric(horizontal: 1.5),
+                                        width: 2.5,
+                                        height: heightValue,
+                                        decoration: BoxDecoration(
+                                          color: index % 2 == 0 ? const Color(0xFF00A3FF) : AppTheme.neonBlue,
+                                          borderRadius: BorderRadius.circular(2),
+                                        ),
+                                      );
+                                    },
+                                  );
+                                }),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        Container(
+                          height: 1,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [const Color(0xFF00A3FF).withOpacity(0.3), Colors.transparent],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        // 🔮 المربع الزجاجي المصلح والمحمي بالكامل لعرض نصوص السحاب الصافية بدون إعلانات أو تشوهات بصرية
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(18),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF161926).withOpacity(0.6),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: const Color(0xFF00A3FF).withOpacity(0.18),
+                              width: 1,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(0xFF00A3FF).withOpacity(0.04),
+                                blurRadius: 12,
+                                spreadRadius: 0,
+                              )
+                            ],
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // عرض متن نص الخبر الصافي العربي المجلوب من خادمك السحابي الفخم
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: Text(
+                                  widget.article.content.isNotEmpty 
+                                      ? widget.article.content 
+                                      : (widget.article.description.isNotEmpty ? widget.article.description : 'جاري تجميع بقية السطور الكروية الحية من المصدر...'),
+                                  textDirection: ui.TextDirection.rtl,
+                                  style: GoogleFonts.cairo(
+                                    color: Colors.white.withOpacity(0.9),
+                                    fontSize: 14,
+                                    height: 1.6,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 20),
+                              const Divider(color: Colors.white10, height: 1),
+                              const SizedBox(height: 15),
+                              
+                              // 🚀 زر اقرأ المزيد الذكي لفتح الرابط الأصلي من متصفح النظام السريع لحماية خيوط المعالج
+                              InkWell(
+                                onTap: () async {
+                                  HapticFeedback.lightImpact();
+                                  final Uri url = Uri.parse(widget.article.articleUrl);
+                                  if (await canLaunchUrl(url)) {
+                                    await launchUrl(url, mode: LaunchMode.externalApplication);
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        backgroundColor: Colors.redAccent,
+                                        content: Text(
+                                          'تعذر فتح رابط المصدر الأصلي حالياً!',
+                                          textAlign: TextAlign.right,
+                                          style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                },
+                                borderRadius: BorderRadius.circular(12),
+                                child: Container(
+                                  width: double.infinity,
+                                  padding: const EdgeInsets.symmetric(vertical: 10),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF00A3FF).withOpacity(0.08),
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.3), width: 1),
+                                  ),
+                                  child: Center(
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      textDirection: ui.TextDirection.rtl,
+                                      children: [
+                                        const Icon(Icons.open_in_browser_rounded, color: Color(0xFF00A3FF), size: 18),
+                                        const SizedBox(width: 8),
+                                        Text(
+                                          'قراءة الخبر كاملاً من المصدر الأصلي',
+                                          style: GoogleFonts.cairo(color: const Color(0xFF00A3FF), fontSize: 12, fontWeight: FontWeight.bold),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 35),
                         Text(
                           'ساحة النقاش والتفاعل الحية',
                           style: GoogleFonts.cairo(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
@@ -397,7 +440,6 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
                               .map((maps) => List<Map<String, dynamic>>.from(maps)),
                           builder: (context, snapshot) {
                             if (snapshot.connectionState == ConnectionState.waiting) {
-                              // ✅ مؤشر تحميل أزرق
                               return const Center(child: Padding(padding: EdgeInsets.all(16.0), child: CircularProgressIndicator(color: Color(0xFF00A3FF))));
                             }
                             final allComments = snapshot.data ?? [];
@@ -444,7 +486,6 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
                             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                             margin: const EdgeInsets.only(bottom: 8),
                             decoration: BoxDecoration(
-                              // ✅ خلفية زرقاء شفافة
                               color: const Color(0xFF00A3FF).withOpacity(0.1),
                               borderRadius: BorderRadius.circular(8),
                             ),
@@ -454,7 +495,6 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
                               children: [
                                 Text(
                                   'جاري الرد على تعليق: ${_replyingToUserName}',
-                                  // ✅ نص أزرق
                                   style: GoogleFonts.cairo(color: const Color(0xFF00A3FF), fontSize: 11, fontWeight: FontWeight.bold),
                                 ),
                                 IconButton(
@@ -473,7 +513,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
                                 textDirection: ui.TextDirection.rtl,
                                 style: GoogleFonts.cairo(color: Colors.white, fontSize: 13),
                                 decoration: InputDecoration(
-                                  hintText: _replyingToCommentId != null ? 'اكتب ردك الرياضي الفخم هنا...' : 'شارك برأيك الكروي في ساحة النقاش...',
+                                  hintText: _replyingToCommentId != null ? 'اكتب ردك الرياضي الفخم هنا...' : 'شارك برأيك الكروي in ساحة النقاش...',
                                   hintStyle: GoogleFonts.cairo(color: Colors.white24, fontSize: 12),
                                   hintTextDirection: ui.TextDirection.rtl,
                                   filled: true,
@@ -482,7 +522,6 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
                                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
                                   focusedBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(14),
-                                    // ✅ حواف زرقاء عند الكتابة
                                     borderSide: BorderSide(color: const Color(0xFF00A3FF).withOpacity(0.4), width: 1.5),
                                   ),
                                 ),
@@ -491,13 +530,11 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
                             const SizedBox(width: 10),
                             Container(
                               decoration: BoxDecoration(
-                                // ✅ خلفية زرقاء شفافة
                                 color: const Color(0xFF00A3FF).withOpacity(0.15),
                                 shape: BoxShape.circle,
                                 border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.4), width: 1),
                               ),
                               child: IconButton(
-                                // ✅ أيقونة زرقاء
                                 icon: const Icon(Icons.send_rounded, color: Color(0xFF00A3FF), size: 20),
                                 onPressed: _postComment,
                               ),
@@ -505,7 +542,6 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
                           ],
                         ),
                         const SizedBox(height: 30),
-
                         InkWell(
                           onTap: () => HapticFeedback.mediumImpact(),
                           borderRadius: BorderRadius.circular(14),
@@ -515,7 +551,6 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
                             decoration: BoxDecoration(
                               color: const Color(0xFF161926).withOpacity(0.4),
                               borderRadius: BorderRadius.circular(14),
-                              // ✅ حواف زرقاء
                               border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.25)),
                               boxShadow: [BoxShadow(color: const Color(0xFF00A3FF).withOpacity(0.05), blurRadius: 10)],
                             ),
@@ -536,7 +571,6 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
                           ),
                         ),
                         const SizedBox(height: 40),
-
                         Center(
                           child: Column(
                             children: [
@@ -557,6 +591,8 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
               ],
             ),
           ),
+          
+          // 📱 شريط الليزر الأفقي العلوي المطور المتفاعل مع سحب إصبع المشجع لمعرفة مستوى قراءة المقال
           Positioned(
             top: 0, left: 0, right: 0,
             child: SafeArea(
@@ -571,7 +607,6 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
                     width: MediaQuery.of(context).size.width * _readingProgress,
                     height: 2.5,
                     decoration: BoxDecoration(
-                      // ✅ مؤشر قراءة أزرق
                       color: const Color(0xFF00A3FF),
                       boxShadow: [
                         BoxShadow(color: const Color(0xFF00A3FF).withOpacity(0.8), blurRadius: 4, spreadRadius: 0.5)
@@ -595,20 +630,20 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
     return 'قبل ${duration.inDays} يوم';
   }
 
+  // 👑 كرت التعليقات الحية والردود المتداخلة المحمي بحاوية الـ Container لمنع تشوهات ألوان النظام
   Widget _buildCommentCard(Map<String, dynamic> comment, bool isReply) {
     final String commentId = comment['id'].toString();
     final String userName = comment['user_name'] ?? 'مشجع';
     final String text = comment['comment_text'] ?? '';
     final int likes = int.tryParse(comment['likes'].toString()) ?? 0;
 
-        return Container(
+    return Container(
       margin: const EdgeInsets.symmetric(vertical: 4),
       decoration: BoxDecoration(
-        color: Color(0xFF161926).withOpacity(isReply ? 0.3 : 0.6),
+        color: const Color(0xFF161926).withOpacity(isReply ? 0.3 : 0.6),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          // ✅ حواف زرقاء
-          color: Color(0xFF00A3FF).withOpacity(isReply ? 0.1 : 0.18),
+          color: const Color(0xFF00A3FF).withOpacity(isReply ? 0.1 : 0.18),
           width: 1,
         ),
       ),
@@ -629,7 +664,6 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
                       width: 28,
                       height: 28,
                       decoration: BoxDecoration(
-                        // ✅ خلفية وحواف زرقاء
                         color: const Color(0xFF00A3FF).withOpacity(0.15),
                         shape: BoxShape.circle,
                         border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.3), width: 1),
@@ -637,7 +671,6 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
                       child: Center(
                         child: Text(
                           userName.substring(0, 1).toUpperCase(),
-                          // ✅ نص أزرق
                           style: GoogleFonts.cairo(color: const Color(0xFF00A3FF), fontSize: 11, fontWeight: FontWeight.bold),
                         ),
                       ),
@@ -651,7 +684,6 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
                       Container(
                         margin: const EdgeInsets.only(right: 6),
                         padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
-                        // ✅ خلفية زرقاء شفافة
                         decoration: BoxDecoration(color: const Color(0x3300A3FF), borderRadius: BorderRadius.circular(4)),
                         child: Text('رد', style: GoogleFonts.cairo(color: const Color(0xFF00A3FF), fontSize: 8, fontWeight: FontWeight.bold)),
                       ),
@@ -681,12 +713,10 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
                   child: Row(
                     textDirection: ui.TextDirection.rtl,
                     children: [
-                      // ✅ أيقونة قلب زرقاء
                       const Icon(Icons.favorite_rounded, color: Color(0xFF00A3FF), size: 14),
                       const SizedBox(width: 4),
                       Text(
                         likes.toString(),
-                        // ✅ نص أزرق
                         style: GoogleFonts.cairo(color: const Color(0xFF00A3FF), fontSize: 10, fontWeight: FontWeight.bold),
                       ),
                     ],
