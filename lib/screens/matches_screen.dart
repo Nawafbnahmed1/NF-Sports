@@ -168,7 +168,7 @@ class _MatchesScreenState extends State<MatchesScreen> with TickerProviderStateM
     _marqueeController.dispose();
     super.dispose();
   }
-  // دالة الاتصال الصافية والأمنة تماماً لجلب علاقات الدوريات والأندية من سحابتك
+
   Future<List<Map<String, dynamic>>> fetchMatchesForDay(DateTime day) async {
     final data = await supabase
         .from('matches')
@@ -183,14 +183,13 @@ class _MatchesScreenState extends State<MatchesScreen> with TickerProviderStateM
 
   Future<void> _loadDay(int index) async {
     _sparkController.forward(from: 0.0);
-    HapticFeedback.lightImpact(); // الاهتزاز اللطيف فائق النعومة لليوم النشط
+    HapticFeedback.lightImpact();
     setState(() {
       _selectedDateIndex = index;
       matchesFuture = fetchMatchesForDay(_days[index]);
     });
   }
 
-  // دالة حل مشكلة التجمد: تعيد تنشيط السحاب وتطلق كرة اللهب عند سحب المستخدم لأسفل الشاشة
   Future<void> _handleDayRefresh() async {
     HapticFeedback.mediumImpact();
     setState(() {
@@ -205,7 +204,6 @@ class _MatchesScreenState extends State<MatchesScreen> with TickerProviderStateM
       body: SafeArea(
         child: Stack(
           children: [
-            // 🛡️ الختم العلاماتي لـ NF SPORTS المائل والضخم بالخلفية بنسبة شفافة جداً 2% لمنح هيبة القنوات العالمية لـ واجهة التطبيق
             Positioned.fill(
               child: Opacity(
                 opacity: 0.02,
@@ -222,17 +220,16 @@ class _MatchesScreenState extends State<MatchesScreen> with TickerProviderStateM
             ),
 
             RefreshIndicator(
-              color: const Color(0xFF00FF66), // اللون الأخضر النيوني المعتم المعتمد لمنع تشوهات النظام
+              color: const Color(0xFF00A3FF), // تم التغيير إلى الأزرق
               backgroundColor: const Color(0xFF0A1220),
               strokeWidth: 3,
-              onRefresh: _handleDayRefresh, // ربط سحب الشاشة لتحديث جدول السحاب ومنع التجمد كلياً
+              onRefresh: _handleDayRefresh,
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 16),
-                    // 📅 أولاً: شريط التقويم الأسبوعي المتكامل (7 مربعات كاملة أفقية لتقويم الأيام مع اللمعان والاهتزاز)
                     SizedBox(
                       height: 80,
                       child: ListView.builder(
@@ -261,12 +258,12 @@ class _MatchesScreenState extends State<MatchesScreen> with TickerProviderStateM
                                     borderRadius: BorderRadius.circular(18),
                                     border: Border.all(
                                       color: isSelected 
-                                          ? const Color(0xFF00FF66).withOpacity(0.5 + (_sparkAnimation.value * 0.5)) 
+                                          ? const Color(0xFF00A3FF).withOpacity(0.5 + (_sparkAnimation.value * 0.5)) // تم التغيير
                                           : Colors.white10, 
                                       width: isSelected ? 2.0 : 1.5
                                     ),
                                     boxShadow: isSelected ? [
-                                      BoxShadow(color: const Color(0xFF00FF66).withOpacity(0.15 * _sparkAnimation.value), blurRadius: 10)
+                                      BoxShadow(color: const Color(0xFF00A3FF).withOpacity(0.15 * _sparkAnimation.value), blurRadius: 10) // تم التغيير
                                     ] : null,
                                   ),
                                   child: child,
@@ -275,7 +272,7 @@ class _MatchesScreenState extends State<MatchesScreen> with TickerProviderStateM
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Text(dayName, style: TextStyle(color: isSelected ? const Color(0xFF00FF66) : Colors.white38, fontSize: 10, fontFamily: 'Cairo', fontWeight: isSelected ? FontWeight.bold : FontWeight.normal)),
+                                  Text(dayName, style: TextStyle(color: isSelected ? const Color(0xFF00A3FF) : Colors.white38, fontSize: 10, fontFamily: 'Cairo', fontWeight: isSelected ? FontWeight.bold : FontWeight.normal)), // تم التغيير
                                   const SizedBox(height: 4),
                                   Text('${d.day}', style: TextStyle(color: isSelected ? Colors.white : Colors.white54, fontSize: 14, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
                                 ],
@@ -287,44 +284,70 @@ class _MatchesScreenState extends State<MatchesScreen> with TickerProviderStateM
                     ),
                     const SizedBox(height: 14),
 
-                    // 🛸 ثانياً: مستطيل الإعلانات الخرافي المتموج والمتحرك سحابياً بالكامل يستقر مباشرة تحت الأيام
+                    // 🛸 مستطيل الإعلانات الفاخر (تم تكبيره وتوحيد الألوان)
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                       child: Container(
-                        height: 50,
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        height: 76, // ✅ تم تكبير الحجم
+                        padding: const EdgeInsets.symmetric(horizontal: 18),
                         decoration: BoxDecoration(
-                          color: AppTheme.surfaceColor.withOpacity(0.85),
-                          borderRadius: BorderRadius.circular(14),
-                          border: Border.all(color: const Color(0xFF00FF66).withOpacity(0.3), width: 1.5),
+                          color: AppTheme.surfaceColor.withOpacity(0.90),
+                          borderRadius: BorderRadius.circular(24), // ✅ انحناء أكبر
+                          border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.4), width: 2),
                           boxShadow: [
                             BoxShadow(
-                              color: const Color(0xFF00FF66).withOpacity(0.12),
-                              blurRadius: 10,
-                              spreadRadius: 0,
+                              color: const Color(0xFF00A3FF).withOpacity(0.2),
+                              blurRadius: 15,
+                              spreadRadius: 1,
                             )
                           ],
                         ),
                         child: ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(22),
                           child: AnimatedBuilder(
                             animation: _marqueeController,
                             builder: (context, child) {
                               return FractionalTranslation(
                                 translation: Offset(-1.0 + (_marqueeController.value * 2.0), 0.0),
                                 child: Center(
-                                  child: Text(
-                                    '⚽ NF SPORTS MATCHES 📊', // صياغة البراند الحركية الفخمة تحت تقويم اليوم بالملي
-                                    maxLines: 1,
-                                    style: GoogleFonts.cairo(
-                                      color: const Color(0xFF00FF66),
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w900,
-                                      letterSpacing: 1.5,
-                                      shadows: [
-                                        Shadow(color: const Color(0xFF00FF66).withOpacity(0.6), blurRadius: 8)
+                                  child: Text.rich(
+                                    TextSpan(
+                                      children: [
+                                        const WidgetSpan(child: Padding(padding: EdgeInsets.only(right: 4), child: Icon(Icons.sports_soccer, color: Colors.white, size: 28))),
+                                        TextSpan(
+                                          text: ' NF',
+                                          style: GoogleFonts.cairo(
+                                            color: const Color(0xFF00A3FF),
+                                            fontSize: 22, // ✅ حجم أكبر
+                                            fontWeight: FontWeight.w900,
+                                            shadows: [
+                                              Shadow(color: const Color(0xFF00A3FF).withOpacity(0.6), blurRadius: 8)
+                                            ],
+                                          ),
+                                        ),
+                                        TextSpan(
+                                          text: ' SPORTS',
+                                          style: GoogleFonts.cairo(
+                                            color: Colors.white,
+                                            fontSize: 22, // ✅ حجم أكبر
+                                            fontWeight: FontWeight.w900,
+                                          ),
+                                        ),
+                                        TextSpan(
+                                          text: ' MATCHES',
+                                          style: GoogleFonts.cairo(
+                                            color: Colors.redAccent,
+                                            fontSize: 22, // ✅ حجم أكبر
+                                            fontWeight: FontWeight.w900,
+                                            shadows: [
+                                              Shadow(color: Colors.redAccent.withOpacity(0.6), blurRadius: 8)
+                                            ],
+                                          ),
+                                        ),
+                                        const WidgetSpan(child: Padding(padding: EdgeInsets.only(left: 4), child: Icon(Icons.bar_chart, color: Colors.white, size: 28))),
                                       ],
                                     ),
+                                    textAlign: TextAlign.center,
                                   ),
                                 ),
                               );
@@ -348,7 +371,7 @@ class _MatchesScreenState extends State<MatchesScreen> with TickerProviderStateM
                                     size: const Size(40, 40),
                                     painter: _CyberFireBallPainter(
                                       angle: _refreshBallController.value * math.pi * 2, 
-                                      glowColor: const Color(0xFF00FF66),
+                                      glowColor: const Color(0xFF00A3FF), // تم التغيير
                                     ),
                                   );
                                 },
@@ -366,14 +389,13 @@ class _MatchesScreenState extends State<MatchesScreen> with TickerProviderStateM
                         final matchesData = snapshot.data ?? [];
                         var matches = matchesData.map((e) => MatchModel.fromMap(e)).toList();
 
-                        // 🔍 تصفية هندسية صافية وحصرية للمباريات الجارية والمستقبلية لهذا اليوم (استئصال جينات النتائج كلياً)
                         final selectedDate = _days[_selectedDateIndex];
                         matches = matches.where((m) {
                           final isSameDay = m.matchDate.year == selectedDate.year &&
                               m.matchDate.month == selectedDate.month &&
                               m.matchDate.day == selectedDate.day;
                           if (!isSameDay) return false;
-                          return !m.isEnded; // جلب فقط اللقاءات التي لم تنتهِ لتنقية جدول المباريات
+                          return !m.isEnded;
                         }).toList();
 
                         matches.sort((a, b) {
@@ -382,7 +404,6 @@ class _MatchesScreenState extends State<MatchesScreen> with TickerProviderStateM
                           return a.matchDate.compareTo(b.matchDate);
                         });
 
-                        // ⚽ شاشة الاستاد الهادئ البديلة والمطهرة بالكامل باللون النيوني المعتم عند خلو اللقاءات
                         if (matches.isEmpty) {
                           return Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 50),
@@ -396,7 +417,7 @@ class _MatchesScreenState extends State<MatchesScreen> with TickerProviderStateM
                                         size: const Size(48, 48),
                                         painter: _CyberFireBallPainter(
                                           angle: _refreshBallController.value * math.pi * 0.5, 
-                                          glowColor: const Color(0xFF00FF66).withOpacity(0.3),
+                                          glowColor: const Color(0xFF00A3FF).withOpacity(0.3), // تم التغيير
                                         ),
                                       );
                                     },
@@ -413,11 +434,11 @@ class _MatchesScreenState extends State<MatchesScreen> with TickerProviderStateM
                                     child: Container(
                                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                                       decoration: BoxDecoration(
-                                        color: const Color(0xFF00FF66).withOpacity(0.08), 
+                                        color: const Color(0xFF00A3FF).withOpacity(0.08), // تم التغيير
                                         borderRadius: BorderRadius.circular(12), 
-                                        border: Border.all(color: const Color(0xFF00FF66).withOpacity(0.2)),
+                                        border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.2)), // تم التغيير
                                       ),
-                                      child: Text('تحديث جدول السحاب', style: GoogleFonts.cairo(color: const Color(0xFF00FF66), fontSize: 11, fontWeight: FontWeight.bold)),
+                                      child: Text('تحديث جدول السحاب', style: GoogleFonts.cairo(color: const Color(0xFF00A3FF), fontSize: 11, fontWeight: FontWeight.bold)), // تم التغيير
                                     ),
                                   ),
                                 ],
@@ -450,7 +471,7 @@ class _MatchesScreenState extends State<MatchesScreen> with TickerProviderStateM
                                   ),
                                 ),
                                 const SizedBox(height: 4),
-                                buildLiveCard(context, match), // استدعاء حصرى ومباشر لكرت المباريات الرشيق
+                                buildLiveCard(context, match),
                               ],
                             );
                           },
@@ -467,7 +488,7 @@ class _MatchesScreenState extends State<MatchesScreen> with TickerProviderStateM
       ),
     );
   }
-  // 👑 كرت المباريات الرشيق والمضغوط هندسياً لحماية الواجهة من الثقل وتوضيح لوغوهات الفرق بالملي
+
   Widget buildLiveCard(BuildContext context, MatchModel match) {
     final bool isHotMatch = match.leagueName.contains('كأس') || match.leagueName.contains('دوري أبطال') || match.isLive;
 
@@ -477,11 +498,11 @@ class _MatchesScreenState extends State<MatchesScreen> with TickerProviderStateM
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
           boxShadow: (isHotMatch && match.isLive) ? [
-            BoxShadow(color: Color(0xFF00FF66).withOpacity(0.12), blurRadius: 12, spreadRadius: 1),
-            BoxShadow(color: Color(0xFF00FF66).withOpacity(0.06), blurRadius: 6, spreadRadius: 0)
+            BoxShadow(color: Color(0xFF00A3FF).withOpacity(0.12), blurRadius: 12, spreadRadius: 1), // تم التغيير
+            BoxShadow(color: Color(0xFF00A3FF).withOpacity(0.06), blurRadius: 6, spreadRadius: 0) // تم التغيير
           ] : null,
           color: Color(0xFF161926).withOpacity(0.6),
-           border: Border.all(color: Color(0xFF00FF66).withOpacity(0.15), width: 1),
+           border: Border.all(color: Color(0xFF00A3FF).withOpacity(0.15), width: 1), // تم التغيير
                   ),
         child: GlassCard(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
@@ -491,7 +512,6 @@ class _MatchesScreenState extends State<MatchesScreen> with TickerProviderStateM
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // الفريق الأول: لوغو ناصع وواضح جداً واسم رشييق وموزون
                   Expanded(
                     child: Row(
                       textDirection: TextDirection.rtl,
@@ -511,7 +531,6 @@ class _MatchesScreenState extends State<MatchesScreen> with TickerProviderStateM
                     ),
                   ),
 
-                  // العمود المركزي المفرغ: يحمل النتيجة الكبيرة العريضة أو التوقيت الفعلي فقط
                   Column(
                     children: [
                       if (match.isLive)
@@ -531,10 +550,9 @@ class _MatchesScreenState extends State<MatchesScreen> with TickerProviderStateM
                           ],
                         )
                       else
-                        Text(match.time12Hour, style: GoogleFonts.cairo(color: const Color(0xFF00FF66), fontSize: 11, fontWeight: FontWeight.bold)),
+                        Text(match.time12Hour, style: GoogleFonts.cairo(color: const Color(0xFF00A3FF), fontSize: 11, fontWeight: FontWeight.bold)), // تم التغيير
                     ],
                   ),
-                  // الفريق الثاني: لوغو ناصع وواضح جداً واسم رشييق وموزون
                   Expanded(
                     child: Row(
                       children: [
@@ -557,7 +575,6 @@ class _MatchesScreenState extends State<MatchesScreen> with TickerProviderStateM
               
               const Padding(padding: EdgeInsets.symmetric(vertical: 6.0), child: Divider(color: Colors.white10, height: 1)),
               
-              // 📱 شريط المؤشرات التحتية الزجاجي الفخم المطعم بكبسولة حقوقك وتوقيع البراند NF بالملي كصورتك
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -568,9 +585,9 @@ class _MatchesScreenState extends State<MatchesScreen> with TickerProviderStateM
                         decoration: BoxDecoration(
                           color: Colors.black45, 
                           borderRadius: BorderRadius.circular(5),
-                          border: Border.all(color: const Color(0xFF00FF66).withOpacity(0.2), width: 0.5),
+                          border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.2), width: 0.5), // تم التغيير
                         ),
-                        child: Text("NF", style: GoogleFonts.cairo(color: const Color(0xFF00FF66).withOpacity(0.7), fontSize: 8, fontWeight: FontWeight.w900)),
+                        child: Text("NF", style: GoogleFonts.cairo(color: const Color(0xFF00A3FF).withOpacity(0.7), fontSize: 8, fontWeight: FontWeight.w900)), // تم التغيير
                       ),
                       if (match.isLive) ...[
                         const SizedBox(width: 6),
@@ -579,15 +596,14 @@ class _MatchesScreenState extends State<MatchesScreen> with TickerProviderStateM
                           decoration: BoxDecoration(
                             color: Colors.black87, 
                             borderRadius: BorderRadius.circular(4), 
-                            border: Border.all(color: const Color(0xFF00FF66), width: 0.8),
+                            border: Border.all(color: const Color(0xFF00A3FF), width: 0.8), // تم التغيير
                           ),
-                          child: Text("LIVE HD", style: GoogleFonts.cairo(color: const Color(0xFF00FF66), fontSize: 7, fontWeight: FontWeight.w900)),
+                          child: Text("LIVE HD", style: GoogleFonts.cairo(color: const Color(0xFF00A3FF), fontSize: 7, fontWeight: FontWeight.w900)), // تم التغيير
                         ),
                       ],
                     ],
                   ),
                   
-                  // زر نيونى ناعم ومطعم بالأخضر المعتم للانتقال الفوري لشاشة تفاصيل اللقاء الإحصائية
                   InkWell(
                     onTap: () {
                       HapticFeedback.lightImpact();
@@ -597,9 +613,9 @@ class _MatchesScreenState extends State<MatchesScreen> with TickerProviderStateM
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF00FF66).withOpacity(0.08), 
+                        color: const Color(0xFF00A3FF).withOpacity(0.08), // تم التغيير
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: const Color(0xFF00FF66).withOpacity(0.25), width: 1),
+                        border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.25), width: 1), // تم التغيير
                       ),
                       child: Text('تفاصيل اللقاء', style: GoogleFonts.cairo(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
                     ),
