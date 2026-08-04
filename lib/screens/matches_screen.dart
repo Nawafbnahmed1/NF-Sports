@@ -535,3 +535,82 @@ class _MatchesScreenState extends State<MatchesScreen> with TickerProviderStateM
                         Text(match.time12Hour, style: GoogleFonts.cairo(color: const Color(0xFF00FF66), fontSize: 11, fontWeight: FontWeight.bold)),
                     ],
                   ),
+                  // الفريق الثاني: لوغو ناصع وواضح جداً واسم رشييق وموزون
+                  Expanded(
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 38,
+                          height: 38,
+                          decoration: BoxDecoration(color: Colors.white.withOpacity(0.04), shape: BoxShape.circle),
+                          padding: const EdgeInsets.all(4),
+                          child: match.team2Logo.isNotEmpty && match.team2Logo.startsWith('http')
+                              ? Image.network(match.team2Logo, fit: BoxFit.contain, errorBuilder: (_, __, ___) => const Icon(Icons.shield, color: Colors.white24, size: 24))
+                              : const Icon(Icons.shield, color: Colors.white24, size: 24),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(child: Text(match.team2, maxLines: 1, overflow: TextOverflow.ellipsis, textAlign: TextAlign.left, style: GoogleFonts.cairo(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold))),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              
+              const Padding(padding: EdgeInsets.symmetric(vertical: 6.0), child: Divider(color: Colors.white10, height: 1)),
+              
+              // 📱 شريط المؤشرات التحتية الزجاجي الفخم المطعم بكبسولة حقوقك وتوقيع البراند NF بالملي كصورتك
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: Colors.black45, 
+                          borderRadius: BorderRadius.circular(5),
+                          border: Border.all(color: const Color(0xFF00FF66).withOpacity(0.2), width: 0.5),
+                        ),
+                        child: Text("NF", style: GoogleFonts.cairo(color: const Color(0xFF00FF66).withOpacity(0.7), fontSize: 8, fontWeight: FontWeight.w900)),
+                      ),
+                      if (match.isLive) ...[
+                        const SizedBox(width: 6),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
+                          decoration: BoxDecoration(
+                            color: Colors.black87, 
+                            borderRadius: BorderRadius.circular(4), 
+                            border: Border.all(color: const Color(0xFF00FF66), width: 0.8),
+                          ),
+                          child: Text("LIVE HD", style: GoogleFonts.cairo(color: const Color(0xFF00FF66), fontSize: 7, fontWeight: FontWeight.w900)),
+                        ),
+                      ],
+                    ],
+                  ),
+                  
+                  // زر نيونى ناعم ومطعم بالأخضر المعتم للانتقال الفوري لشاشة تفاصيل اللقاء الإحصائية
+                  InkWell(
+                    onTap: () {
+                      HapticFeedback.lightImpact();
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => MatchDetailScreen(team1: match.team1, team2: match.team2)));
+                    },
+                    borderRadius: BorderRadius.circular(8),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF00FF66).withOpacity(0.08), 
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: const Color(0xFF00FF66).withOpacity(0.25), width: 1),
+                      ),
+                      child: Text('تفاصيل اللقاء', style: GoogleFonts.cairo(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
