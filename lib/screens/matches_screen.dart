@@ -481,7 +481,8 @@ class _MatchesScreenState extends State<MatchesScreen> with TickerProviderStateM
             BoxShadow(color: Color(0xFF00FF66).withOpacity(0.06), blurRadius: 6, spreadRadius: 0)
           ] : null,
           color: Color(0xFF161926).withOpacity(0.6),
-          border: Border.all(color: Color(0xFF00FF66).withOpacity(0.15), width: 1),
+           border: Border.all(color: Color(0xFF00FF66).withOpacity(0.15), width: 1),
+                  ),
         child: GlassCard(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           borderRadius: 20,
