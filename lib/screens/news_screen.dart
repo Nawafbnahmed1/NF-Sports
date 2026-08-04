@@ -154,11 +154,11 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 16),
-                    // ⭕ شريط دوائر الستوري الأفقية (تم تكبير الحجم)
+                    // ⭕ شريط دوائر الستوري الأفقية (تم التكبير الأخير)
                     Directionality(
                       textDirection: TextDirection.rtl,
                       child: SizedBox(
-                        height: 130, // ✅ تم تكبير ارتفاع الحاوية ليتسع للدوائر الأكبر
+                        height: 140, // ✅ تم رفع الارتفاع
                         child: ListView.builder(
                           scrollDirection: Axis.horizontal,
                           padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -178,8 +178,8 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
                                 child: Column(
                                   children: [
                                     Container(
-                                      width: 78, // ✅ تم تكبير الحجم من 65 إلى 78
-                                      height: 78, // ✅ تم تكبير الحجم من 65 إلى 78
+                                      width: 86, // ✅ تم التكبير الأخير
+                                      height: 86, // ✅ تم التكبير الأخير
                                       decoration: BoxDecoration(
                                         shape: BoxShape.circle,
                                         border: Border.all(color: isRead ? Colors.white24 : const Color(0xFF00A3FF), width: 2),
@@ -216,22 +216,22 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                       child: Container(
-                        height: 70,
-                        padding: const EdgeInsets.symmetric(horizontal: 14),
+                        height: 76,
+                        padding: const EdgeInsets.symmetric(horizontal: 18),
                         decoration: BoxDecoration(
-                          color: AppTheme.surfaceColor.withOpacity(0.85),
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.3), width: 1.5),
+                          color: AppTheme.surfaceColor.withOpacity(0.90),
+                          borderRadius: BorderRadius.circular(24),
+                          border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.4), width: 2),
                           boxShadow: [
                             BoxShadow(
-                              color: const Color(0xFF00A3FF).withOpacity(0.12),
-                              blurRadius: 10,
-                              spreadRadius: 0,
+                              color: const Color(0xFF00A3FF).withOpacity(0.2),
+                              blurRadius: 15,
+                              spreadRadius: 1,
                             )
                           ],
                         ),
                         child: ClipRRect(
-                          borderRadius: BorderRadius.circular(18),
+                          borderRadius: BorderRadius.circular(22),
                           child: AnimatedBuilder(
                             animation: _marqueeController,
                             builder: (context, child) {
@@ -241,12 +241,12 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
                                   child: Text.rich(
                                     TextSpan(
                                       children: [
-                                        const WidgetSpan(child: Padding(padding: EdgeInsets.only(right: 4), child: Icon(Icons.sports_soccer, color: Colors.white, size: 24))),
+                                        const WidgetSpan(child: Padding(padding: EdgeInsets.only(right: 4), child: Icon(Icons.sports_soccer, color: Colors.white, size: 28))),
                                         TextSpan(
                                           text: ' NF',
                                           style: GoogleFonts.cairo(
                                             color: const Color(0xFF00A3FF),
-                                            fontSize: 20,
+                                            fontSize: 22,
                                             fontWeight: FontWeight.w900,
                                             shadows: [
                                               Shadow(color: const Color(0xFF00A3FF).withOpacity(0.6), blurRadius: 8)
@@ -257,7 +257,7 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
                                           text: ' SPORTS',
                                           style: GoogleFonts.cairo(
                                             color: Colors.white,
-                                            fontSize: 20,
+                                            fontSize: 22,
                                             fontWeight: FontWeight.w900,
                                           ),
                                         ),
@@ -265,14 +265,14 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
                                           text: ' NEWS',
                                           style: GoogleFonts.cairo(
                                             color: Colors.redAccent,
-                                            fontSize: 20,
+                                            fontSize: 22,
                                             fontWeight: FontWeight.w900,
                                             shadows: [
                                               Shadow(color: Colors.redAccent.withOpacity(0.6), blurRadius: 8)
                                             ],
                                           ),
                                         ),
-                                        const WidgetSpan(child: Padding(padding: EdgeInsets.only(left: 4), child: Icon(Icons.newspaper, color: Colors.white, size: 24))),
+                                        const WidgetSpan(child: Padding(padding: EdgeInsets.only(left: 4), child: Icon(Icons.newspaper, color: Colors.white, size: 28))),
                                       ],
                                     ),
                                     textAlign: TextAlign.center,
@@ -343,7 +343,6 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
     );
   }
 
-  // 🎬 الكرت الرئيسي (تم تقليص حجمه قليلاً)
   Widget _buildMainArticleCard(BuildContext context, NewsArticleModel article) {
     final bool isRead = _readArticlesMemory.contains(article.articleUrl);
     
@@ -360,7 +359,17 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(24),
-            boxShadow: !isRead ? [BoxShadow(color: const Color(0xFF00A3FF).withOpacity(0.12), blurRadius: 16)] : null,
+            boxShadow: !isRead ? [
+              BoxShadow(
+                color: const Color(0xFF00A3FF).withOpacity(0.25),
+                blurRadius: 20,
+                spreadRadius: 0,
+              )
+            ] : null,
+            border: Border.all(
+              color: const Color(0xFF00A3FF).withOpacity(0.6),
+              width: 1.5,
+            ),
           ),
           child: GlassCard(
             padding: EdgeInsets.zero,
@@ -371,7 +380,7 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
                   children: [
                     Container(
                       width: double.infinity,
-                      height: 145, // ✅ تم تقليل الحجم من 155 إلى 145
+                      height: 112,
                       decoration: const BoxDecoration(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
                       child: ClipRRect(
                         borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
@@ -399,7 +408,7 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
                   ],
                 ),
                 Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.all(14.0),
                   child: Column(
                     children: [
                       Align(
@@ -480,7 +489,6 @@ class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
     );
   }
   
-  // 📰 الكروت الفرعية
   Widget _buildSubArticleCard(BuildContext context, NewsArticleModel article) {
     final bool isRead = _readArticlesMemory.contains(article.articleUrl);
     
