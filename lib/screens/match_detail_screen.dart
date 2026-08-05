@@ -877,6 +877,6 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                     ],
                   ),
                 ),
-                const SizedBox(height: 60),
+                const SizedBox(height: 60);
   }
 }
