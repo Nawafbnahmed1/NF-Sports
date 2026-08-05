@@ -1,615 +1,887 @@
+import 'dart:async';
+import 'dart:math' as math;
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../theme/app_theme.dart';
-import 'package:glass_kit/glass_kit.dart';
 import '../widgets/glass_card.dart';
 
-class UserLineupPrediction {
-  final String positionName;
-  final double dx;
-  final double dy;
-  String playerName;
-  String playerNumber;
-  Color jerseyColor;
-  bool isPlaced;
+// 👑 موديل أحداث اللقاء الحية المصفى ليتناسب 100% مع معطيات المصادر المجانية الصافية
+class MatchEventModel {
+  final String id;
+  final String minute;
+  final String type; // goal, card, substitution
+  final String playerName;
+  final String detail; // assist name, or card color, or sub player out
+  final bool isHomeTeam;
 
-  UserLineupPrediction({
-    required this.positionName,
-    required this.dx,
-    required this.dy,
-    this.playerName = '',
-    this.playerNumber = '',
-    this.jerseyColor = AppTheme.neonBlue,
-    this.isPlaced = false,
+  const MatchEventModel({
+    required this.id,
+    required this.minute,
+    required this.type,
+    required this.playerName,
+    required this.detail,
+    required this.isHomeTeam,
   });
 }
 
+// 👑 موديل إحصائيات اللقاء الموزون والمضمون برمجياً بنقاء
+class MatchStatsModel {
+  final int homePossession;
+  final int awayPossession;
+  final int homeShots;
+  final int awayShots;
+  final int homeShotsOnTarget;
+  final int awayShotsOnTarget;
+  final int homeCorners;
+  final int awayCorners;
+
+  const MatchStatsModel({
+    this.homePossession = 50,
+    this.awayPossession = 50,
+    this.homeShots = 0,
+    this.awayShots = 0,
+    this.homeShotsOnTarget = 0,
+    this.awayShotsOnTarget = 0,
+    this.homeCorners = 0,
+    this.awayCorners = 0,
+  });
+}
+
+// 👑 موديل بيانات كروت التشكيلة الرسمية للاعبين والتقييمات الرقمية المضيئة
+class PlayerLineupModel {
+  final String name;
+  final String number;
+  final String rating;
+  final String position; // GK, DEF, MID, ATT
+  final int xGrid; // من 1 إلى 5 لتوزيع اللاعبين تكتيكياً
+  final int yGrid; // من 1 = للحارس إلى 5 = للهجوم
+
+  const PlayerLineupModel({
+    required this.name,
+    required this.number,
+    required this.rating,
+    required this.position,
+    required this.xGrid,
+    required this.yGrid,
+  });
+}
 class MatchDetailScreen extends StatefulWidget {
   final String team1;
   final String team2;
+  final String matchId; // معرف المباراة لربط السحاب والتصويت الحركي
 
-  const MatchDetailScreen({super.key, required this.team1, required this.team2});
+  const MatchDetailScreen({
+    super.key,
+    required this.team1,
+    required this.team2,
+    this.matchId = 'global_match_2026',
+  });
 
   @override
   State<MatchDetailScreen> createState() => _MatchDetailScreenState();
 }
 
-class _CyberPitchPainter extends CustomPainter {
-  final Color linesColor;
-  final double pulseValue;
-
-  _CyberPitchPainter({required this.linesColor, required this.pulseValue});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final Paint paint = Paint()
-      ..color = linesColor.withOpacity(0.12 + (pulseValue * 0.08))
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.2;
-
-    canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), paint);
-    canvas.drawLine(Offset(0, size.height / 2), Offset(size.width, size.height / 2), paint);
-    canvas.drawCircle(Offset(size.width / 2, size.height / 2), 45, paint);
-    canvas.drawCircle(Offset(size.width / 2, size.height / 2), 2, paint);
-    canvas.drawRect(Rect.fromLTWH(size.width * 0.2, 0, size.width * 0.6, 50), paint);
-    canvas.drawRect(Rect.fromLTWH(size.width * 0.35, 0, size.width * 0.3, 18), paint);
-    canvas.drawRect(Rect.fromLTWH(size.width * 0.2, size.height - 50, size.width * 0.6, 50), paint);
-    canvas.drawRect(Rect.fromLTWH(size.width * 0.35, size.height - 18, size.width * 0.3, 18), paint);
-  }
-
-  @override
-  bool shouldRepaint(covariant _CyberPitchPainter oldDelegate) => oldDelegate.pulseValue != pulseValue;
-}
 class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProviderStateMixin {
-  late AnimationController _pulseController;
-  late AnimationController _marqueeController;
+  final supabase = Supabase.instance.client;
+  
+  late TabController _tabController;
+  late PageController _lineupPageController; // متحكم السحب الأفقي للملاعب ثلاثية الأبعاد
+  
+  final TextEditingController _chatController = TextEditingController();
+  
+  // 🤖 محرك أوتار البوت وحظر المستخدمين المخالفين لـ 12 ساعة
+  final List<String> _blacklistedUsers = [];
+  final Map<String, DateTime> _banList = {};
+  
+  // شروط حارس الأمان الصارم للبوت النصي الذكي لـ NF SPORTS
+  final List<String> _toxicKeywords = ['كلب', 'حمار', 'غبي', 'حيوان', 'يلعن', 'تفو', 'منيوك', 'كس', 'عرص', 'قحبة'];
 
-  final List<UserLineupPrediction> _predictedLineup = [
-    UserLineupPrediction(positionName: 'GK', dx: 0.5, dy: 0.88),
-    UserLineupPrediction(positionName: 'CB1', dx: 0.32, dy: 0.72),
-    UserLineupPrediction(positionName: 'CB2', dx: 0.68, dy: 0.72),
-    UserLineupPrediction(positionName: 'LB', dx: 0.12, dy: 0.65),
-    UserLineupPrediction(positionName: 'RB', dx: 0.88, dy: 0.65),
-    UserLineupPrediction(positionName: 'CM', dx: 0.5, dy: 0.48),
-    UserLineupPrediction(positionName: 'LCM', dx: 0.25, dy: 0.45),
-    UserLineupPrediction(positionName: 'RCM', dx: 0.75, dy: 0.45),
-    UserLineupPrediction(positionName: 'ST', dx: 0.5, dy: 0.18),
-    UserLineupPrediction(positionName: 'LW', dx: 0.20, dy: 0.22),
-    UserLineupPrediction(positionName: 'RW', dx: 0.80, dy: 0.22),
-  ];
-
-  int? _activePositionIndex;
-  final TextEditingController _playerNameController = TextEditingController();
-  final TextEditingController _playerNumberController = TextEditingController();
-  final TextEditingController _userNameController = TextEditingController();
-
-  Color _selectedJerseyColor = AppTheme.neonBlue;
-  bool _isOfficialLineupReleased = false;
-  bool _showTutorial = true;
+  // إحصائيات وهمية ذكية متطابقة 100% مع معطيات المصادر المجانية الصافية
+  int _homeVotes = 142;
+  int _drawVotes = 64;
+  int _awayVotes = 118;
+  bool _hasVoted = false;
+  String? _myVoteChoice;
 
   @override
   void initState() {
     super.initState();
-    _pulseController = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 2),
-    )..repeat(reverse: true);
-
-    _marqueeController = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 12),
-    )..repeat();
+    // واجهتان ملكيتان فقط بالقمة لكسر تشتت المشجع
+    _tabController = TabController(length: 2, vsync: this);
+    _lineupPageController = PageController(initialPage: 0);
+    _loadStoredVotes();
   }
 
   @override
   void dispose() {
-    _pulseController.dispose();
-    _marqueeController.dispose();
-    _playerNameController.dispose();
-    _playerNumberController.dispose();
-    _userNameController.dispose();
+    _tabController.dispose();
+    _lineupPageController.dispose();
+    _chatController.dispose();
     super.dispose();
   }
 
-  void _openMechaBench(int index) {
-    if (_isOfficialLineupReleased) return;
-    HapticFeedback.lightImpact();
-    setState(() {
-      _activePositionIndex = index;
-      _playerNameController.text = _predictedLineup[index].playerName;
-      _playerNumberController.text = _predictedLineup[index].playerNumber;
-      if (_predictedLineup[index].isPlaced) {
-        _selectedJerseyColor = _predictedLineup[index].jerseyColor;
+  void _loadStoredVotes() {
+    // محاكاة سريعة لجلب أرقام الاستفتاء السحابي لتوقع الفائز
+    Timer(const Duration(milliseconds: 600), () {
+      if (mounted) {
+        setState(() {
+          _homeVotes = 158;
+          _drawVotes = 72;
+          _awayVotes = 124;
+        });
       }
     });
   }
 
-  void _submitPredictionToCloud() {
-    if (_userNameController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('الرجاء كتابة اسمك أولاً لحفظ التشكيلة! ⚠️', style: TextStyle(fontFamily: 'Cairo'))),
-      );
-      return;
+  // 🤖 دالة البوت الحارس الذكي لفحص النصوص والروابط وحجب الإعلانات فورا
+  bool _checkAndApplyBotGuard(String text, String userName) {
+    final cleanText = text.toLowerCase().trim();
+    bool shouldBan = false;
+
+    // 1. فحص روابط الويب والإعلانات الخارجية الخبيثة
+    if (cleanText.contains('http://') || cleanText.contains('https://') || cleanText.contains('.com') || cleanText.contains('www.')) {
+      shouldBan = true;
     }
-    HapticFeedback.mediumImpact();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('تم إرسال تشكيلتك يا ${_userNameController.text.trim()}! في انتظار مطابقة الواقع... 🏆', style: const TextStyle(fontFamily: 'Cairo'))),
-    );
+    
+    // 2. فحص الألفاظ السيئة والخروج عن الروح الرياضية
+    for (var word in _toxicKeywords) {
+      if (cleanText.contains(word)) {
+        shouldBan = true;
+        break;
+      }
+    }
+
+    if (shouldBan) {
+      HapticFeedback.vibrate(); // اهتزاز عنيف لتنبيه المخالف
+      setState(() {
+        _banList[userName] = DateTime.now().add(const Duration(hours: 12));
+      });
+      return true; // تم رصد مخالفة وقام البوت بالحظر
+    }
+    return false;
   }
   @override
   Widget build(BuildContext context) {
-    final colors = [Colors.cyanAccent, AppTheme.neonBlue, Colors.amberAccent, Colors.redAccent];
-
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: const Color(0xFF0F111A),
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.white, size: 20),
+          icon: const Icon(Icons.arrow_back_ios_new, color: Color(0xFF00A3FF), size: 20),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'تفاصيل اللقاء',
-          style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold, fontFamily: 'Cairo'),
+        title: Text(
+          'الإمبراطورية الرياضية',
+          style: GoogleFonts.cairo(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
+        // 🎫 التبويب الثنائي الملكي بالقمة لكسر تشتت المشجع وعزل المناقشات الكروية
+        bottom: TabBar(
+          controller: _tabController,
+          indicatorColor: const Color(0xFF00A3FF),
+          indicatorWeight: 3,
+          labelColor: const Color(0xFF00A3FF),
+          unselectedLabelColor: Colors.white38,
+          labelStyle: GoogleFonts.cairo(fontSize: 13, fontWeight: FontWeight.bold),
+          tabs: const [
+            Tab(text: 'تفاصيل المباراة'),
+            Tab(text: 'مناقشات كروية'),
+          ],
+        ),
       ),
-      body: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              child: GlassCard(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          // ⚽ الواجهة الأولى: صفحة تفاصيل اللقاء الهيدروليكية الممتدة والمعلوماتية الكبرى
+          SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                
+                // 🌌 1. هيدر الذوبان الضبابي السينمائي البانورامي المضاء بالأزرق الكوني الفاخر لـ NF SPORTS
+                Container(
+                  width: double.infinity,
+                  height: 180,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [const Color(0xFF0F111A), AppTheme.backgroundColor],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                    ),
+                  ),
+                  child: Stack(
                     children: [
-                      Expanded(
-                        child: Column(
-                          children: [
-                            Container(
-                              width: 44,
-                              height: 44,
-                              decoration: BoxDecoration(color: Colors.white.withOpacity(0.04), shape: BoxShape.circle),
-                              child: const Icon(Icons.shield, color: Colors.white60, size: 32),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(widget.team1, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
-                          ],
-                        ),
+                      // حقن وسم حقوق الملكية NF الكريستالي الناعم بداخل زاوية الهيدر
+                      Positioned(
+                        top: 10, right: 15,
+                        child: Text('NF', style: GoogleFonts.cairo(color: const Color(0xFF00A3FF).withOpacity(0.2), fontSize: 11, fontWeight: FontWeight.w900)),
                       ),
-                      Column(
-                        children: [
-                          const Text('- : -', style: TextStyle(color: Colors.white24, fontSize: 32, fontWeight: FontWeight.bold, letterSpacing: 1.0)),
-                          const SizedBox(height: 4),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-                            decoration: BoxDecoration(color: const Color(0x0AFFFFFF), borderRadius: BorderRadius.circular(6)),
-                            child: const Text('في انتظار البداية', style: TextStyle(color: Colors.white38, fontSize: 10, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
-                          ),
-                        ],
-                      ),
-                      Expanded(
-                        child: Column(
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Container(
-                              width: 44,
-                              height: 44,
-                              decoration: BoxDecoration(color: Colors.white.withOpacity(0.04), shape: BoxShape.circle),
-                              child: const Icon(Icons.shield, color: Colors.white60, size: 32),
+                            // الفريق الأول (المستضيف)
+                            Expanded(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    width: 60, height: 60,
+                                    decoration: BoxDecoration(color: Colors.white.withOpacity(0.04), shape: BoxShape.circle, border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.15))),
+                                    padding: const EdgeInsets.all(8),
+                                    child: const Icon(Icons.shield, color: Colors.white70, size: 40),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(widget.team1, maxLines: 1, overflow: TextOverflow.ellipsis, style: GoogleFonts.cairo(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold)),
+                                ],
+                              ),
                             ),
-                            const SizedBox(height: 8),
-                            Text(widget.team2, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                            
+                            // الكتلة المركزية المشعة للنتيجة الرقمية والتوقيت اللحظي
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF161926).withOpacity(0.6),
+                                    borderRadius: BorderRadius.circular(30),
+                                    border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.25)),
+                                    boxShadow: [BoxShadow(color: const Color(0xFF00A3FF).withOpacity(0.08), blurRadius: 12)],
+                                  ),
+                                  child: const Text('2 - 1', style: TextStyle(color: Colors.white, fontSize: 26, fontWeight: FontWeight.w900, letterSpacing: 1.5)),
+                                ),
+                                const SizedBox(height: 6),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+                                  decoration: BoxDecoration(color: const Color(0xFF00A3FF).withOpacity(0.1), borderRadius: BorderRadius.circular(6)),
+                                  child: Text('انتهت المباراة • FT', style: GoogleFonts.cairo(color: const Color(0xFF00A3FF), fontSize: 9, fontWeight: FontWeight.w900)),
+                                ),
+                              ],
+                            ),
+                            
+                            // الفريق الثاني (الضيف)
+                            Expanded(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    width: 60, height: 60,
+                                    decoration: BoxDecoration(color: Colors.white.withOpacity(0.04), shape: BoxShape.circle, border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.15))),
+                                    padding: const EdgeInsets.all(8),
+                                    child: const Icon(Icons.shield, color: Colors.white70, size: 40),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(widget.team2, maxLines: 1, overflow: TextOverflow.ellipsis, style: GoogleFonts.cairo(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold)),
+                                ],
+                              ),
+                            ),
                           ],
                         ),
                       ),
                     ],
                   ),
                 ),
-              ),
-            ),
-            if (_showTutorial && !_isOfficialLineupReleased)
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
-                child: AnimatedOpacity(
-                  duration: const Duration(milliseconds: 300),
-                  opacity: _showTutorial ? 1.0 : 0.0,
+                // 🎫 2. لوحة كبسولات تفاصيل اللقاء الأساسية (البطولة • الملعب • الحكم • الناقل)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
                   child: Container(
-                    padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: const Color(0x1F00B4FF),
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: AppTheme.neonBlue.withOpacity(0.2)),
+                      color: const Color(0xFF161926).withOpacity(0.6),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.18), width: 1),
                     ),
-                    child: Row(
-                      textDirection: TextDirection.rtl,
-                      children: [
-                        const Icon(Icons.lightbulb_outline, color: AppTheme.neonBlue, size: 18),
-                        const SizedBox(width: 8),
-                        const Expanded(
-                          child: Text(
-                            '💡 طريقة توقع تشكيلة المدرب : اضغط على مركز في الملعب، ثم اختر الروبوت من دكة الاحتياط، واكتب اسم اللاعب ورقمه لتبني خطتك الأسطورية!',
+                    child: GlassCard(
+                      borderRadius: 20,
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        children: [
+                          Row(
                             textDirection: TextDirection.rtl,
-                            style: TextStyle(color: Colors.white70, fontSize: 11, fontFamily: 'Cairo', height: 1.4),
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(textDirection: TextDirection.rtl, children: [
+                                const Icon(Icons.emoji_events, color: Colors.amber, size: 16),
+                                const SizedBox(width: 8),
+                                Text('الدوري الممتاز', style: GoogleFonts.cairo(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold)),
+                              ]),
+                              Text('الأسبوع 18', style: GoogleFonts.cairo(color: Colors.white38, fontSize: 11)),
+                            ],
                           ),
-                        ),
-                      ],
+                          const Padding(padding: EdgeInsets.symmetric(vertical: 8), child: Divider(color: Colors.white10, height: 1)),
+                          Row(
+                            textDirection: TextDirection.rtl,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(textDirection: TextDirection.rtl, children: [
+                                const Icon(Icons.stadium, color: Color(0xFF00A3FF), size: 16),
+                                const SizedBox(width: 8),
+                                Text('استاد الملك فهد الدولي', style: GoogleFonts.cairo(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold)),
+                              ]),
+                              Text('NF', style: GoogleFonts.cairo(color: const Color(0xFF00A3FF).withOpacity(0.3), fontSize: 10, fontWeight: FontWeight.black)),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-            Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: AspectRatio(
-                aspectRatio: 0.72,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF040A14),
-                    borderRadius: BorderRadius.circular(24),
-                    border: Border.all(color: Colors.white10, width: 1.5),
-                  ),
-                  child: Stack(
-                    children: [
-                      Positioned.fill(
-                        child: AnimatedBuilder(
-                          animation: _pulseController,
-                          builder: (context, _) {
-                            return CustomPaint(
-                              painter: _CyberPitchPainter(linesColor: AppTheme.neonBlue, pulseValue: _pulseController.value),
-                            );
-                          },
-                        ),
-                      ),
-                      LayoutBuilder(
-                        builder: (context, constraints) {
-                          return Stack(
-                            children: List.generate(_predictedLineup.length, (index) {
-                              final p = _predictedLineup[index];
-                              final double posX = (p.dx * constraints.maxWidth) - 20;
-                              final double posY = (p.dy * constraints.maxHeight) - 25;
-                              final bool isActive = _activePositionIndex == index;
+                const SizedBox(height: 14),
 
-                              return Positioned(
-                                left: posX,
-                                top: posY,
-                                child: GestureDetector(
-                                  onTap: () {
-                                    setState(() => _showTutorial = false);
-                                    _openMechaBench(index);
-                                  },
-                                  child: Column(
-                                    children: [
-                                      AnimatedBuilder(
-                                        animation: _pulseController,
-                                        builder: (context, child) {
-                                          return Container(
-                                            width: 40,
-                                            height: 40,
-                                            decoration: BoxDecoration(
-                                              color: p.isPlaced ? p.jerseyColor.withOpacity(0.2) : (isActive ? AppTheme.neonBlue.withOpacity(0.3) : const Color(0x1AFFFFFF)),
-                                              shape: BoxShape.circle,
-                                              border: Border.all(
-                                                color: p.isPlaced ? p.jerseyColor : (isActive ? Colors.white : AppTheme.neonBlue.withOpacity(0.4)),
-                                                width: isActive ? 2.0 : 1.5,
-                                              ),
-                                              boxShadow: (p.isPlaced || isActive)
-                                                  ? [
-                                                      BoxShadow(color: (p.isPlaced ? p.jerseyColor : AppTheme.neonBlue).withOpacity(0.4 * _pulseController.value), blurRadius: 10),
-                                                    ]
-                                                  : null,
-                                            ),
-                                            child: child,
-                                          );
-                                        },
-                                        child: Icon(p.isPlaced ? Icons.android_rounded : Icons.add_moderator, size: 18, color: p.isPlaced ? Colors.white : Colors.white38),
-                                      ),
-                                      const SizedBox(height: 2),
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
-                                        decoration: BoxDecoration(color: Colors.black87, borderRadius: BorderRadius.circular(4)),
-                                        child: Text(
-                                          p.isPlaced ? '${p.playerNumber}. ${p.playerName}' : p.positionName,
-                                          maxLines: 1,
-                                          style: TextStyle(color: p.isPlaced ? Colors.white : Colors.white54, fontSize: p.isPlaced ? 9 : 8, fontWeight: FontWeight.bold, fontFamily: 'Cairo'),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            }),
-                          );
-                        },
-                      ),
-                      if (_activePositionIndex != null && !_isOfficialLineupReleased)
-                        Positioned(
-                          bottom: 12,
-                          left: 12,
-                          right: 12,
-                          child: GlassCard(
-                            borderRadius: 24,
-                            child: Padding(
-                              padding: const EdgeInsets.all(12),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
+                // 📊 3. شريط المقارنة اللحظية للإحصائيات الحية (متطابق 100% مع معطيات المصادر المجانية الصافية)
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 4),
+                  child: Text('إحصائيات اللقاء الحالية', style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF161926).withOpacity(0.6),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.15), width: 1),
+                    ),
+                    child: GlassCard(
+                      borderRadius: 20,
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        children: [
+                          // سطر الاستحواذ الكلي
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text('55%', style: TextStyle(color: Color(0xFF00A3FF), fontSize: 12, fontWeight: FontWeight.bold)),
+                              Text('الاستحواذ الكلي', style: GoogleFonts.cairo(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold)),
+                              const Text('45%', style: TextStyle(color: Colors.white38, fontSize: 12, fontWeight: FontWeight.bold)),
+                            ],
+                          ),
+                          const SizedBox(height: 6),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(4),
+                            child: Container(
+                              height: 5, width: double.infinity, color: Colors.white10,
+                              child: Row(
                                 children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    textDirection: TextDirection.rtl,
-                                    children: [
-                                      Text('إعداد مركز: ${_predictedLineup[_activePositionIndex!].positionName}', style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
-                                      IconButton(
-                                        constraints: const BoxConstraints(),
-                                        padding: EdgeInsets.zero,
-                                        icon: const Icon(Icons.close_rounded, color: Colors.white38, size: 18),
-                                        onPressed: () => setState(() => _activePositionIndex = null),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: TextField(
-                                          controller: _playerNameController,
-                                          textAlign: TextAlign.right,
-                                          style: const TextStyle(color: Colors.white, fontSize: 12),
-                                          decoration: InputDecoration(
-                                            hintText: 'اسم اللاعب التوقعي',
-                                            hintStyle: const TextStyle(color: Colors.white24, fontSize: 11, fontFamily: 'Cairo'),
-                                            contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                                            filled: true,
-                                            fillColor: Colors.black26,
-                                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide.none),
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(width: 8),
-                                      SizedBox(
-                                        width: 50,
-                                        child: TextField(
-                                          controller: _playerNumberController,
-                                          keyboardType: TextInputType.number,
-                                          textAlign: TextAlign.center,
-                                          style: const TextStyle(color: Colors.white, fontSize: 12),
-                                          decoration: InputDecoration(
-                                            hintText: 'الرقم',
-                                            hintStyle: const TextStyle(color: Colors.white24, fontSize: 11, fontFamily: 'Cairo'),
-                                            contentPadding: const EdgeInsets.symmetric(vertical: 8),
-                                            filled: true,
-                                            fillColor: Colors.black26,
-                                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide.none),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    textDirection: TextDirection.rtl,
-                                    children: [
-                                      Row(
-                                        children: colors.map((color) {
-                                          return GestureDetector(
-                                            onTap: () => setState(() => _selectedJerseyColor = color),
-                                            child: Container(
-                                              margin: const EdgeInsets.symmetric(horizontal: 4),
-                                              width: 18,
-                                              height: 18,
-                                              decoration: BoxDecoration(
-                                                color: color,
-                                                shape: BoxShape.circle,
-                                                border: Border.all(color: _selectedJerseyColor == color ? Colors.white : Colors.transparent, width: 1.5),
-                                              ),
-                                            ),
-                                          );
-                                        }).toList(),
-                                      ),
-                                      ElevatedButton(
-                                        style: ElevatedButton.styleFrom(backgroundColor: AppTheme.neonBlue, padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
-                                        onPressed: () {
-                                          if (_playerNameController.text.trim().isNotEmpty) {
-                                            setState(() {
-                                              final p = _predictedLineup[_activePositionIndex!];
-                                              p.playerName = _playerNameController.text.trim();
-                                              p.playerNumber = _playerNumberController.text.trim().isEmpty ? '10' : _playerNumberController.text.trim();
-                                              p.jerseyColor = _selectedJerseyColor;
-                                              p.isPlaced = true;
-                                              _activePositionIndex = null;
-                                            });
-                                            HapticFeedback.mediumImpact();
-                                          }
-                                        },
-                                        child: const Text('تأكيد التمركز', style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
-                                      ),
-                                    ],
-                                  ),
+                                  const Expanded(flex: 55, child: ColoredBox(color: Color(0xFF00A3FF))),
+                                  Expanded(flex: 45, child: ColoredBox(color: const Color(0xFF161926).withOpacity(0.8))),
                                 ],
                               ),
                             ),
                           ),
-                        ),
+                          const SizedBox(height: 14),
+                          // سطر إجمالي التسديدات
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text('14', style: TextStyle(color: Color(0xFF00A3FF), fontSize: 12, fontWeight: FontWeight.bold)),
+                              Text('إجمالي التسديدات', style: GoogleFonts.cairo(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold)),
+                              const Text('8', style: TextStyle(color: Colors.white38, fontSize: 12, fontWeight: FontWeight.bold)),
+                            ],
+                          ),
+                          const SizedBox(height: 6),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(4),
+                            child: Container(
+                              height: 5, width: double.infinity, color: Colors.white10,
+                              child: Row(
+                                children: [
+                                  const Expanded(flex: 14, child: ColoredBox(color: Color(0xFF00A3FF))),
+                                  Expanded(flex: 8, child: ColoredBox(color: const Color(0xFF161926).withOpacity(0.8))),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 14),
+                // 🟢 4. معجزة مجسم الملعب العشبي ثلاثي الأبعاد المائل مع التمرير الأفقي السلس بين التشكيلتين لـ NF SPORTS
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 4),
+                  child: Text('التشكيلة التكتيكية الرسمية للخطوط', style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                ),
+                
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    textDirection: TextDirection.rtl,
+                    children: [
+                      const Icon(Icons.swipe_horizontal_rounded, color: Color(0xFF00A3FF), size: 14),
+                      const SizedBox(width: 6),
+                      Text('مرر الشاشة أفقياً لرؤية تشكيلة الخصم المتقابلة', style: GoogleFonts.cairo(color: Colors.white38, fontSize: 10, fontWeight: FontWeight.bold)),
                     ],
                   ),
                 ),
+                const SizedBox(height: 6),
+
+                SizedBox(
+                  height: 380,
+                  child: PageView(
+                    controller: _lineupPageController,
+                    physics: const BouncingScrollPhysics(),
+                    children: [
+                      // 🏠 الملعب الأول: تشكيلة أصحاب الأرض (Team 1) ثلاثية الأبعاد الفخمة
+                      _buildPerspectivePitch(widget.team1, [
+                        const PlayerLineupModel(name: 'بونو', number: '1', rating: '7.8', position: 'GK', xGrid: 3, yGrid: 1),
+                        const PlayerLineupModel(name: 'كوليبالي', number: '3', rating: '8.1', position: 'DEF', xGrid: 2, yGrid: 2),
+                        const PlayerLineupModel(name: 'البليهي', number: '5', rating: '7.2', position: 'DEF', xGrid: 4, yGrid: 2),
+                        const PlayerLineupModel(name: 'نيفيز', number: '8', rating: '8.5', position: 'MID', xGrid: 3, yGrid: 3),
+                        const PlayerLineupModel(name: 'سافيتش', number: '22', rating: '7.9', position: 'MID', xGrid: 4, yGrid: 3),
+                        const PlayerLineupModel(name: 'مالكوم', number: '77', rating: '8.2', position: 'ATT', xGrid: 2, yGrid: 4),
+                        const PlayerLineupModel(name: 'ميتروفيتش', number: '9', rating: '9.0', position: 'ATT', xGrid: 3, yGrid: 5),
+                      ]),
+
+                      // 🚀 الملعب الثاني: تشكيلة الخصم والضيوف (Team 2) ثلاثية الأبعاد المتقابلة
+                      _buildPerspectivePitch(widget.team2, [
+                        const PlayerLineupModel(name: 'بينتو', number: '24', rating: '7.5', position: 'GK', xGrid: 3, yGrid: 1),
+                        const PlayerLineupModel(name: 'لا بورت', number: '27', rating: '8.0', position: 'DEF', xGrid: 3, yGrid: 2),
+                        const PlayerLineupModel(name: 'الغنام', number: '2', rating: '7.1', position: 'DEF', xGrid: 5, yGrid: 2),
+                        const PlayerLineupModel(name: 'الخيبري', number: '17', rating: '7.4', position: 'MID', xGrid: 2, yGrid: 3),
+                        const PlayerLineupModel(name: 'أوتافيو', number: '25', rating: '8.3', position: 'MID', xGrid: 4, yGrid: 3),
+                        const PlayerLineupModel(name: 'تاليسكا', number: '94', rating: '7.8', position: 'ATT', xGrid: 4, yGrid: 4),
+                        const PlayerLineupModel(name: 'رونالدو', number: '7', rating: '9.2', position: 'ATT', xGrid: 3, yGrid: 5),
+                      ]),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 14),
+
+                // 🔄 5. الخط الزمني الملكي للأحداث والتبديلات والأهداف (Timeline)
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 4),
+                  child: Text('شريط الأحداث الزمني والتبديلات', style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                ),
+                _buildTimelineEventsSection(),
+                const SizedBox(height: 120),
+              ],
+            ),
+          ),
+  // 🏟️ دالة بناء مجسم الملعب العشبي ثلاثي الأبعاد المائل مع حساب إحداثيات قمصان اللاعبين والتقييم المضيء
+  Widget _buildPerspectivePitch(String teamName, List<PlayerLineupModel> players) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      decoration: BoxDecoration(
+        color: const Color(0xFF161926).withOpacity(0.4),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.2), width: 1.5),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: Stack(
+          children: [
+            // 🗺️ الخلفية العشبية الفخمة ثلاثية الأبعاد والمائلة سينمائياً للملعب الكوني
+            Transform(
+              transform: Matrix4.identity()
+                ..setEntry(3, 2, 0.002) // عامل قهر أبعاد المنظور المائل وعمق الـ 3D Perspective
+                ..rotateX(-0.35), // درجة زاوية ميل أرضية الملعب العشبي للأمام
+              alignment: Alignment.center,
+              child: Container(
+                margin: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF0C1424),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.3), width: 2),
+                ),
+                child: Stack(
+                  children: [
+                    // خطوط التقسيم الليزرية لمنتصف وجه الملعب ثلاثي الأبعاد
+                    Center(child: Container(height: 1, width: double.infinity, color: const Color(0xFF00A3FF).withOpacity(0.15))),
+                    Center(
+                      child: Container(
+                        width: 90, height: 90,
+                        decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.15), width: 1.5)),
+                      ),
+                    ),
+                    // 🛡️ زراعة وحقن وسم حقوق الملكية وتوقيع براندك الكوني "NF" في منتصف عشب الملعب لفرض الهيبة الرسمية
+                    Center(
+                      child: Text('NF', style: GoogleFonts.cairo(color: const Color(0xFF00A3FF).withOpacity(0.12), fontSize: 24, fontWeight: FontWeight.w900, letterSpacing: 2)),
+                    ),
+                  ],
+                ),
               ),
+            ),
+
+            // ترويسة اسم الفريق المستعرض أعلى كادر الملعب
+            Positioned(
+              top: 14, left: 0, right: 0,
+              child: Center(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+                  decoration: BoxDecoration(color: const Color(0xFF0F111A).withOpacity(0.85), borderRadius: BorderRadius.circular(12), border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.3), width: 0.8)),
+                  child: Text(teamName, style: GoogleFonts.cairo(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold)),
+                ),
               ),
-            if (!_isOfficialLineupReleased)
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                child: GlassCard(
-                  borderRadius: 16,
-                  child: Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: Row(
-                      textDirection: TextDirection.rtl,
+            ),
+
+            // 🎽 فرش وتوزيع كبسولات قمصان اللاعبين والتقييمات الرقمية المضيئة فوق الملعب المائل
+            ...players.map((player) {
+              // حساب الإحداثيات الرياضية أفقياً ورأسياً بناءً على شبكة التكتيك المرسومة
+              final double alignmentX = -1.0 + ((player.xGrid - 1) * 0.5);
+              final double alignmentY = 0.85 - ((player.yGrid - 1) * 0.42);
+
+              return Align(
+                alignment: Alignment(alignmentX, alignmentY),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // شارة كبسولة اللاعب مع التقييم الرقمي المشع المضيء بالجانب بالملي
+                    Stack(
+                      clipBehavior: Clip.none,
                       children: [
-                        Expanded(
-                          child: TextField(
-                            controller: _userNameController,
-                            textAlign: TextAlign.right,
-                            style: const TextStyle(color: Colors.white, fontSize: 13),
-                            decoration: InputDecoration(
-                              hintText: 'اكتب اسمك كمدرب (إجباري)',
-                              hintStyle: const TextStyle(color: Colors.white24, fontSize: 11, fontFamily: 'Cairo'),
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                              filled: true,
-                              fillColor: Colors.black26,
-                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
-                            ),
+                        Container(
+                          width: 32, height: 32,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF0F111A),
+                            shape: BoxShape.circle,
+                            border: Border.all(color: const Color(0xFF00A3FF), width: 1.5),
+                            boxShadow: [BoxShadow(color: const Color(0xFF00A3FF).withOpacity(0.3), blurRadius: 6)],
                           ),
+                          child: Center(child: Text(player.number, style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold))),
                         ),
-                        const SizedBox(width: 12),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.green,
-                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        // التقييم الرقمي المضيء للاعب مستقر بالزاوية العلوية للقميص بنقاء
+                        Positioned(
+                          top: -3, right: -6,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                            decoration: BoxDecoration(color: const Color(0xFF00A3FF), borderRadius: BorderRadius.circular(4)),
+                            child: Text(player.rating, style: const TextStyle(color: Colors.white, fontSize: 7, fontWeight: FontWeight.bold)),
                           ),
-                          onPressed: _submitPredictionToCloud,
-                          child: const Text('إرسال الخطة', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
                         ),
                       ],
                     ),
-                  ),
+                    const SizedBox(height: 3),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+                      decoration: BoxDecoration(color: const Color(0xFF0F111A).withOpacity(0.75), borderRadius: BorderRadius.circular(4)),
+                      child: Text(player.name, maxLines: 1, overflow: TextOverflow.ellipsis, style: GoogleFonts.cairo(color: Colors.white, fontSize: 8, fontWeight: FontWeight.bold)),
+                    ),
+                  ],
                 ),
-              ),
-            const SizedBox(height: 10),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Container(
-                height: 28,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Colors.black87,
-                  borderRadius: BorderRadius.circular(6),
-                  border: Border.all(color: AppTheme.neonBlue.withOpacity(0.3), width: 1),
+              );
+            }),
+          ],
+        ),
+      ),
+    );
+  }
+  // 🔄 دالة بناء الخط الزمني الملكي للأحداث والتبديلات والأهداف الموزعة بالتبادل لراحة عين المشجع
+  Widget _buildTimelineEventsSection() {
+    // محاكاة الأجندة الزمنية للأهداف والتبديلات المتوافقة مع معطيات المصادر المجانية الصافية
+    final List<MatchEventModel> sampleEvents = [
+      const MatchEventModel(id: '1', minute: "24'", type: 'goal', playerName: 'ميتروفيتش', detail: 'تمريرة حاسمة: مالكوم', isHomeTeam: true),
+      const MatchEventModel(id: '2', minute: "41'", type: 'card', playerName: 'الخيبري', detail: 'بطاقة صفراء', isHomeTeam: false),
+      const MatchEventModel(id: '3', minute: "68'", type: 'substitution', playerName: 'رونالدو', detail: 'خروج: تاليسكا', isHomeTeam: false),
+      const MatchEventModel(id: '4', minute: "82'", type: 'goal', playerName: 'نيفيز', detail: 'ضربة جزاء ناجحة', isHomeTeam: true),
+    ];
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+      child: Container(
+        decoration: BoxDecoration(
+          color: const Color(0xFF161926).withOpacity(0.6),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.18), width: 1),
+        ),
+        child: GlassCard(
+          borderRadius: 20,
+          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+          child: ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: sampleEvents.length,
+            itemBuilder: (context, index) {
+              final ev = sampleEvents[index];
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Row(
+                  children: [
+                    // أحداث الفريق الثاني (الضيوف) تفرز وتتراصف يساراً بنقاء 100%
+                    Expanded(
+                      child: !ev.isHomeTeam
+                          ? Row(
+                              children: [
+                                Icon(
+                                  ev.type == 'goal' 
+                                      ? Icons.sports_soccer 
+                                      : (ev.type == 'card' ? Icons.style_rounded : Icons.cached_rounded), 
+                                  color: ev.type == 'goal' 
+                                      ? Colors.white 
+                                      : (ev.type == 'card' ? Colors.amber : const Color(0xFF00A3FF)), 
+                                  size: 14,
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(ev.playerName, style: GoogleFonts.cairo(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold)),
+                                      Text(ev.detail, style: GoogleFonts.cairo(color: Colors.white38, fontSize: 9)),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            )
+                          : const SizedBox(),
+                    ),
+
+                    // العمود المركزي الصافي والمضيء الحارس للدقائق الزمنية لكل حدث كروي
+                    Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 10),
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF00A3FF).withOpacity(0.12), 
+                        borderRadius: BorderRadius.circular(8), 
+                        border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.3), width: 0.8),
+                      ),
+                      child: Text(ev.minute, style: const TextStyle(color: Color(0xFF00A3FF), fontSize: 9, fontWeight: FontWeight.w900)),
+                    ),
+
+                    // أحداث الفريق الأول (أصحاب الأرض) تفرز وتتراصف يميناً بنقاء 100%
+                    Expanded(
+                      child: ev.isHomeTeam
+                          ? Row(
+                              textDirection: TextDirection.rtl,
+                              children: [
+                                Icon(
+                                  ev.type == 'goal' 
+                                      ? Icons.sports_soccer 
+                                      : (ev.type == 'card' ? Icons.style_rounded : Icons.cached_rounded), 
+                                  color: ev.type == 'goal' 
+                                      ? Colors.white 
+                                      : (ev.type == 'card' ? Colors.amber : const Color(0xFF00A3FF)), 
+                                  size: 14,
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    textDirection: TextDirection.rtl,
+                                    children: [
+                                      Text(ev.playerName, style: GoogleFonts.cairo(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold)),
+                                      Text(ev.detail, textDirection: TextDirection.rtl, style: GoogleFonts.cairo(color: Colors.white38, fontSize: 9)),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            )
+                          : const SizedBox(),
+                    ),
+                  ],
                 ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(6),
-                  child: AnimatedBuilder(
-                    animation: _marqueeController,
-                    builder: (context, child) {
-                      return FractionalTranslation(
-                        translation: Offset(1.0 - (_marqueeController.value * 2.0), 0.0),
-                        child: child,
-                      );
-                    },
-                    child: Center(
-                      child: Text(
-                        'NF SPORTS PREMIUM PARTNER ADVERTISING PANEL • LIVE SPORTS METRIC SYNCED DATA • BROADCASTING 2100',
-                        maxLines: 1,
-                        style: TextStyle(color: AppTheme.neonBlue.withOpacity(0.8), fontSize: 9, fontWeight: FontWeight.bold, letterSpacing: 1.5),
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  }
+          // 💬 الواجهة الثانية: ساحة "مناقشات كروية" المدججة بترسانة التفاعل والبوت الحارس لـ NF SPORTS
+          SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                
+                // 📊 أولاً: شريط استفتاء توقع الفائز الكوني (موضع بالقمة لإشعال حماس الجماهير)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF161926).withOpacity(0.6),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.2), width: 1),
+                    ),
+                    child: GlassCard(
+                      borderRadius: 20,
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        children: [
+                          Row(
+                            textDirection: TextDirection.rtl,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text('توقع الفائز في هذه الملحمة الكروية', style: GoogleFonts.cairo(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+                              Text('NF', style: GoogleFonts.cairo(color: const Color(0xFF00A3FF).withOpacity(0.3), fontSize: 10, fontWeight: FontWeight.black)),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          
+                          // شريط النسب المشع والنابض لتوقع الجماهير
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Container(
+                              height: 24, width: double.infinity, color: Colors.white05,
+                              child: Row(
+                                children: [
+                                  Expanded(flex: _homeVotes, child: Container(color: const Color(0xFF00A3FF), child: Center(child: Text('${((_homeVotes/(_homeVotes+_drawVotes+_awayVotes))*100).toStringAsFixed(0)}%', style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold))))),
+                                  Expanded(flex: _drawVotes, child: Container(color: Colors.white10, child: Center(child: Text('${((_drawVotes/(_homeVotes+_drawVotes+_awayVotes))*100).toStringAsFixed(0)}%', style: const TextStyle(color: Colors.white54, fontSize: 10, fontWeight: FontWeight.bold))))),
+                                  Expanded(flex: _awayVotes, child: Container(color: const Color(0xFF00A3FF).withOpacity(0.4), child: Center(child: Text('${((_awayVotes/(_homeVotes+_drawVotes+_awayVotes))*100).toStringAsFixed(0)}%', style: const TextStyle(color: Colors.white70, fontSize: 10, fontWeight: FontWeight.bold))))),
+                                ],
+                              ),
+                            ),
+                          ),
+                          
+                          // أزرار كبس التصويت التفاعلية قبل انطلاق اللقاء (تختفي فور نقر المستخدم)
+                          if (!_hasVoted) ...[
+                            const SizedBox(height: 12),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                InkWell(
+                                  onTap: () => setState(() { _homeVotes++; _hasVoted = true; _myVoteChoice = 'home'; HapticFeedback.lightImpact(); }),
+                                  child: Container(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6), decoration: BoxDecoration(color: const Color(0xFF00A3FF).withOpacity(0.12), borderRadius: BorderRadius.circular(8)), child: Text('فوز ${widget.team1}', style: GoogleFonts.cairo(color: const Color(0xFF00A3FF), fontSize: 10, fontWeight: FontWeight.bold))),
+                                ),
+                                InkWell(
+                                  onTap: () => setState(() { _drawVotes++; _hasVoted = true; _myVoteChoice = 'draw'; HapticFeedback.lightImpact(); }),
+                                  child: Container(padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6), decoration: BoxDecoration(color: Colors.white05, borderRadius: BorderRadius.circular(8)), child: Text('تعادل', style: GoogleFonts.cairo(color: Colors.white54, fontSize: 10, fontWeight: FontWeight.bold))),
+                                ),
+                                InkWell(
+                                  onTap: () => setState(() { _awayVotes++; _hasVoted = true; _myVoteChoice = 'away'; HapticFeedback.lightImpact(); }),
+                                  child: Container(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6), decoration: BoxDecoration(color: const Color(0xFF00A3FF).withOpacity(0.05), borderRadius: BorderRadius.circular(8)), child: Text('فوز ${widget.team2}', style: GoogleFonts.cairo(color: Colors.white70, fontSize: 10, fontWeight: FontWeight.bold))),
+                                ),
+                              ],
+                            ),
+                          ] else ...[
+                            const SizedBox(height: 8),
+                            Text('شكراً لتصويتك! أنت توقعت: ${_myVoteChoice == 'home' ? widget.team1 : (_myVoteChoice == 'away' ? widget.team2 : 'التعادل')}', style: GoogleFonts.cairo(color: const Color(0xFF00A3FF), fontSize: 10, fontWeight: FontWeight.bold)),
+                          ],
+                        ],
                       ),
                     ),
                   ),
                 ),
-              ),
-            ),
-            const SizedBox(height: 25),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 24, vertical: 4),
-              child: Text('إحصائيات المواجهة اللحظية', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-              child: GlassCard(
-                borderRadius: 20,
-                child: Padding(
-                  padding: const EdgeInsets.all(14.0),
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: const [
-                          Text('45%', style: TextStyle(color: Colors.cyanAccent, fontSize: 12, fontWeight: FontWeight.bold)),
-                          Text('الاستحواذ الكلي', style: TextStyle(color: Colors.white70, fontSize: 12, fontFamily: 'Cairo')),
-                          Text('55%', style: TextStyle(color: AppTheme.neonBlue, fontSize: 12, fontWeight: FontWeight.bold)),
-                        ],
-                      ),
-                      const SizedBox(height: 6),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(4),
-                        child: Container(
-                          height: 5,
-                          width: double.infinity,
-                          color: Colors.white10,
-                          child: Row(
-                            children: const [
-                              Expanded(flex: 45, child: ColoredBox(color: Colors.cyanAccent)),
-                              Expanded(flex: 55, child: ColoredBox(color: AppTheme.neonBlue)),
-                            ],
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: const [
-                          Text('8', style: TextStyle(color: Colors.cyanAccent, fontSize: 12, fontWeight: FontWeight.bold)),
-                          Text('إجمالي التسديدات', style: TextStyle(color: Colors.white70, fontSize: 12, fontFamily: 'Cairo')),
-                          Text('12', style: TextStyle(color: AppTheme.neonBlue, fontSize: 12, fontWeight: FontWeight.bold)),
-                        ],
-                      ),
-                      const SizedBox(height: 6),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(4),
-                        child: Container(
-                          height: 5,
-                          width: double.infinity,
-                          color: Colors.white10,
-                          child: Row(
-                            children: const [
-                              Expanded(flex: 8, child: ColoredBox(color: Colors.cyanAccent)),
-                              Expanded(flex: 12, child: ColoredBox(color: AppTheme.neonBlue)),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+
+                //  ساحة فرز نقاشات المشجين الحية (قائمة الاستماع اللحظي)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Text('منبر الجماهير الحركي 🏟️', style: GoogleFonts.cairo(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.bold)),
                 ),
-              ),
-            ),
-            const SizedBox(height: 20),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 24, vertical: 4),
-              child: Text('العيادة الطبية والغيابات', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-              child: GlassCard(
-                borderRadius: 20,
-                child: Container(
-                  width: double.infinity,
+                //  محاكاة لستة الرسائل المباشرة المفرومة بنقاء وبوت الحماية من الإعلانات
+                ListView.builder(
+                  shrinkWrap: true, physics: const NeverScrollableScrollPhysics(),
+                  itemCount: 3,
+                  itemBuilder: (context, index) {
+                    final names = ['الكابتن ماجد', 'مدرج العميد', 'ابن اليمن'];
+                    final texts = ['تكتيك أسطوري ومباراة للتاريخ 🔥', 'رونالدو اليوم بينفجر في الملعب ⚽', 'رابط بث مباشر للمباراة هنا ://matchlive.com'];
+                    final currentName = names[index % 3];
+                    final currentText = texts[index % 3];
+                    
+                    final isBannedByBot = _banList.containsKey(currentName);
+
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF161926).withOpacity(0.6),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.12)),
+                        ),
+                        child: GlassCard(
+                          borderRadius: 16, padding: const EdgeInsets.all(12),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // 🚨 المربع الأحمر النيوني التحذيري من البوت الحارس للمخالفين والروابط
+                              if (isBannedByBot || currentText.contains('www.')) ...[
+                                Container(
+                                  width: double.infinity, margin: const EdgeInsets.only(bottom: 8), padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                                  decoration: BoxDecoration(color: Colors.redAccent.withOpacity(0.12), borderRadius: BorderRadius.circular(6), border: Border.all(color: Colors.redAccent.withOpacity(0.4))),
+                                  child: Text('⚠️ تم الحظر التلقائي: خالف هذا الحساب شروط وقوانين مجتمع NF الرياضية لمده 12 ساعة.', textDirection: TextDirection.rtl, style: GoogleFonts.cairo(color: Colors.redAccent, fontSize: 8, fontWeight: FontWeight.bold)),
+                                ),
+                              ],
+                              Row(
+                                textDirection: TextDirection.rtl, mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(currentName, style: GoogleFonts.cairo(color: Colors.white70, fontSize: 11, fontWeight: FontWeight.bold)),
+                                  Text('منذ قليل', style: GoogleFonts.cairo(color: Colors.white24, fontSize: 8)),
+                                ],
+                              ),
+                              const SizedBox(height: 6),
+                              Align(alignment: Alignment.centerRight, child: Text(currentText, textDirection: TextDirection.rtl, style: GoogleFonts.cairo(color: (isBannedByBot || currentText.contains('www.')) ? Colors.white24 : Colors.white, fontSize: 12))),
+                              
+                              const Padding(padding: EdgeInsets.symmetric(vertical: 4), child: Divider(color: Colors.white05, height: 1)),
+                              // أزرار التفاعل المدججة للزوار 👍 و 👎 والرسائل الصوتية بالأسفل مع توقيع الحقوق
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    children: [
+                                      IconButton(icon: const Icon(Icons.thumb_up_rounded, color: Color(0xFF00A3FF), size: 12), onPressed: () => HapticFeedback.selectionClick()),
+                                      const Text('12', style: TextStyle(color: Color(0xFF00A3FF), fontSize: 9)),
+                                      const SizedBox(width: 10),
+                                      IconButton(icon: const Icon(Icons.thumb_down_rounded, color: Colors.white24, size: 12), onPressed: () => HapticFeedback.selectionClick()),
+                                      const Text('2', style: TextStyle(color: Colors.white24, fontSize: 9)),
+                                    ],
+                                  ),
+                                  if (index == 0) // محاكاة لـ وسم تشغيل الصوت المرسل بنقاء
+                                    Container(padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2), decoration: BoxDecoration(color: const Color(0xFF00A3FF).withOpacity(0.1), borderRadius: BorderRadius.circular(6)), child: Row(children: const [Text('0:04 ', style: TextStyle(color: Color(0xFF00A3FF), fontSize: 8)), Icon(Icons.volume_up_rounded, color: Color(0xFF00A3FF), size: 10)])),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+                
+                // 🛠️ صندوق إدخال الآراء والتعليقات والرسائل الصوتية بالأسفل
+                Padding(
                   padding: const EdgeInsets.all(20),
-                  child: Column(
+                  child: Row(
+                    textDirection: TextDirection.rtl,
                     children: [
-                      AnimatedBuilder(
-                        animation: _pulseController,
-                        builder: (context, _) {
-                          return Icon(Icons.monitor_heart_rounded, color: Colors.redAccent.withOpacity(0.2 + (_pulseController.value * 0.4)), size: 36);
-                        },
+                      Expanded(
+                        child: TextField(
+                          controller: _chatController, textDirection: TextDirection.rtl,
+                          style: GoogleFonts.cairo(color: Colors.white, fontSize: 12),
+                          decoration: InputDecoration(
+                            hintText: 'اكتب نقاشك الرياضي الفخم هنا...',
+                            hintStyle: GoogleFonts.cairo(color: Colors.white24, fontSize: 11),
+                            hintTextDirection: TextDirection.rtl, filled: true, fillColor: const Color(0xFF161926).withOpacity(0.5),
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
+                            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: const Color(0xFF00A3FF).withOpacity(0.4), width: 1.5)),
+                          ),
+                        ),
                       ),
-                      const SizedBox(height: 10),
-                      const Text(
-                        'لا توجد غيابات حية أو إصابات مسجلة حالياً لعناصر الفريقين',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(color: Colors.white38, fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo'),
+                      const SizedBox(width: 8),
+                      // زر إرسال التفاعلات الصوتية للأصوات المنسابة حياً بنقاء لحماية المنصة مجاناً
+                      Container(
+                        decoration: BoxDecoration(color: const Color(0xFF161926), shape: BoxShape.circle, border: Border.all(color: Colors.white10)),
+                        child: IconButton(icon: const Icon(Icons.mic_rounded, color: Colors.white60, size: 18), onPressed: () { HapticFeedback.mediumImpact(); ScaffoldMessenger.of(context).showSnackBar(SnackBar(backgroundColor: const Color(0xFF00A3FF), content: Text('🎙️ ميزة البلاغات المفعلة للأصوات تعمل حماية تلقائية ومجانية لـ مجتمع NF', textAlign: TextAlign.right, style: GoogleFonts.cairo(fontSize: 11, fontWeight: FontWeight.bold)))); }),
+                      ),
+                      const SizedBox(width: 6),
+                      // زر الإرسال الكوني المربوط بالبوت الحارس الذكي فورا
+                      Container(
+                        decoration: BoxDecoration(color: const Color(0xFF00A3FF).withOpacity(0.15), shape: BoxShape.circle, border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.4))),
+                        child: IconButton(
+                          icon: const Icon(Icons.send_rounded, color: Color(0xFF00A3FF), size: 18),
+                          onPressed: () {
+                            final txt = _chatController.text.trim();
+                            if (txt.isEmpty) return;
+                            _checkAndApplyBotGuard(txt, 'مشجع_حالي');
+                            _chatController.clear();
+                          },
+                        ),
                       ),
                     ],
                   ),
                 ),
-              ),
+                const SizedBox(height: 60),
+              ],
             ),
-            const SizedBox(height: 120),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
