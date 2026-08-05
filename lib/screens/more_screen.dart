@@ -64,7 +64,7 @@ class _MoreScreenState extends State<MoreScreen> with TickerProviderStateMixin {
       final response = await Supabase.instance.client
           .from('profiles')
           .select('username, bio, correct_predictions')
-          .eq('id', _userId)
+          .eq('id', _userId!)
           .maybeSingle();
 
       if (response != null && mounted) {
