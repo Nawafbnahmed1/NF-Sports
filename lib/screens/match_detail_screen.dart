@@ -415,7 +415,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                     mainAxisAlignment: MainAxisAlignment.center,
                     textDirection: TextDirection.rtl,
                     children: [
-                      const Icon(Icons.swipe_horizontal_rounded, color: Color(0xFF00A3FF), size: 14),
+                      Icon(Icons.swipe, color: Color(0xFF00A3FF), size: 14),
                       const SizedBox(width: 6),
                       Text('مرر الشاشة أفقياً لرؤية تشكيلة الخصم المتقابلة', style: GoogleFonts.cairo(color: Colors.white38, fontSize: 10, fontWeight: FontWeight.bold)),
                     ],
