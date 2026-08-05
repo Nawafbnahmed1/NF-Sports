@@ -705,7 +705,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text('توقع الفائز في هذه الملحمة الكروية', style: GoogleFonts.cairo(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
-                              Text('NF', style: GoogleFonts.cairo(color: const Color(0xFF00A3FF).withOpacity(0.3), fontSize: 10, fontWeight: FontWeight.Black)),
+                              Text('NF', style: GoogleFonts.cairo(color: const Color(0xFF00A3FF).withOpacity(0.3), fontSize: 10, fontWeight: FontWeight.black)),
                             ],
                           ),
                           const SizedBox(height: 12),
@@ -714,7 +714,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                           ClipRRect(
                             borderRadius: BorderRadius.circular(8),
                             child: Container(
-                              height: 24, width: double.infinity, color: Colors.white05,
+                              height: 24, width: double.infinity, color: Colors.white10,
                               child: Row(
                                 children: [
                                   Expanded(flex: _homeVotes, child: Container(color: const Color(0xFF00A3FF), child: Center(child: Text('${((_homeVotes/(_homeVotes+_drawVotes+_awayVotes))*100).toStringAsFixed(0)}%', style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold))))),
@@ -737,7 +737,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                                 ),
                                 InkWell(
                                   onTap: () => setState(() { _drawVotes++; _hasVoted = true; _myVoteChoice = 'draw'; HapticFeedback.lightImpact(); }),
-                                  child: Container(padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6), decoration: BoxDecoration(color: Colors.white05, borderRadius: BorderRadius.circular(8)), child: Text('تعادل', style: GoogleFonts.cairo(color: Colors.white54, fontSize: 10, fontWeight: FontWeight.bold))),
+                                  child: Container(padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6), decoration: BoxDecoration(color: Colors.white10, borderRadius: BorderRadius.circular(8)), child: Text('تعادل', style: GoogleFonts.cairo(color: Colors.white54, fontSize: 10, fontWeight: FontWeight.bold))),
                                 ),
                                 InkWell(
                                   onTap: () => setState(() { _awayVotes++; _hasVoted = true; _myVoteChoice = 'away'; HapticFeedback.lightImpact(); }),
