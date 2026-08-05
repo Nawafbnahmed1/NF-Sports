@@ -452,7 +452,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
             ),
           ),
   // 🏟️ دالة بناء مجسم الملعب العشبي ثلاثي الأبعاد المائل مع حساب إحداثيات قمصان اللاعبين والتقييم المضيء
-  Widget _buildPerspectivePitch(String teamName, List<PlayerLineupModel> players) {
+  _buildPerspectivePitch(String teamName, List<PlayerLineupModel> players) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       decoration: BoxDecoration(
@@ -557,7 +557,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
     );
   }
   // 🔄 دالة بناء الخط الزمني الملكي للأحداث والتبديلات والأهداف الموزعة بالتبادل لراحة عين المشجع
-  Widget _buildTimelineEventsSection() {
+  _buildTimelineEventsSection() {
     final List<MatchEventModel> sampleEvents = [
       const MatchEventModel(id: '1', minute: "24'", type: 'goal', playerName: 'ميتروفيتش', detail: 'تمريرة حاسمة: مالكوم', isHomeTeam: true),
       const MatchEventModel(id: '2', minute: "41'", type: 'card', playerName: 'الخيبري', detail: 'بطاقة صفراء', isHomeTeam: false),
