@@ -283,11 +283,6 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                               ),
                             ),
                           ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
                 // 🎫 2. لوحة كبسولات تفاصيل اللقاء الأساسية (البطولة • الملعب • الحكم • الناقل)
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
