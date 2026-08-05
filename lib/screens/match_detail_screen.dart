@@ -324,7 +324,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                                 const SizedBox(width: 8),
                                 Text('استاد الملك فهد الدولي', style: GoogleFonts.cairo(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold)),
                               ]),
-                              Text('NF', style: GoogleFonts.cairo(color: const Color(0xFF00A3FF).withOpacity(0.3), fontSize: 10, fontWeight: FontWeight.black)),
+                              Text('NF', style: GoogleFonts.cairo(color: const Color(0xFF00A3FF).withOpacity(0.3), fontSize: 10, fontWeight: FontWeight.Black)),
                             ],
                           ),
                         ],
@@ -710,7 +710,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text('توقع الفائز في هذه الملحمة الكروية', style: GoogleFonts.cairo(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
-                              Text('NF', style: GoogleFonts.cairo(color: const Color(0xFF00A3FF).withOpacity(0.3), fontSize: 10, fontWeight: FontWeight.black)),
+                              Text('NF', style: GoogleFonts.cairo(color: const Color(0xFF00A3FF).withOpacity(0.3), fontSize: 10, fontWeight: FontWeight.Black)),
                             ],
                           ),
                           const SizedBox(height: 12),
