@@ -449,17 +449,6 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                   ),
                 ),
                 const SizedBox(height: 14),
-
-                // 🔄 5. الخط الزمني الملكي للأحداث والتبديلات والأهداف (Timeline)
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 4),
-                  child: Text('شريط الأحداث الزمني والتبديلات', style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
-                ),
-                _buildTimelineEventsSection(),
-                const SizedBox(height: 120),
-              ],
-            ),
-          ),
   // 🏟️ دالة بناء مجسم الملعب العشبي ثلاثي الأبعاد المائل مع حساب إحداثيات قمصان اللاعبين والتقييم المضيء
   Widget _buildPerspectivePitch(String teamName, List<PlayerLineupModel> players) {
     return Container(
