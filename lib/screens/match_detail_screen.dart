@@ -312,7 +312,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                                 const SizedBox(width: 8),
                                 Text('استاد الملك فهد الدولي', style: GoogleFonts.cairo(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold)),
                               ]),
-                              Text('NF', style: GoogleFonts.cairo(color: const Color(0xFF00A3FF).withOpacity(0.3), fontSize: 10, fontWeight: FontWeight.black)),
+                              Text('NF', style: GoogleFonts.cairo(color: const Color(0xFF00A3FF).withOpacity(0.3), fontSize: 10, fontWeight: FontWeight.w900)),
                             ],
                           ),
                         ],
@@ -665,7 +665,6 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
         ),
       ),
     );
-  }
           // 💬 الواجهة الثانية: ساحة "مناقشات كروية" المدججة بترسانة التفاعل والبوت الحارس لـ NF SPORTS
           SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
@@ -701,7 +700,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                           ClipRRect(
                             borderRadius: BorderRadius.circular(8),
                             child: Container(
-                              height: 24, width: double.infinity, color: Colors.white05,
+                              height: 24, width: double.infinity, color: Colors.white.withOpacity(0.05),
                               child: Row(
                                 children: [
                                   Expanded(flex: _homeVotes > 0 ? _homeVotes : 1, child: Container(color: const Color(0xFF00A3FF), child: Center(child: Text('${(_homeVotes + _drawVotes + _awayVotes) > 0 ? ((_homeVotes/(_homeVotes+_drawVotes+_awayVotes))*100).toStringAsFixed(0) : 0}%', style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold))))),
@@ -724,7 +723,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                                 ),
                                 InkWell(
                                   onTap: () => setState(() { _drawVotes++; _hasVoted = true; _myVoteChoice = 'draw'; HapticFeedback.lightImpact(); }),
-                                  child: Container(padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6), decoration: BoxDecoration(color: Colors.white05, borderRadius: BorderRadius.circular(8)), child: Text('تعادل', style: GoogleFonts.cairo(color: Colors.white54, fontSize: 10, fontWeight: FontWeight.bold))),
+                                  child: Container(padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6), decoration: BoxDecoration(color: Colors.white.withOpacity(0.05), borderRadius: BorderRadius.circular(8)), child: Text('تعادل', style: GoogleFonts.cairo(color: Colors.white54, fontSize: 10, fontWeight: FontWeight.bold))),
                                 ),
                                 InkWell(
                                   onTap: () => setState(() { _awayVotes++; _hasVoted = true; _myVoteChoice = 'away'; HapticFeedback.lightImpact(); }),
