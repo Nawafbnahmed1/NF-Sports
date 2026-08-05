@@ -71,7 +71,7 @@ class PlayerLineupModel {
 class MatchDetailScreen extends StatefulWidget {
   final String team1;
   final String team2;
-  final String matchId; // معرف المباراة لربط السحاب والتصويت الحركي
+  final String matchId; 
 
   const MatchDetailScreen({
     super.key,
@@ -88,31 +88,27 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
   final supabase = Supabase.instance.client;
   
   late TabController _tabController;
-  late PageController _lineupPageController; // متحكم السحب الأفقي للملاعب ثلاثية الأبعاد
+  late PageController _lineupPageController; 
   
   final TextEditingController _chatController = TextEditingController();
   
-  // 🤖 محرك أوتار البوت وحظر المستخدمين المخالفين لـ 12 ساعة
   final List<String> _blacklistedUsers = [];
   final Map<String, DateTime> _banList = {};
   
-  // شروط حارس الأمان الصارم للبوت النصي الذكي لـ NF SPORTS
   final List<String> _toxicKeywords = ['كلب', 'حمار', 'غبي', 'حيوان', 'يلعن', 'تفو', 'منيوك', 'كس', 'عرص', 'قحبة'];
 
-  // إحصائيات وهمية ذكية متطابقة 100% مع معطيات المصادر المجانية الصافية
-  int _homeVotes = 142;
-  int _drawVotes = 64;
-  int _awayVotes = 118;
+  int _homeVotes = 0;
+  int _drawVotes = 0;
+  int _awayVotes = 0;
   bool _hasVoted = false;
   String? _myVoteChoice;
 
   @override
   void initState() {
     super.initState();
-    // واجهتان ملكيتان فقط بالقمة لكسر تشتت المشجع
     _tabController = TabController(length: 2, vsync: this);
     _lineupPageController = PageController(initialPage: 0);
-    _loadStoredVotes();
+    _syncVotesFromCloud();
   }
 
   @override
@@ -123,30 +119,32 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
     super.dispose();
   }
 
-  void _loadStoredVotes() {
-    // محاكاة سريعة لجلب أرقام الاستفتاء السحابي لتوقع الفائز
-    Timer(const Duration(milliseconds: 600), () {
-      if (mounted) {
+  void _syncVotesFromCloud() async {
+    try {
+      final response = await supabase
+          .from('match_votes')
+          .select()
+          .eq('match_id', widget.matchId)
+          .maybeSingle();
+
+      if (response != null && mounted) {
         setState(() {
-          _homeVotes = 158;
-          _drawVotes = 72;
-          _awayVotes = 124;
+          _homeVotes = response['home_votes'] ?? 0;
+          _drawVotes = response['draw_votes'] ?? 0;
+          _awayVotes = response['away_votes'] ?? 0;
         });
       }
-    });
+    } catch (_) {}
   }
 
-  // 🤖 دالة البوت الحارس الذكي لفحص النصوص والروابط وحجب الإعلانات فورا
   bool _checkAndApplyBotGuard(String text, String userName) {
     final cleanText = text.toLowerCase().trim();
     bool shouldBan = false;
 
-    // 1. فحص روابط الويب والإعلانات الخارجية الخبيثة
     if (cleanText.contains('http://') || cleanText.contains('https://') || cleanText.contains('.com') || cleanText.contains('www.')) {
       shouldBan = true;
     }
     
-    // 2. فحص الألفاظ السيئة والخروج عن الروح الرياضية
     for (var word in _toxicKeywords) {
       if (cleanText.contains(word)) {
         shouldBan = true;
@@ -155,11 +153,11 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
     }
 
     if (shouldBan) {
-      HapticFeedback.vibrate(); // اهتزاز عنيف لتنبيه المخالف
+      HapticFeedback.vibrate(); 
       setState(() {
         _banList[userName] = DateTime.now().add(const Duration(hours: 12));
       });
-      return true; // تم رصد مخالفة وقام البوت بالحظر
+      return true; 
     }
     return false;
   }
@@ -179,7 +177,6 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
           style: GoogleFonts.cairo(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
-        // 🎫 التبويب الثنائي الملكي بالقمة لكسر تشتت المشجع وعزل المناقشات الكروية
         bottom: TabBar(
           controller: _tabController,
           indicatorColor: const Color(0xFF00A3FF),
@@ -196,14 +193,11 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
       body: TabBarView(
         controller: _tabController,
         children: [
-          // ⚽ الواجهة الأولى: صفحة تفاصيل اللقاء الهيدروليكية الممتدة والمعلوماتية الكبرى
           SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                
-                // 🌌 1. هيدر الذوبان الضبابي السينمائي البانورامي المضاء بالأزرق الكوني الفاخر لـ NF SPORTS
                 Container(
                   width: double.infinity,
                   height: 180,
@@ -216,7 +210,6 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                   ),
                   child: Stack(
                     children: [
-                      // حقن وسم حقوق الملكية NF الكريستالي الناعم بداخل زاوية الهيدر
                       Positioned(
                         top: 10, right: 15,
                         child: Text('NF', style: GoogleFonts.cairo(color: const Color(0xFF00A3FF).withOpacity(0.2), fontSize: 11, fontWeight: FontWeight.w900)),
@@ -226,7 +219,6 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            // الفريق الأول (المستضيف)
                             Expanded(
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -242,8 +234,6 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                                 ],
                               ),
                             ),
-                            
-                            // الكتلة المركزية المشعة للنتيجة الرقمية والتوقيت اللحظي
                             Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
@@ -265,8 +255,6 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                                 ),
                               ],
                             ),
-                            
-                            // الفريق الثاني (الضيف)
                             Expanded(
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -283,7 +271,12 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                               ),
                             ),
                           ],
-                // 🎫 2. لوحة كبسولات تفاصيل اللقاء الأساسية (البطولة • الملعب • الحكم • الناقل)
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                // 🎫 2. لوحة كبسولات تفاصيل اللقاء الأساسية (البطولة • الملعب)
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
                   child: Container(
@@ -329,7 +322,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                 ),
                 const SizedBox(height: 14),
 
-                // 📊 3. شريط المقارنة اللحظية للإحصائيات الحية (متطابق 100% مع معطيات المصادر المجانية الصافية)
+                // 📊 3. شريط المقارنة اللحظية للإحصائيات الحية المصفاة لبراند NF SPORTS
                 const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 24, vertical: 4),
                   child: Text('إحصائيات اللقاء الحالية', style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
@@ -347,7 +340,6 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                       padding: const EdgeInsets.all(16),
                       child: Column(
                         children: [
-                          // سطر الاستحواذ الكلي
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -364,13 +356,12 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                               child: Row(
                                 children: [
                                   const Expanded(flex: 55, child: ColoredBox(color: Color(0xFF00A3FF))),
-                                  Expanded(flex: 45, child: ColoredBox(color: const Color(0xFF161926).withOpacity(0.8))),
+                                  Expanded(flex: 45, child: ColoredBox(color: const Color(0xFF161926))),
                                 ],
                               ),
                             ),
                           ),
                           const SizedBox(height: 14),
-                          // سطر إجمالي التسديدات
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -387,7 +378,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                               child: Row(
                                 children: [
                                   const Expanded(flex: 14, child: ColoredBox(color: Color(0xFF00A3FF))),
-                                  Expanded(flex: 8, child: ColoredBox(color: const Color(0xFF161926).withOpacity(0.8))),
+                                  Expanded(flex: 8, child: ColoredBox(color: const Color(0xFF161926))),
                                 ],
                               ),
                             ),
@@ -410,7 +401,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                     mainAxisAlignment: MainAxisAlignment.center,
                     textDirection: TextDirection.rtl,
                     children: [
-                      Icon(Icons.swipe, color: Color(0xFF00A3FF), size: 14),
+                      const Icon(Icons.swipe, color: Color(0xFF00A3FF), size: 14),
                       const SizedBox(width: 6),
                       Text('مرر الشاشة أفقياً لرؤية تشكيلة الخصم المتقابلة', style: GoogleFonts.cairo(color: Colors.white38, fontSize: 10, fontWeight: FontWeight.bold)),
                     ],
@@ -449,6 +440,17 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                   ),
                 ),
                 const SizedBox(height: 14),
+
+                // 🔄 5. الخط الزمني الملكي للأحداث والتبديلات والأهداف (Timeline)
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 4),
+                  child: Text('شريط الأحداث الزمني والتبديلات', style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                ),
+                _buildTimelineEventsSection(),
+                const SizedBox(height: 60),
+              ],
+            ),
+          ),
   // 🏟️ دالة بناء مجسم الملعب العشبي ثلاثي الأبعاد المائل مع حساب إحداثيات قمصان اللاعبين والتقييم المضيء
   Widget _buildPerspectivePitch(String teamName, List<PlayerLineupModel> players) {
     return Container(
@@ -466,7 +468,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
             Transform(
               transform: Matrix4.identity()
                 ..setEntry(3, 2, 0.002) // عامل قهر أبعاد المنظور المائل وعمق الـ 3D Perspective
-                ..rotateX(-0.35), // درجة زاوية ميل أرضية الملعب العشبي للأمام
+                ..rotateX(-0.35), // degree of tilt for pitch angle
               alignment: Alignment.center,
               child: Container(
                 margin: const EdgeInsets.all(12),
@@ -477,7 +479,6 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                 ),
                 child: Stack(
                   children: [
-                    // خطوط التقسيم الليزرية لمنتصف وجه الملعب ثلاثي الأبعاد
                     Center(child: Container(height: 1, width: double.infinity, color: const Color(0xFF00A3FF).withOpacity(0.15))),
                     Center(
                       child: Container(
@@ -508,7 +509,6 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
 
             // 🎽 فرش وتوزيع كبسولات قمصان اللاعبين والتقييمات الرقمية المضيئة فوق الملعب المائل
             ...players.map((player) {
-              // حساب الإحداثيات الرياضية أفقياً ورأسياً بناءً على شبكة التكتيك المرسومة
               final double alignmentX = -1.0 + ((player.xGrid - 1) * 0.5);
               final double alignmentY = 0.85 - ((player.yGrid - 1) * 0.42);
 
@@ -517,7 +517,6 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // شارة كبسولة اللاعب مع التقييم الرقمي المشع المضيء بالجانب بالملي
                     Stack(
                       clipBehavior: Clip.none,
                       children: [
@@ -559,7 +558,6 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
   }
   // 🔄 دالة بناء الخط الزمني الملكي للأحداث والتبديلات والأهداف الموزعة بالتبادل لراحة عين المشجع
   Widget _buildTimelineEventsSection() {
-    // محاكاة الأجندة الزمنية للأهداف والتبديلات المتوافقة مع معطيات المصادر المجانية الصافية
     final List<MatchEventModel> sampleEvents = [
       const MatchEventModel(id: '1', minute: "24'", type: 'goal', playerName: 'ميتروفيتش', detail: 'تمريرة حاسمة: مالكوم', isHomeTeam: true),
       const MatchEventModel(id: '2', minute: "41'", type: 'card', playerName: 'الخيبري', detail: 'بطاقة صفراء', isHomeTeam: false),
@@ -703,12 +701,12 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                           ClipRRect(
                             borderRadius: BorderRadius.circular(8),
                             child: Container(
-                              height: 24, width: double.infinity, color: Colors.white10,
+                              height: 24, width: double.infinity, color: Colors.white05,
                               child: Row(
                                 children: [
-                                  Expanded(flex: _homeVotes, child: Container(color: const Color(0xFF00A3FF), child: Center(child: Text('${((_homeVotes/(_homeVotes+_drawVotes+_awayVotes))*100).toStringAsFixed(0)}%', style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold))))),
-                                  Expanded(flex: _drawVotes, child: Container(color: Colors.white10, child: Center(child: Text('${((_drawVotes/(_homeVotes+_drawVotes+_awayVotes))*100).toStringAsFixed(0)}%', style: const TextStyle(color: Colors.white54, fontSize: 10, fontWeight: FontWeight.bold))))),
-                                  Expanded(flex: _awayVotes, child: Container(color: const Color(0xFF00A3FF).withOpacity(0.4), child: Center(child: Text('${((_awayVotes/(_homeVotes+_drawVotes+_awayVotes))*100).toStringAsFixed(0)}%', style: const TextStyle(color: Colors.white70, fontSize: 10, fontWeight: FontWeight.bold))))),
+                                  Expanded(flex: _homeVotes > 0 ? _homeVotes : 1, child: Container(color: const Color(0xFF00A3FF), child: Center(child: Text('${(_homeVotes + _drawVotes + _awayVotes) > 0 ? ((_homeVotes/(_homeVotes+_drawVotes+_awayVotes))*100).toStringAsFixed(0) : 0}%', style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold))))),
+                                  Expanded(flex: _drawVotes > 0 ? _drawVotes : 1, child: Container(color: Colors.white10, child: Center(child: Text('${(_homeVotes + _drawVotes + _awayVotes) > 0 ? ((_drawVotes/(_homeVotes+_drawVotes+_awayVotes))*100).toStringAsFixed(0) : 0}%', style: const TextStyle(color: Colors.white54, fontSize: 10, fontWeight: FontWeight.bold))))),
+                                  Expanded(flex: _awayVotes > 0 ? _awayVotes : 1, child: Container(color: const Color(0xFF00A3FF).withOpacity(0.4), child: Center(child: Text('${(_homeVotes + _drawVotes + _awayVotes) > 0 ? ((_awayVotes/(_homeVotes+_drawVotes+_awayVotes))*100).toStringAsFixed(0) : 0}%', style: const TextStyle(color: Colors.white70, fontSize: 10, fontWeight: FontWeight.bold))))),
                                 ],
                               ),
                             ),
@@ -726,7 +724,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                                 ),
                                 InkWell(
                                   onTap: () => setState(() { _drawVotes++; _hasVoted = true; _myVoteChoice = 'draw'; HapticFeedback.lightImpact(); }),
-                                  child: Container(padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6), decoration: BoxDecoration(color: Colors.white10, borderRadius: BorderRadius.circular(8)), child: Text('تعادل', style: GoogleFonts.cairo(color: Colors.white54, fontSize: 10, fontWeight: FontWeight.bold))),
+                                  child: Container(padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6), decoration: BoxDecoration(color: Colors.white05, borderRadius: BorderRadius.circular(8)), child: Text('تعادل', style: GoogleFonts.cairo(color: Colors.white54, fontSize: 10, fontWeight: FontWeight.bold))),
                                 ),
                                 InkWell(
                                   onTap: () => setState(() { _awayVotes++; _hasVoted = true; _myVoteChoice = 'away'; HapticFeedback.lightImpact(); }),
@@ -861,6 +859,12 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                     ],
                   ),
                 ),
-                const SizedBox(height: 60);
+                const SizedBox(height: 60),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
