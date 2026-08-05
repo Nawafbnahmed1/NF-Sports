@@ -2,7 +2,6 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-// 🔵 نظام البث السحابي المباشر لتوحيد الشاشات وصفحة النتائج تلقائياً لـ NF SPORTS لعام 2026 حياً
 import 'package:supabase_flutter/supabase_flutter.dart'; 
 import '../theme/app_theme.dart';
 import '../widgets/glass_card.dart';
@@ -84,6 +83,7 @@ class HomeMediaModel {
     );
   }
 }
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -94,6 +94,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   late AnimationController _pulseController;
   late AnimationController _audioWaveController;
+  late AnimationController _marqueeController; // متحكم حركة النص للمستطيلات
   final Set<String> _homeReadMemory = <String>{};
   
   List<HomeMatchModel> _liveMatches = [];
@@ -113,6 +114,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       vsync: this,
       duration: const Duration(milliseconds: 600),
     )..repeat(reverse: true);
+
+    // ✅ متحكم النص المتحرك للمستطيلات
+    _marqueeController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 12),
+    )..repeat();
 
     _fetchCentralSupaData();
   }
@@ -141,6 +148,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   void dispose() {
     _pulseController.dispose();
     _audioWaveController.dispose();
+    _marqueeController.dispose(); // ✅ تنظيف المتحكم
     super.dispose();
   }
 
@@ -156,6 +164,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     }
     return '$totalViews';
   }
+
   void _openFullscreenVideoPlayer(BuildContext context, HomeMediaModel media) {
     HapticFeedback.vibrate();
     setState(() {
@@ -326,6 +335,96 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     });
   }
+
+  // ✅ دالة بناء المستطيلات المتحركة (على نفس السطر مع العنوان)
+  Widget _buildAdMarqueeRow(String title, String adText) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      child: Row(
+        children: [
+          // جهة اليمين: العنوان
+          Text(
+            title,
+            style: GoogleFonts.cairo(
+              color: Colors.white,
+              fontSize: 15,
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+          const SizedBox(width: 12),
+          // جهة اليسار: المستطيل الإعلاني
+          Expanded(
+            child: Container(
+              height: 46, // ✅ حجم المستطيل مناسب للاعلانات ومتناسق مع السطر
+              padding: const EdgeInsets.symmetric(horizontal: 14),
+              decoration: BoxDecoration(
+                color: AppTheme.surfaceColor.withOpacity(0.85),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: AppTheme.neonBlue.withOpacity(0.4), width: 1.5),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppTheme.neonBlue.withOpacity(0.12),
+                    blurRadius: 10,
+                    spreadRadius: 0,
+                  )
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(14),
+                child: AnimatedBuilder(
+                  animation: _marqueeController,
+                  builder: (context, child) {
+                    return FractionalTranslation(
+                      translation: Offset(-1.0 + (_marqueeController.value * 2.0), 0.0),
+                      child: Center(
+                        child: Text.rich(
+                          TextSpan(
+                            children: [
+                              TextSpan(
+                                text: 'NF',
+                                style: GoogleFonts.cairo(
+                                  color: AppTheme.neonBlue,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w900,
+                                  shadows: [
+                                    Shadow(color: AppTheme.neonBlue.withOpacity(0.6), blurRadius: 8)
+                                  ],
+                                ),
+                              ),
+                              TextSpan(
+                                text: ' SPORTS ',
+                                style: GoogleFonts.cairo(
+                                  color: Colors.white,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w900,
+                                ),
+                              ),
+                              TextSpan(
+                                text: adText,
+                                style: GoogleFonts.cairo(
+                                  color: Colors.redAccent,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w900,
+                                  shadows: [
+                                    Shadow(color: Colors.redAccent.withOpacity(0.6), blurRadius: 8)
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -334,7 +433,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         child: _isLoading
             ? const Center(child: CircularProgressIndicator(color: AppTheme.neonBlue))
             : StreamBuilder(
-                // 🔮 البث السحابي التلقائي اللحظي: استماع حي ومفتوح لجدول المباريات وصفحة النتائج ليتحدث التطبيق تلقائياً بدون سحب يدوياً نهائياً
                 stream: Supabase.instance.client.from('matches').stream(primaryKey: ['id']).order('time', ascending: true),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
@@ -369,7 +467,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                   ),
                                 ],
                               ),
-                              // 🔔 جرس الإشعارات عالي الجودة والجاهز لبث العواجل بالتوازي اللحظي التلقائي مع السحاب
                               IconButton(
                                 icon: const Icon(Icons.notifications_active, color: AppTheme.neonBlue, size: 32),
                                 onPressed: () {
@@ -382,9 +479,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             ],
                           ),
                         ),
-                        const SectionTitle(title: 'مباريات اليوم'),
+
+                        // ✅ المستطيل 1: قسم المباريات
+                        _buildAdMarqueeRow('مباريات اليوم', 'MATCHES🏟️'),
                         SizedBox(
-                          height: 355,
+                          height: 290, // تم تصغير الارتفاع ليتناسب مع حجم الكروت الجديد
                           child: _liveMatches.isEmpty
                               ? Center(child: Text('لا توجد مباريات جارية اليوم', style: GoogleFonts.cairo(color: Colors.white38, fontSize: 14)))
                               : ListView.builder(
@@ -397,7 +496,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                     final bool isLive = match.status.contains('مباشر') || match.status.toLowerCase().contains('live');
 
                                     return Container(
-                                      width: 325,
+                                      width: 250, // ✅ تم تصغير العرض
                                       margin: const EdgeInsets.only(right: 16),
                                       decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(24),
@@ -406,7 +505,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                             : null,
                                       ),
                                       child: GlassCard(
-                                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10), // تقليل الحشو
                                         borderRadius: 24,
                                         child: Column(
                                           children: [
@@ -427,7 +526,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                                 ),
                                               ),
                                             ),
-                                            const SizedBox(height: 10),
+                                            const SizedBox(height: 8),
                                             Row(
                                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                               children: [
@@ -435,25 +534,25 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                                   child: Column(
                                                     children: [
                                                       Container(
-                                                        padding: const EdgeInsets.all(8),
+                                                        padding: const EdgeInsets.all(6),
                                                         decoration: BoxDecoration(color: const Color(0x0AFFFFFF), shape: BoxShape.circle, border: Border.all(color: const Color(0x3300B4FF), width: 1)),
-                                                        child: const Icon(Icons.shield, color: Colors.white, size: 28),
+                                                        child: const Icon(Icons.shield, color: Colors.white, size: 22),
                                                       ),
-                                                      const SizedBox(height: 6),
-                                                      Text(match.team1, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                                                      const SizedBox(height: 4),
+                                                      Text(match.team1, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
                                                       const SizedBox(height: 4),
                                                       Container(
                                                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                                                         decoration: BoxDecoration(color: const Color(0x2600B4FF), borderRadius: BorderRadius.circular(8)),
-                                                        child: Text(match.f1, style: const TextStyle(color: Color(0xFF00B4FF), fontSize: 13, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                                                        child: Text(match.f1, style: const TextStyle(color: Color(0xFF00B4FF), fontSize: 12, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
                                                       ),
                                                     ],
                                                   ),
                                                 ),
                                                 Column(
                                                   children: [
-                                                    Text(match.time, style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
-                                                    const SizedBox(height: 5),
+                                                    Text(match.time, style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                                                    const SizedBox(height: 4),
                                                     isLive
                                                         ? Row(
                                                             mainAxisAlignment: MainAxisAlignment.center,
@@ -488,36 +587,36 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                                   child: Column(
                                                     children: [
                                                       Container(
-                                                        padding: const EdgeInsets.all(8),
+                                                        padding: const EdgeInsets.all(6),
                                                         decoration: BoxDecoration(color: const Color(0x0AFFFFFF), shape: BoxShape.circle, border: Border.all(color: const Color(0x3300B4FF), width: 1)),
-                                                        child: const Icon(Icons.shield, color: Colors.white, size: 28),
+                                                        child: const Icon(Icons.shield, color: Colors.white, size: 22),
                                                       ),
-                                                      const SizedBox(height: 6),
-                                                      Text(match.team2, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                                                      const SizedBox(height: 4),
+                                                      Text(match.team2, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
                                                       const SizedBox(height: 4),
                                                       Container(
                                                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                                                         decoration: BoxDecoration(color: const Color(0x2600B4FF), borderRadius: BorderRadius.circular(8)),
-                                                        child: Text(match.f2, style: const TextStyle(color: Color(0xFF00B4FF), fontSize: 13, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                                                        child: Text(match.f2, style: const TextStyle(color: Color(0xFF00B4FF), fontSize: 12, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
                                                       ),
                                                     ],
                                                   ),
                                                 ),
                                               ],
                                             ),
-                                            const Padding(padding: EdgeInsets.symmetric(vertical: 8.0), child: Divider(color: Colors.white10, height: 1)),
+                                            const Padding(padding: EdgeInsets.symmetric(vertical: 6.0), child: Divider(color: Colors.white10, height: 1)),
                                             Row(
                                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                               children: [
-                                                Text(match.p1, style: const TextStyle(color: AppTheme.neonBlue, fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
-                                                Text(match.p2, style: const TextStyle(color: Colors.redAccent, fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                                                Text(match.p1, style: const TextStyle(color: AppTheme.neonBlue, fontSize: 10, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                                                Text(match.p2, style: const TextStyle(color: Colors.redAccent, fontSize: 10, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
                                               ],
                                             ),
-                                            const SizedBox(height: 6),
+                                            const SizedBox(height: 4),
                                             ClipRRect(
                                               borderRadius: BorderRadius.circular(6),
                                               child: Container(
-                                                height: 5,
+                                                height: 4,
                                                 width: double.infinity,
                                                 color: Colors.white10,
                                                 child: Row(
@@ -545,25 +644,25 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                                 ),
                                               ),
                                             ),
-                                            const Padding(padding: EdgeInsets.symmetric(vertical: 8.0), child: Divider(color: Colors.white10, height: 1)),
+                                            const Padding(padding: EdgeInsets.symmetric(vertical: 6.0), child: Divider(color: Colors.white10, height: 1)),
                                             Row(
                                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                               children: [
-                                                Expanded(child: Text(match.h1, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white70, fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo'))),
+                                                Expanded(child: Text(match.h1, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white70, fontSize: 10, fontWeight: FontWeight.bold, fontFamily: 'Cairo'))),
                                                 const SizedBox(width: 8),
-                                                Expanded(child: Text(match.h2, maxLines: 1, overflow: TextOverflow.ellipsis, textAlign: TextAlign.left, style: const TextStyle(color: Colors.white70, fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo'))),
+                                                Expanded(child: Text(match.h2, maxLines: 1, overflow: TextOverflow.ellipsis, textAlign: TextAlign.left, style: const TextStyle(color: Colors.white70, fontSize: 10, fontWeight: FontWeight.bold, fontFamily: 'Cairo'))),
                                               ],
                                             ),
-                                            const Padding(padding: EdgeInsets.symmetric(vertical: 8.0), child: Divider(color: Colors.white10, height: 1)),
+                                            const Padding(padding: EdgeInsets.symmetric(vertical: 6.0), child: Divider(color: Colors.white10, height: 1)),
                                             Row(
                                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                               children: [
-                                                Text(match.f1, style: const TextStyle(color: Colors.green, fontSize: 13, fontWeight: FontWeight.bold, letterSpacing: 1.5)),
-                                                const Text('', style: TextStyle(color: Colors.white38, fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
-                                                Text(match.f2, style: const TextStyle(color: Colors.amber, fontSize: 13, fontWeight: FontWeight.bold, letterSpacing: 1.5)),
+                                                Text(match.f1, style: const TextStyle(color: Colors.green, fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 1.5)),
+                                                const Text('', style: TextStyle(color: Colors.white38, fontSize: 10, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                                                Text(match.f2, style: const TextStyle(color: Colors.amber, fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 1.5)),
                                               ],
                                             ),
-                                            const Padding(padding: EdgeInsets.symmetric(vertical: 10.0), child: Divider(color: Colors.white10, height: 1)),
+                                            const Padding(padding: EdgeInsets.symmetric(vertical: 8.0), child: Divider(color: Colors.white10, height: 1)),
                                             NeonButton(
                                               text: 'تفاصيل المباراة',
                                               onPressed: () {
@@ -577,12 +676,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                   },
                                 ),
                         ),
-                        const SizedBox(height: 20),
-                        const SectionTitle(title: 'آخر الأخبار'),
+
+                        // ✅ المستطيل 2: قسم الأخبار
+                        _buildAdMarqueeRow('آخر الأخبار', 'NEWS🗞️'),
                         _buildHorizontalList(isNews: true),
-                        const SizedBox(height: 20),
-                        const SectionTitle(title: 'أبرز اللقطات'),
+
+                        // ✅ المستطيل 3: قسم الملخصات
+                        _buildAdMarqueeRow('أبرز اللقطات', 'HIGHLIGHTS 🎬'),
                         _buildHorizontalList(isNews: false),
+
                         const SizedBox(height: 120)
                       ],
                     ),
@@ -592,8 +694,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       ),
     );
   }
+
   Widget _buildHorizontalList({required bool isNews}) {
-    // 🔮 المزامنة السحابية اللحظية: توجيه التحديث التلقائي لقراءة صفحة الملخصات أو الأخبار حياً من السحاب
     final listData = isNews ? _latestNews : _topHighlights;
     
     return SizedBox(
@@ -615,9 +717,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     setState(() {
                       _homeReadMemory.add(media.videoUrl);
                     });
-                    HapticFeedback.mediumImpact(); // اهتزاز تكتيكي ناعم يشعر المستخدم بقوة التطبيق
+                    HapticFeedback.mediumImpact();
                     if (isNews) {
-                      // الانتقال الفوري والمضمون إلى شاشة تفاصيل الأخبار الرسمية لقراءة الخبر من المربع الزجاجي
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -635,7 +736,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         ),
                       );
                     } else {
-                      // إطلاق المشغل السينمائي المحكم لـ صفحة الملخصات والأهداف الحاسمة فوراً
                       _openFullscreenVideoPlayer(context, media);
                     }
                   },
