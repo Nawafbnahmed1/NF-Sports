@@ -808,7 +808,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                               const SizedBox(height: 6),
                               Align(alignment: Alignment.centerRight, child: Text(currentText, textDirection: TextDirection.rtl, style: GoogleFonts.cairo(color: (isBannedByBot || currentText.contains('www.')) ? Colors.white24 : Colors.white, fontSize: 12))),
                               
-                              const Padding(padding: EdgeInsets.symmetric(vertical: 4), child: Divider(color: Colors.white05, height: 1)),
+                              const Padding(padding: EdgeInsets.symmetric(vertical: 4), child: Divider(color: Colors.white10, height: 1)),
                               // أزرار التفاعل المدججة للزوار 👍 و 👎 والرسائل الصوتية بالأسفل مع توقيع الحقوق
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -878,11 +878,5 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                   ),
                 ),
                 const SizedBox(height: 60),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
   }
 }
