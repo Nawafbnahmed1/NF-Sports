@@ -212,7 +212,6 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
       if (path != null) {
         HapticFeedback.mediumImpact();
         _isRecording = false;
-        setState(() {});
         
         // رفع الملف الصوتي إلى السحابة
         try {
@@ -233,12 +232,11 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
       // بدء التسجيل
       HapticFeedback.mediumImpact();
       _isRecording = true;
-      setState(() {});
       try {
         await _audioRecorder.start(const RecordConfig(encoder: AudioEncoder.aacLc), path: '');
       } catch (e) {
         _isRecording = false;
-        setState(() {});
+      
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('تعذر الوصول إلى الميكروفون', style: GoogleFonts.cairo())),
         );
