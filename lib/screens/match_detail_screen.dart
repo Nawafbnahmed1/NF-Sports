@@ -39,7 +39,7 @@ class MatchStatsModel {
     this.awayCorners = 0,
   });
 }
- 
+  
 class PlayerLineupModel {
   final String name, number, rating, position;
   final int xGrid, yGrid;
