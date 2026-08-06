@@ -24,7 +24,7 @@ class MatchEventModel {
     required this.isHomeTeam,
   });
 }
- 
+  
 class MatchStatsModel {
   final int homePossession, awayPossession, homeShots, awayShots;
   final int homeShotsOnTarget, awayShotsOnTarget, homeCorners, awayCorners;
