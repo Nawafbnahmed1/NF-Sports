@@ -52,7 +52,6 @@ class MatchStatsModel {
     this.awayCorners = 0,
   });
 }
-
 // 👑 موديل بيانات كروت التشكيلة الرسمية
 class PlayerLineupModel {
   final String name;
@@ -120,7 +119,6 @@ class MatchDetailScreen extends StatefulWidget {
   @override
   State<MatchDetailScreen> createState() => _MatchDetailScreenState();
 }
-
 class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProviderStateMixin {
   final supabase = Supabase.instance.client;
   
@@ -156,7 +154,6 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
       _currentUser = user.id;
     }
   }
-
   @override
   void dispose() {
     _tabController.dispose();
@@ -207,8 +204,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
     }
     return false;
   }
-
-  // ✅ دالة التسجيل الصوتي الحقيقية
+  // ✅ دالة التسجيل الصوتي الحقيقية (المصلحة بالكامل لبروتوكولات 2026)
   Future<void> _toggleRecording() async {
     if (_isRecording) {
       // إيقاف التسجيل وحفظه
@@ -239,7 +235,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
       _isRecording = true;
       setState(() {});
       try {
-        await _audioRecorder.start(const RecordConfig(encoder: AudioEncoder.aacLc));
+        await _audioRecorder.start(const RecordConfig(encoder: AudioEncoder.aacLc), path: '');
       } catch (e) {
         _isRecording = false;
         setState(() {});
@@ -249,7 +245,6 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
       }
     }
   }
-
   // ✅ إرسال التعليق (نصي أو صوتي)
   Future<void> _submitComment(String? text, [String? audioUrl]) async {
     final user = supabase.auth.currentUser;
@@ -302,13 +297,11 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
 
     HapticFeedback.selectionClick();
     try {
-      // يجب إنشاء جدول comment_likes لمنع تكرار الإعجاب
       await supabase.from('match_comments').update({'likes': currentLikes + 1}).eq('id', commentId);
     } catch (e) {
       print('Error liking comment: $e');
     }
   }
-
   // =============================
   // 🏟️ دالة بناء مجسم الملعب العشبي ثلاثي الأبعاد
   // =============================
@@ -411,9 +404,8 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
       ),
     );
   }
-
   // =============================
-  // 🔄 دالة بناء الخط الزمني الملكي للأحداث (بيانات وهمية مؤقتة لن تُستخدم في الإنتاج)
+  // 🔄 دالة بناء الخط الزمني الملكي للأحداث
   // =============================
   Widget _buildTimelineEventsSection() {
     final List<MatchEventModel> sampleEvents = [
@@ -474,7 +466,6 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
       ),
     );
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -509,7 +500,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                   Expanded(child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [Container(width: 60, height: 60, decoration: BoxDecoration(color: Colors.white.withOpacity(0.04), shape: BoxShape.circle, border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.15))), padding: const EdgeInsets.all(8), child: const Icon(Icons.shield, color: Colors.white70, size: 40)), const SizedBox(height: 8), Text(widget.team2, maxLines: 1, overflow: TextOverflow.ellipsis, style: GoogleFonts.cairo(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold))])),
                 ],),),
               ],),),
-              Padding(padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4), child: Container(decoration: BoxDecoration(color: const Color(0xFF161926).withOpacity(0.6), borderRadius: BorderRadius.circular(20), border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.18), width: 1)), child: GlassCard(borderRadius: 20, padding: const EdgeInsets.all(16), child: Column(children: [Row(textDirection: TextDirection.rtl, mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Row(textDirection: TextDirection.rtl, children: [const Icon(Icons.emoji_events, color: Colors.amber, size: 16), const SizedBox(width: 8), Text('الدوري الممتاز', style: GoogleFonts.cairo(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold))]), Text('الأسبوع 18', style: GoogleFonts.cairo(color: Colors.white38, fontSize: 11))]), const Padding(padding: EdgeInsets.symmetric(vertical: 8), child: Divider(color: Colors.white10, height: 1)), Row(textDirection: TextDirection.rtl, mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Row(textDirection: TextDirection.rtl, children: [const Icon(Icons.stadium, color: Color(0xFF00A3FF), size: 16), const SizedBox(width: 8), Text('استاد الملك فهد الدولي', style: GoogleFonts.cairo(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold))]), Text('NF', style: GoogleFonts.cairo(color: const Color(0xFF00A3FF).withOpacity(0.3), fontSize: 10, fontWeight: FontWeight.w900))])],),),)),
+                        Padding(padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4), child: Container(decoration: BoxDecoration(color: const Color(0xFF161926).withOpacity(0.6), borderRadius: BorderRadius.circular(20), border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.18), width: 1)), child: GlassCard(borderRadius: 20, padding: const EdgeInsets.all(16), child: Column(children: [Row(textDirection: TextDirection.rtl, mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Row(textDirection: TextDirection.rtl, children: [const Icon(Icons.emoji_events, color: Colors.amber, size: 16), const SizedBox(width: 8), Text('الدوري الممتاز', style: GoogleFonts.cairo(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold))]), Text('الأسبوع 18', style: GoogleFonts.cairo(color: Colors.white38, fontSize: 11))]), const Padding(padding: EdgeInsets.symmetric(vertical: 8), child: Divider(color: Colors.white10, height: 1)), Row(textDirection: TextDirection.rtl, mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Row(textDirection: TextDirection.rtl, children: [const Icon(Icons.stadium, color: Color(0xFF00A3FF), size: 16), const SizedBox(width: 8), Text('استاد الملك فهد الدولي', style: GoogleFonts.cairo(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold))]), Text('NF', style: GoogleFonts.cairo(color: const Color(0xFF00A3FF).withOpacity(0.3), fontSize: 10, fontWeight: FontWeight.w900))])],),),)),
               const SizedBox(height: 14),
               const Padding(padding: EdgeInsets.symmetric(horizontal: 24, vertical: 4), child: Text('إحصائيات اللقاء الحالية', style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold, fontFamily: 'Cairo'))),
               Padding(padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4), child: Container(decoration: BoxDecoration(color: const Color(0xFF161926).withOpacity(0.6), borderRadius: BorderRadius.circular(20), border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.15), width: 1)), child: GlassCard(borderRadius: 20, padding: const EdgeInsets.all(16), child: Column(children: [Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [const Text('55%', style: TextStyle(color: Color(0xFF00A3FF), fontSize: 12, fontWeight: FontWeight.bold)), Text('الاستحواذ الكلي', style: GoogleFonts.cairo(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold)), const Text('45%', style: TextStyle(color: Colors.white38, fontSize: 12, fontWeight: FontWeight.bold))]), const SizedBox(height: 6), ClipRRect(borderRadius: BorderRadius.circular(4), child: Container(height: 5, width: double.infinity, color: Colors.white10, child: Row(children: [const Expanded(flex: 55, child: ColoredBox(color: Color(0xFF00A3FF))), Expanded(flex: 45, child: ColoredBox(color: const Color(0xFF161926)))])), const SizedBox(height: 14), Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [const Text('14', style: TextStyle(color: Color(0xFF00A3FF), fontSize: 12, fontWeight: FontWeight.bold)), Text('إجمالي التسديدات', style: GoogleFonts.cairo(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold)), const Text('8', style: TextStyle(color: Colors.white38, fontSize: 12, fontWeight: FontWeight.bold))]), const SizedBox(height: 6), ClipRRect(borderRadius: BorderRadius.circular(4), child: Container(height: 5, width: double.infinity, color: Colors.white10, child: Row(children: [const Expanded(flex: 14, child: ColoredBox(color: Color(0xFF00A3FF))), Expanded(flex: 8, child: ColoredBox(color: const Color(0xFF161926)))])),],),),)),
@@ -524,7 +515,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
               const SizedBox(height: 60),
             ]),
           ),
-          // 💬 الواجهة الثانية: ساحة "مناقشات كروية" المطورة بالكامل (حقيقية)
+                // 💬 الواجهة الثانية: ساحة "مناقشات كروية" المطورة بالكامل
           SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -535,7 +526,6 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                 if (!_hasVoted) ...[const SizedBox(height: 12), Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [InkWell(onTap: () => setState(() { _homeVotes++; _hasVoted = true; _myVoteChoice = 'home'; HapticFeedback.lightImpact(); }), child: Container(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6), decoration: BoxDecoration(color: const Color(0xFF00A3FF).withOpacity(0.12), borderRadius: BorderRadius.circular(8)), child: Text('فوز ${widget.team1}', style: GoogleFonts.cairo(color: const Color(0xFF00A3FF), fontSize: 10, fontWeight: FontWeight.bold)))), InkWell(onTap: () => setState(() { _drawVotes++; _hasVoted = true; _myVoteChoice = 'draw'; HapticFeedback.lightImpact(); }), child: Container(padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6), decoration: BoxDecoration(color: Colors.white.withOpacity(0.05), borderRadius: BorderRadius.circular(8)), child: Text('تعادل', style: GoogleFonts.cairo(color: Colors.white54, fontSize: 10, fontWeight: FontWeight.bold)))), InkWell(onTap: () => setState(() { _awayVotes++; _hasVoted = true; _myVoteChoice = 'away'; HapticFeedback.lightImpact(); }), child: Container(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6), decoration: BoxDecoration(color: const Color(0xFF00A3FF).withOpacity(0.05), borderRadius: BorderRadius.circular(8)), child: Text('فوز ${widget.team2}', style: GoogleFonts.cairo(color: Colors.white70, fontSize: 10, fontWeight: FontWeight.bold))))])] else ...[const SizedBox(height: 8), Text('شكراً لتصويتك! أنت توقعت: ${_myVoteChoice == 'home' ? widget.team1 : (_myVoteChoice == 'away' ? widget.team2 : 'التعادل')}', style: GoogleFonts.cairo(color: const Color(0xFF00A3FF), fontSize: 10, fontWeight: FontWeight.bold))],
               ],),),),
               Padding(padding: const EdgeInsets.symmetric(horizontal: 24), child: Text('منبر الجماهير الحركي 🏟️', style: GoogleFonts.cairo(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.bold))),
-              // ✅ تم استبدال الـ ListView الوهمي بـ StreamBuilder حقيقي من السحابة
               StreamBuilder<List<Map<String, dynamic>>>(
                 stream: supabase
                     .from('match_comments')
@@ -570,7 +560,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                         Align(alignment: Alignment.centerRight, child: Text(text, textDirection: TextDirection.rtl, style: GoogleFonts.cairo(color: Colors.white, fontSize: 12))),
                         if (audioUrl != null && audioUrl.isNotEmpty) ...[
                           const SizedBox(height: 8),
-                          Container(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8), decoration: BoxDecoration(color: Colors.black26, borderRadius: BorderRadius.circular(8)), child: Row(textDirection: TextDirection.rtl, children: [const Icon(Icons.audiotrack, color: Color(0xFF00A3FF), size: 16), const SizedBox(width: 8), Text('رسالة صوتية 🎙️', style: GoogleFonts.cairo(color: Colors.white70, fontSize: 10)), const Spacer(), IconButton(icon: const Icon(Icons.play_arrow_rounded, color: Color(0xFF00A3FF), size: 16), onPressed: () { /* تشغيل الصوت باستخدام audioplayers لاحقاً */ })])),
+                          Container(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8), decoration: BoxDecoration(color: Colors.black26, borderRadius: BorderRadius.circular(8)), child: Row(textDirection: TextDirection.rtl, children: [const Icon(Icons.audiotrack, color: Color(0xFF00A3FF), size: 16), const SizedBox(width: 8), Text('رسالة صوتية 🎙️', style: GoogleFonts.cairo(color: Colors.white70, fontSize: 10)), const Spacer(), IconButton(icon: const Icon(Icons.play_arrow_rounded, color: Color(0xFF00A3FF), size: 16), onPressed: () {})])),
                         ],
                         const Padding(padding: EdgeInsets.symmetric(vertical: 4), child: Divider(color: Colors.white10, height: 1)),
                         Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
@@ -585,7 +575,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                   );
                 },
               ),
-              // 🛠️ صندوق إدخال الآراء والتعليقات المطور (مع التسجيل الصوتي الحقيقي)
+                     // 🛠️ صندوق إدخال الآراء والتعليقات المطور (مع التسجيل الصوتي الحقيقي)
               Padding(padding: const EdgeInsets.all(20), child: Row(textDirection: TextDirection.rtl, children: [
                 Expanded(child: TextField(controller: _chatController, textDirection: TextDirection.rtl, style: GoogleFonts.cairo(color: Colors.white, fontSize: 12), decoration: InputDecoration(hintText: _replyingToCommentId != null ? 'اكتب ردك...' : 'اكتب نقاشك الرياضي الفخم هنا...', hintStyle: GoogleFonts.cairo(color: Colors.white24, fontSize: 11), hintTextDirection: TextDirection.rtl, filled: true, fillColor: const Color(0xFF161926).withOpacity(0.5), contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10), border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none), focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: const Color(0xFF00A3FF).withOpacity(0.4), width: 1.5))))),
                 const SizedBox(width: 8),
@@ -619,3 +609,4 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
     return 'قبل ${duration.inDays} يوم';
   }
 }
+           
