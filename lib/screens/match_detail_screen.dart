@@ -290,7 +290,17 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
           SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Container(width: double.infinity, height: 180, decoration: BoxDecoration(gradient: LinearGradient(colors: [const Color(0xFF0F111A), AppTheme.backgroundColor], begin: Alignment.topCenter, end: Alignment.bottomCenter)), child: Stack(children: [
+              Container(
+               width: double.infinity,
+                height: 180,
+                decoration: BoxDecoration(
+               gradient: LinearGradient(
+               colors: [const Color(0xFF0F111A), AppTheme.backgroundColor],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                ),
+                ),
+               child: Stack(children: [
                 Positioned(top: 10, right: 15, child: Text('NF', style: GoogleFonts.cairo(color: const Color(0xFF00A3FF).withOpacity(0.2), fontSize: 11, fontWeight: FontWeight.w900))),
                 Padding(padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20), child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                   Expanded(child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [Container(width: 60, height: 60, decoration: BoxDecoration(color: Colors.white.withOpacity(0.04), shape: BoxShape.circle, border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.15))), padding: const EdgeInsets.all(8), child: const Icon(Icons.shield, color: Colors.white70, size: 40)), const SizedBox(height: 8), Text(widget.team1, maxLines: 1, overflow: TextOverflow.ellipsis, style: GoogleFonts.cairo(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold))])),
