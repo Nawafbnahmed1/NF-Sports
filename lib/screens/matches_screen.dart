@@ -334,7 +334,7 @@ class _MatchesScreenState extends State<MatchesScreen> with TickerProviderStateM
                                           ),
                                         ),
                                         TextSpan(
-                                          text: ' MATCHES',
+                                          text: ' MATCHES 🏟️', // ✅ تم التعديل إلى رمز الملعب
                                           style: GoogleFonts.cairo(
                                             color: Colors.redAccent,
                                             fontSize: 22, // ✅ حجم أكبر
@@ -344,7 +344,6 @@ class _MatchesScreenState extends State<MatchesScreen> with TickerProviderStateM
                                             ],
                                           ),
                                         ),
-                                        const WidgetSpan(child: Padding(padding: EdgeInsets.only(left: 4), child: Icon(Icons.bar_chart, color: Colors.white, size: 28))),
                                       ],
                                     ),
                                     textAlign: TextAlign.center,
