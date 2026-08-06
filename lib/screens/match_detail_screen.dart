@@ -481,8 +481,9 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                   Expanded(child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [Container(width: 60, height: 60, decoration: BoxDecoration(color: Colors.white.withOpacity(0.04), shape: BoxShape.circle, border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.15))), padding: const EdgeInsets.all(8), child: const Icon(Icons.shield, color: Colors.white70, size: 40)), const SizedBox(height: 8), Text(widget.team1, maxLines: 1, overflow: TextOverflow.ellipsis, style: GoogleFonts.cairo(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold))])),
                   Column(mainAxisAlignment: MainAxisAlignment.center, children: [Container(padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4), decoration: BoxDecoration(color: const Color(0xFF161926).withOpacity(0.6), borderRadius: BorderRadius.circular(30), border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.25)), boxShadow: [BoxShadow(color: const Color(0xFF00A3FF).withOpacity(0.08), blurRadius: 12)]), child: const Text('2 - 1', style: TextStyle(color: Colors.white, fontSize: 26, fontWeight: FontWeight.w900, letterSpacing: 1.5))), const SizedBox(height: 6), Container(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2), decoration: BoxDecoration(color: const Color(0xFF00A3FF).withOpacity(0.1), borderRadius: BorderRadius.circular(6)), child: Text('انتهت المباراة • FT', style: GoogleFonts.cairo(color: const Color(0xFF00A3FF), fontSize: 9, fontWeight: FontWeight.w900)))]),
                   Expanded(child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [Container(width: 60, height: 60, decoration: BoxDecoration(color: Colors.white.withOpacity(0.04), shape: BoxShape.circle, border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.15))), padding: const EdgeInsets.all(8), child: const Icon(Icons.shield, color: Colors.white70, size: 40)), const SizedBox(height: 8), Text(widget.team2, maxLines: 1, overflow: TextOverflow.ellipsis, style: GoogleFonts.cairo(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold))])),
-                ],),),
-              ],),),
+                   ],
+                 ),
+                ),
               Padding(padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4), child: Container(decoration: BoxDecoration(color: const Color(0xFF161926).withOpacity(0.6), borderRadius: BorderRadius.circular(20), border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.18), width: 1)), child: GlassCard(borderRadius: 20, padding: const EdgeInsets.all(16), child: Column(children: [Row(textDirection: TextDirection.rtl, mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Row(textDirection: TextDirection.rtl, children: [const Icon(Icons.emoji_events, color: Colors.amber, size: 16), const SizedBox(width: 8), Text('الدوري الممتاز', style: GoogleFonts.cairo(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold))]), Text('الأسبوع 18', style: GoogleFonts.cairo(color: Colors.white38, fontSize: 11))]), const Padding(padding: EdgeInsets.symmetric(vertical: 8), child: Divider(color: Colors.white10, height: 1)), Row(textDirection: TextDirection.rtl, mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Row(textDirection: TextDirection.rtl, children: [const Icon(Icons.stadium, color: Color(0xFF00A3FF), size: 16), const SizedBox(width: 8), Text('استاد الملك فهد الدولي', style: GoogleFonts.cairo(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold))]), Text('NF', style: GoogleFonts.cairo(color: const Color(0xFF00A3FF).withOpacity(0.3), fontSize: 10, fontWeight: FontWeight.w900))])],),),)),
               const SizedBox(height: 14),
               const Padding(padding: EdgeInsets.symmetric(horizontal: 24, vertical: 4), child: Text('إحصائيات اللقاء الحالية', style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold, fontFamily: 'Cairo'))),
@@ -496,8 +497,9 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
               const Padding(padding: EdgeInsets.symmetric(horizontal: 24, vertical: 4), child: Text('شريط الأحداث الزمني والتبديلات', style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold, fontFamily: 'Cairo'))),
               _buildTimelineEventsSection(),
               const SizedBox(height: 60),
-            ]),
-          ),
+               ],
+             ),
+            ),                                                                                      
           SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -508,5 +510,5 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with TickerProvid
                 if (!_hasVoted) ...[
                   const SizedBox(height: 12),
                   Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                    InkWell(onTap: () => setState(() { _homeVotes++; _hasVoted = true; _myVoteChoice = 'home'; HapticFeedback.lightImpact(); }), child: Container(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6), decoration: BoxDecoration(color: const Color(0xFF00A3FF).withOpacity(0.12), borderRadius: BorderRadius.circular(8)), child: Text('فوز ${widget.team1}', style: GoogleFonts.cairo(color: const Color(0xFF00A3FF), fontSize: 10, fontWeight: FontWeight.bold))),
+                    InkWell(onTap: () => setState(() { _homeVotes++; _hasVoted = true; _myVoteChoice = 'home'; HapticFeedback.lightImpact(); }), child: Container(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6), decoration: BoxDecoration(color: const Color(0xFF00A3FF).withOpacity(0.12), borderRadius: BorderRadius.circular(8)), child: Text('فوز ${widget.team1}', style: GoogleFonts.cairo(color: const Color(0xFF00A3FF), fontSize: 10, fontWeight: FontWeight.bold)));
                     InkWell(onTap: () => setState(() { _drawVotes++; _hasVoted
