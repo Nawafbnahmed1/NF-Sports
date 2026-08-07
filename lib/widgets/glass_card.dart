@@ -18,16 +18,17 @@ class GlassCard extends StatelessWidget {
     return Container(
       padding: padding ?? const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        // لون زجاجي داكن مع شفافية فخمة مطابقة لتصميمك
-        color: AppTheme.surfaceColor.withValues(alpha: 0.75),
+        // ✅ تصحيح: استخدام withOpacity بدلاً من withValues
+        color: AppTheme.surfaceColor.withOpacity(0.75),
         borderRadius: BorderRadius.circular(borderRadius ?? 24),
         border: Border.all(
-          color: AppTheme.neonBlue.withValues(alpha: 0.25), // إطار النيون الخفيف المحيط بالبطاقة
+          // ✅ تصحيح: استخدام withOpacity بدلاً من withValues
+          color: AppTheme.neonBlue.withOpacity(0.25),
           width: 1.5,
         ),
         boxShadow: [
           BoxShadow(
-            color: AppTheme.neonBlue.withValues(alpha: 0.05),
+            color: AppTheme.neonBlue.withOpacity(0.05),
             blurRadius: 15,
             spreadRadius: 1,
           ),
