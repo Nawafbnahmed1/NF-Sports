@@ -1351,9 +1351,7 @@ String _getFormatedTimeAgo(DateTime dateTime) {
                       const SizedBox(width: 8),
 
                       // زر التسجيل الصوتي
-                      AnimatedBuilder(
-                        animation: _audioRecorder,
-                        builder: (context, _) {
+                      AnimatedBuilder(animation: _audioRecorder, builder: (context, child) {
                           return GestureDetector(
                             onLongPressStart: (_) => _toggleRecording(),
                             onLongPressEnd: (_) => _toggleRecording(),
