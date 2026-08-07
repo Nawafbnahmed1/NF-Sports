@@ -15,7 +15,7 @@ class SectionTitle extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
       child: Row(
         children: [
-          // 🌟 شريط النيون العمودي المضيء والمتوهج بجانب العنوان (نفس تصميمك)
+          // 🌟 شريط النيون العمودي المضيء والمتوهج بجانب العنوان
           Container(
             width: 4,
             height: 20,
@@ -24,7 +24,8 @@ class SectionTitle extends StatelessWidget {
               borderRadius: BorderRadius.circular(2),
               boxShadow: [
                 BoxShadow(
-                  color: AppTheme.neonBlue.withValues(alpha: 0.6),
+                  // ✅ تصحيح: استخدام withOpacity بدلاً من withValues
+                  color: AppTheme.neonBlue.withOpacity(0.6),
                   blurRadius: 10,
                   spreadRadius: 1,
                 ),
