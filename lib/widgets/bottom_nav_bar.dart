@@ -15,19 +15,18 @@ class NFSportsBottomNavBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final double screenHeight = MediaQuery.of(context).size.height;
 
-    // 🌟 استخدام Directionality لإجبار الشريط على البدء والترتيب من اليمين تماماً (RTL)
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Container(
         height: screenHeight * 0.10,
         decoration: BoxDecoration(
-          color: AppTheme.surfaceColor.withValues(alpha: 0.95),
+          color: AppTheme.surfaceColor.withOpacity(0.95),
           border: const Border(
             top: BorderSide(color: Colors.white10, width: 1),
           ),
           boxShadow: [
             BoxShadow(
-              color: AppTheme.neonBlue.withValues(alpha: 0.03),
+              color: AppTheme.neonBlue.withOpacity(0.03),
               blurRadius: 10,
             ),
           ],
@@ -54,9 +53,19 @@ class NFSportsBottomNavBar extends StatelessWidget {
               label: 'المباريات',
             ),
             BottomNavigationBarItem(
+              icon: Icon(Icons.analytics_outlined),
+              activeIcon: Icon(Icons.analytics, color: AppTheme.neonBlue),
+              label: 'النتائج',
+            ),
+            BottomNavigationBarItem(
               icon: Icon(Icons.newspaper_outlined),
               activeIcon: Icon(Icons.newspaper, color: AppTheme.neonBlue),
               label: 'الأخبار',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.play_circle_outline),
+              activeIcon: Icon(Icons.play_circle_filled, color: AppTheme.neonBlue),
+              label: 'الملخصات',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.more_horiz_outlined),
