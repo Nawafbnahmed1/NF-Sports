@@ -47,6 +47,7 @@ android {
         
         versionCode = 1
         versionName = "1.0.0"
+        resValue "string", "app_name", "NF SPORTS"
     }
 
     buildTypes {
