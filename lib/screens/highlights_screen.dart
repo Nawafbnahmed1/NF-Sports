@@ -51,10 +51,15 @@ class _HighlightsScreenState extends State<HighlightsScreen> with TickerProvider
   final supabase = Supabase.instance.client;
   late AnimationController _pulseController;
   late AnimationController _marqueeController;
+  
+  // حالة التعليقات المباشرة لكل فيديو
+  final Map<String, bool> _showCommentBoxMap = {};
+  final Map<String, TextEditingController> _commentControllers = {};
   final Set<String> _readHighlightsMemory = <String>{};
   
   final Map<String, int> _baseViewsMap = {};
   final Map<String, int> _timeOffsetMap = {};
+  
   @override
   void initState() {
     super.initState();
@@ -76,7 +81,6 @@ class _HighlightsScreenState extends State<HighlightsScreen> with TickerProvider
     super.dispose();
   }
 
-  // 📡 محرك التمويه التفاعلي الذكي
   String _generateStealthViews(HighlightMediaModel media) {
     final String key = media.id.isNotEmpty ? media.id : media.videoUrl;
     
@@ -324,6 +328,29 @@ class _HighlightsScreenState extends State<HighlightsScreen> with TickerProvider
     });
   }
 
+  // ✅ دالة إرسال التعليق
+  Future<void> _submitComment(String highlightId, String text) async {
+    final user = supabase.auth.currentUser;
+    if (user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('يجب تسجيل الدخول أولاً للتعليق')),
+      );
+      return;
+    }
+    try {
+      await supabase.from('comments').insert({
+        'highlight_id': highlightId,
+        'user_id': user.id,
+        'user_name': user.email?.split('@').first ?? 'مشجع',
+        'comment_text': text,
+        'created_at': DateTime.now().toIso8601String(),
+      });
+      if (mounted) setState(() {});
+    } catch (e) {
+      print('Error submitting comment: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -356,11 +383,10 @@ class _HighlightsScreenState extends State<HighlightsScreen> with TickerProvider
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 16),
-                    // ⭕ شريط دوائر الستوري الأفقية (تم التكبير الأخير ليصبح 86)
                     Directionality(
                       textDirection: TextDirection.rtl,
                       child: SizedBox(
-                        height: 140, // ✅ تم رفع الارتفاع
+                        height: 140,
                         child: ListView.builder(
                           scrollDirection: Axis.horizontal,
                           padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -379,8 +405,8 @@ class _HighlightsScreenState extends State<HighlightsScreen> with TickerProvider
                                 child: Column(
                                   children: [
                                     Container(
-                                      width: 86, // ✅ تم التكبير الأخير
-                                      height: 86, // ✅ تم التكبير الأخير
+                                      width: 86,
+                                      height: 86,
                                       decoration: BoxDecoration(
                                         shape: BoxShape.circle,
                                         border: Border.all(color: isRead ? Colors.white24 : const Color(0xFF00A3FF), width: 2),
@@ -413,15 +439,14 @@ class _HighlightsScreenState extends State<HighlightsScreen> with TickerProvider
                       ),
                     ),
                     const SizedBox(height: 5),
-                    // 🛸 مستطيل الإعلانات الأزرق الفاخر (نفس تنسيق قسم الأخبار)
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                       child: Container(
-                        height: 76, // ✅ تم تكبير الحجم
+                        height: 76,
                         padding: const EdgeInsets.symmetric(horizontal: 18),
                         decoration: BoxDecoration(
                           color: AppTheme.surfaceColor.withOpacity(0.90),
-                          borderRadius: BorderRadius.circular(24), // ✅ انحناء حواف أكبر
+                          borderRadius: BorderRadius.circular(24),
                           border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.4), width: 2),
                           boxShadow: [
                             BoxShadow(
@@ -447,7 +472,7 @@ class _HighlightsScreenState extends State<HighlightsScreen> with TickerProvider
                                           text: ' NF',
                                           style: GoogleFonts.cairo(
                                             color: const Color(0xFF00A3FF),
-                                            fontSize: 22, // ✅ حجم أكبر
+                                            fontSize: 22,
                                             fontWeight: FontWeight.w900,
                                             shadows: [
                                               Shadow(color: const Color(0xFF00A3FF).withOpacity(0.6), blurRadius: 8)
@@ -458,7 +483,7 @@ class _HighlightsScreenState extends State<HighlightsScreen> with TickerProvider
                                           text: ' SPORTS',
                                           style: GoogleFonts.cairo(
                                             color: Colors.white,
-                                            fontSize: 22, // ✅ حجم أكبر
+                                            fontSize: 22,
                                             fontWeight: FontWeight.w900,
                                           ),
                                         ),
@@ -466,7 +491,7 @@ class _HighlightsScreenState extends State<HighlightsScreen> with TickerProvider
                                           text: ' HIGHLIGHTS',
                                           style: GoogleFonts.cairo(
                                             color: Colors.redAccent,
-                                            fontSize: 22, // ✅ حجم أكبر
+                                            fontSize: 22,
                                             fontWeight: FontWeight.w900,
                                             shadows: [
                                               Shadow(color: Colors.redAccent.withOpacity(0.6), blurRadius: 8)
@@ -543,9 +568,17 @@ class _HighlightsScreenState extends State<HighlightsScreen> with TickerProvider
     );
   }
 
-  // 🎬 الكرت الرئيسي (تم التصغير إلى 112 وإضافة الحواف المشعة)
   Widget _buildMainHighlightCard(BuildContext context, HighlightMediaModel media) {
     final bool isRead = _readHighlightsMemory.contains(media.videoUrl);
+    final String key = media.id;
+    
+    // إدارة حالة صندوق التعليق
+    if (!_showCommentBoxMap.containsKey(key)) {
+      _showCommentBoxMap[key] = false;
+    }
+    if (!_commentControllers.containsKey(key)) {
+      _commentControllers[key] = TextEditingController();
+    }
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -576,7 +609,7 @@ class _HighlightsScreenState extends State<HighlightsScreen> with TickerProvider
                   children: [
                     Container(
                       width: double.infinity,
-                      height: 112, // ✅ تم التصغير إلى 112
+                      height: 112,
                       decoration: const BoxDecoration(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
                       child: ClipRRect(
                         borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
@@ -630,7 +663,7 @@ class _HighlightsScreenState extends State<HighlightsScreen> with TickerProvider
                   ],
                 ),
                 Padding(
-                  padding: const EdgeInsets.all(14.0), // تم تقليل البادينج
+                  padding: const EdgeInsets.all(14.0),
                   child: Column(
                     children: [
                       Align(
@@ -682,6 +715,94 @@ class _HighlightsScreenState extends State<HighlightsScreen> with TickerProvider
                           ),
                         ],
                       ),
+                      const SizedBox(height: 8),
+                      // زر التعليق المباشر
+                      InkWell(
+                        onTap: () {
+                          HapticFeedback.lightImpact();
+                          setState(() {
+                            _showCommentBoxMap[key] = !_showCommentBoxMap[key]!;
+                          });
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF00A3FF).withOpacity(0.12),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.3), width: 1),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            textDirection: TextDirection.rtl,
+                            children: [
+                              const Icon(Icons.chat_bubble_outline_rounded, color: Color(0xFF00A3FF), size: 16),
+                              const SizedBox(width: 6),
+                              Text(
+                                'تعليق',
+                                style: GoogleFonts.cairo(color: const Color(0xFF00A3FF), fontSize: 12, fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      // صندوق التعليق (يظهر عند الضغط)
+                      if (_showCommentBoxMap[key] == true) ...[
+                        const SizedBox(height: 10),
+                        Row(
+                          textDirection: TextDirection.rtl,
+                          children: [
+                            Expanded(
+                              child: TextField(
+                                controller: _commentControllers[key],
+                                textDirection: TextDirection.rtl,
+                                style: GoogleFonts.cairo(color: Colors.white, fontSize: 13),
+                                decoration: InputDecoration(
+                                  hintText: 'اكتب تعليقك على هذا الملخص...',
+                                  hintStyle: GoogleFonts.cairo(color: Colors.white24, fontSize: 12),
+                                  hintTextDirection: TextDirection.rtl,
+                                  filled: true,
+                                  fillColor: AppTheme.surfaceColor.withOpacity(0.5),
+                                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                    borderSide: BorderSide.none,
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                    borderSide: BorderSide(
+                                      color: const Color(0xFF00A3FF).withOpacity(0.4),
+                                      width: 1.5,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Container(
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF00A3FF).withOpacity(0.15),
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: const Color(0xFF00A3FF).withOpacity(0.4),
+                                ),
+                              ),
+                              child: IconButton(
+                                icon: const Icon(Icons.send_rounded, color: Color(0xFF00A3FF), size: 18),
+                                onPressed: () {
+                                  final text = _commentControllers[key]!.text.trim();
+                                  if (text.isNotEmpty) {
+                                    _submitComment(key, text);
+                                    _commentControllers[key]!.clear();
+                                    setState(() {
+                                      _showCommentBoxMap[key] = false;
+                                    });
+                                  }
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ],
                   ),
                 ),
@@ -693,9 +814,16 @@ class _HighlightsScreenState extends State<HighlightsScreen> with TickerProvider
     );
   }
 
-  // 📰 الكروت الفرعية
   Widget _buildSubHighlightCard(BuildContext context, HighlightMediaModel media) {
     final bool isRead = _readHighlightsMemory.contains(media.videoUrl);
+    final String key = media.id;
+    
+    if (!_showCommentBoxMap.containsKey(key)) {
+      _showCommentBoxMap[key] = false;
+    }
+    if (!_commentControllers.containsKey(key)) {
+      _commentControllers[key] = TextEditingController();
+    }
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
@@ -786,19 +914,93 @@ class _HighlightsScreenState extends State<HighlightsScreen> with TickerProvider
                             ),
                           ),
                         ),
-                        Row(
-                          textDirection: TextDirection.rtl,
-                          children: [
-                            const Icon(Icons.video_collection_outlined, color: Colors.white24, size: 11),
-                            const SizedBox(width: 4),
-                            Text(
-                              _generateStealthViews(media),
-                              style: TextStyle(color: isRead ? Colors.white24 : Colors.white38, fontSize: 10, fontFamily: 'Cairo'),
+                        // زر تعليق صغير للبطاقات الفرعية
+                        InkWell(
+                          onTap: () {
+                            HapticFeedback.lightImpact();
+                            setState(() {
+                              _showCommentBoxMap[key] = !_showCommentBoxMap[key]!;
+                            });
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF00A3FF).withOpacity(0.12),
+                              borderRadius: BorderRadius.circular(6),
+                              border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.3), width: 1),
                             ),
-                          ],
+                            child: Row(
+                              textDirection: TextDirection.rtl,
+                              children: [
+                                const Icon(Icons.chat_bubble_outline_rounded, color: Color(0xFF00A3FF), size: 12),
+                                const SizedBox(width: 4),
+                                Text(
+                                  'تعليق',
+                                  style: GoogleFonts.cairo(color: const Color(0xFF00A3FF), fontSize: 10, fontWeight: FontWeight.bold),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
                       ],
                     ),
+                    if (_showCommentBoxMap[key] == true) ...[
+                      const SizedBox(height: 8),
+                      Row(
+                        textDirection: TextDirection.rtl,
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              controller: _commentControllers[key],
+                              textDirection: TextDirection.rtl,
+                              style: GoogleFonts.cairo(color: Colors.white, fontSize: 12),
+                              decoration: InputDecoration(
+                                hintText: 'اكتب تعليقك...',
+                                hintStyle: GoogleFonts.cairo(color: Colors.white24, fontSize: 11),
+                                hintTextDirection: TextDirection.rtl,
+                                filled: true,
+                                fillColor: AppTheme.surfaceColor.withOpacity(0.5),
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide.none,
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(
+                                    color: const Color(0xFF00A3FF).withOpacity(0.4),
+                                    width: 1.5,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF00A3FF).withOpacity(0.15),
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: const Color(0xFF00A3FF).withOpacity(0.4),
+                              ),
+                            ),
+                            child: IconButton(
+                              icon: const Icon(Icons.send_rounded, color: Color(0xFF00A3FF), size: 14),
+                              onPressed: () {
+                                final text = _commentControllers[key]!.text.trim();
+                                if (text.isNotEmpty) {
+                                  _submitComment(key, text);
+                                  _commentControllers[key]!.clear();
+                                  setState(() {
+                                    _showCommentBoxMap[key] = false;
+                                  });
+                                }
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ],
                 ),
               ),
