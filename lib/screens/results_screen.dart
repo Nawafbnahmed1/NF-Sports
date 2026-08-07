@@ -187,411 +187,168 @@ class _ResultsScreenState extends State<ResultsScreen> with TickerProviderStateM
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
-      body: SafeArea(
-        child: Stack(
+  // 🚀 الدالة الجديدة لفتح صفحة النقاش مباشرة
+  void _openMatchDiscussion(String team1, String team2, String matchId) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MatchDetailScreen(
+          team1: team1,
+          team2: team2,
+          matchId: matchId,
+        ),
+      ),
+    ).then((_) {
+      // بعد العودة، يمكن إضافة كود تحديث هنا إذا لزم الأمر
+    });
+  }
+  Widget buildCustomResultCard(BuildContext context, MatchModel match) {
+  return Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+    child: Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFF161926).withOpacity(0.6),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: const Color(0xFF00A3FF).withOpacity(0.18),
+          width: 1,
+        ),
+      ),
+      child: GlassCard(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        borderRadius: 20,
+        child: Column(
           children: [
-            Positioned.fill(
-              child: Opacity(
-                opacity: 0.02,
-                child: Transform.rotate(
-                  angle: -math.pi / 6,
-                  child: const Center(
-                    child: Text(
-                      'NF SPORTS',
-                      style: TextStyle(color: Colors.white, fontSize: 54, fontWeight: FontWeight.bold, letterSpacing: 10),
-                    ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Row(
+                    textDirection: TextDirection.rtl,
+                    children: [
+                      Container(
+                        width: 38,
+                        height: 38,
+                        decoration: BoxDecoration(color: Colors.white.withOpacity(0.04), shape: BoxShape.circle),
+                        padding: const EdgeInsets.all(4),
+                        child: match.team1Logo.isNotEmpty && match.team1Logo.startsWith('http')
+                            ? Image.network(match.team1Logo, fit: BoxFit.contain, errorBuilder: (_, __, ___) => const Icon(Icons.shield, color: Colors.white24, size: 24))
+                            : const Icon(Icons.shield, color: Colors.white24, size: 24),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(child: Text(match.team1, maxLines: 1, overflow: TextOverflow.ellipsis, style: GoogleFonts.cairo(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold))),
+                    ],
                   ),
                 ),
-              ),
-            ),
 
-            RefreshIndicator(
-              color: const Color(0xFF00A3FF), // تم التغيير إلى الأزرق
-              backgroundColor: const Color(0xFF0A1220),
-              strokeWidth: 3,
-              onRefresh: _handleDayRefresh,
-              child: SingleChildScrollView(
-                physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                Column(
                   children: [
-                    const SizedBox(height: 16),
-                    SizedBox(
-                      height: 80,
-                      child: ListView.builder(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        scrollDirection: Axis.horizontal,
-                        physics: const BouncingScrollPhysics(),
-                        itemCount: _days.length, 
-                        itemBuilder: (context, index) {
-                          final isSelected = index == _selectedDateIndex;
-                          final d = _days[index];
-                          
-                          final List<String> weekDaysAr = ['أحد', 'إثنين', 'ثلاثاء', 'أربعاء', 'خميس', 'جمعة', 'سبت'];
-                          final String dayName = weekDaysAr[d.weekday % 7];
-
-                          return InkWell(
-                            onTap: () => _loadDay(index),
-                            borderRadius: BorderRadius.circular(18),
-                            child: AnimatedBuilder(
-                              animation: _sparkAnimation,
-                              builder: (context, child) {
-                                return Container(
-                                  width: 68,
-                                  margin: const EdgeInsets.only(right: 12),
-                                  decoration: BoxDecoration(
-                                    color: isSelected ? const Color(0xFF161926).withOpacity(0.6) : AppTheme.surfaceColor,
-                                    borderRadius: BorderRadius.circular(18),
-                                    border: Border.all(
-                                      color: isSelected 
-                                          ? const Color(0xFF00A3FF).withOpacity(0.5 + (_sparkAnimation.value * 0.5)) // تم التغيير
-                                          : Colors.white10, 
-                                      width: isSelected ? 2.0 : 1.5
-                                    ),
-                                    boxShadow: isSelected ? [
-                                      BoxShadow(color: const Color(0xFF00A3FF).withOpacity(0.15 * _sparkAnimation.value), blurRadius: 10) // تم التغيير
-                                    ] : null,
-                                  ),
-                                  child: child,
-                                );
-                              },
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(dayName, style: TextStyle(color: isSelected ? const Color(0xFF00A3FF) : Colors.white38, fontSize: 10, fontFamily: 'Cairo', fontWeight: isSelected ? FontWeight.bold : FontWeight.normal)), // تم التغيير
-                                  const SizedBox(height: 4),
-                                  Text('${d.day}', style: TextStyle(color: isSelected ? Colors.white : Colors.white54, fontSize: 14, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                    const SizedBox(height: 14),
-
-                    // 🛸 مستطيل الإعلانات الفاخر (تم تكبيره وتوحيد الألوان)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                      child: Container(
-                        height: 76, // ✅ تم تكبير الحجم
-                        padding: const EdgeInsets.symmetric(horizontal: 18),
-                        decoration: BoxDecoration(
-                          color: AppTheme.surfaceColor.withOpacity(0.90),
-                          borderRadius: BorderRadius.circular(24), // ✅ انحناء أكبر
-                          border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.4), width: 2),
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color(0xFF00A3FF).withOpacity(0.2),
-                              blurRadius: 15,
-                              spreadRadius: 1,
-                            )
-                          ],
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(22),
-                          child: AnimatedBuilder(
-                            animation: _marqueeController,
-                            builder: (context, child) {
-                              return FractionalTranslation(
-                                translation: Offset(-1.0 + (_marqueeController.value * 2.0), 0.0),
-                                child: Center(
-                                  child: Text.rich(
-                                    TextSpan(
-                                      children: [
-                                        const WidgetSpan(child: Padding(padding: EdgeInsets.only(right: 4), child: Icon(Icons.sports_soccer, color: Colors.white, size: 28))),
-                                        TextSpan(
-                                          text: ' NF',
-                                          style: GoogleFonts.cairo(
-                                            color: const Color(0xFF00A3FF),
-                                            fontSize: 22, // ✅ حجم أكبر
-                                            fontWeight: FontWeight.w900,
-                                            shadows: [
-                                              Shadow(color: const Color(0xFF00A3FF).withOpacity(0.6), blurRadius: 8)
-                                            ],
-                                          ),
-                                        ),
-                                        TextSpan(
-                                          text: ' SPORTS',
-                                          style: GoogleFonts.cairo(
-                                            color: Colors.white,
-                                            fontSize: 22, // ✅ حجم أكبر
-                                            fontWeight: FontWeight.w900,
-                                          ),
-                                        ),
-                                        TextSpan(
-                                          text: ' RESULTS',
-                                          style: GoogleFonts.cairo(
-                                            color: Colors.redAccent,
-                                            fontSize: 22, // ✅ حجم أكبر
-                                            fontWeight: FontWeight.w900,
-                                            shadows: [
-                                              Shadow(color: Colors.redAccent.withOpacity(0.6), blurRadius: 8)
-                                            ],
-                                          ),
-                                        ),
-                                        const WidgetSpan(child: Padding(padding: EdgeInsets.only(left: 4), child: Icon(Icons.bar_chart, color: Colors.white, size: 28))),
-                                      ],
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    FutureBuilder<List<Map<String, dynamic>>>(
-                      future: matchesFuture,
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
-                          return Padding(
-                            padding: const EdgeInsets.all(40),
-                            child: Center(
-                              child: AnimatedBuilder(
-                                animation: _refreshBallController,
-                                builder: (context, _) {
-                                  return CustomPaint(
-                                    size: const Size(40, 40),
-                                    painter: _CyberFireBallPainter(
-                                      angle: _refreshBallController.value * math.pi * 2, 
-                                      glowColor: const Color(0xFF00A3FF), // تم التغيير
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                          );
-                        }
-                        if (snapshot.hasError) {
-                          return const Padding(
-                            padding: EdgeInsets.all(20),
-                            child: Center(child: Text('', style: TextStyle(color: Colors.white24))),
-                          );
-                        }
-
-                        final matchesData = snapshot.data ?? [];
-                        var matches = matchesData.map((e) => MatchModel.fromMap(e)).toList();
-
-                        final selectedDate = _days[_selectedDateIndex];
-                        matches = matches.where((m) {
-                          final isSameDay = m.matchDate.year == selectedDate.year &&
-                              m.matchDate.month == selectedDate.month &&
-                              m.matchDate.day == selectedDate.day;
-                          if (!isSameDay) return false;
-                          return m.isEnded;
-                        }).toList();
-
-                        matches.sort((a, b) => b.matchDate.compareTo(a.matchDate));
-
-                        if (matches.isEmpty) {
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 50),
-                            child: Center(
-                              child: Column(
-                                children: [
-                                  AnimatedBuilder(
-                                    animation: _refreshBallController,
-                                    builder: (context, _) {
-                                      return CustomPaint(
-                                        size: const Size(48, 48),
-                                        painter: _CyberFireBallPainter(
-                                          angle: _refreshBallController.value * math.pi * 0.5, 
-                                          glowColor: const Color(0xFF00A3FF).withOpacity(0.3), // تم التغيير
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                  const SizedBox(height: 16),
-                                  Text(
-                                    'لا توجد نتائج مسجلة لهذا اليوم',
-                                    style: GoogleFonts.cairo(color: Colors.white38, fontSize: 13, fontWeight: FontWeight.bold),
-                                  ),
-                                  const SizedBox(height: 20),
-                                  InkWell(
-                                    onTap: _handleDayRefresh,
-                                    borderRadius: BorderRadius.circular(12),
-                                    child: Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                                      decoration: BoxDecoration(
-                                        color: const Color(0xFF00A3FF).withOpacity(0.08), // تم التغيير
-                                        borderRadius: BorderRadius.circular(12), 
-                                        border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.2)), // تم التغيير
-                                      ),
-                                      child: Text('تحديث جدول السحاب', style: GoogleFonts.cairo(color: const Color(0xFF00A3FF), fontSize: 11, fontWeight: FontWeight.bold)), // تم التغيير
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        }
-
-                        return ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: matches.length,
-                          itemBuilder: (context, index) {
-                            final match = matches[index];
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                                  child: Row(
-                                    textDirection: TextDirection.rtl,
-                                    children: [
-                                      const Icon(Icons.emoji_events, color: Colors.amber, size: 16),
-                                      const SizedBox(width: 8),
-                                      Text(
-                                        match.leagueName,
-                                        style: GoogleFonts.cairo(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.bold),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                buildCustomResultCard(context, match),
-                              ],
-                            );
-                          },
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 120),
+                    Text(match.score, style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w900, letterSpacing: 0.5)),
+                    Text('انتهت', style: GoogleFonts.cairo(color: Colors.white38, fontSize: 9)),
                   ],
                 ),
-              ),
+
+                Expanded(
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 38,
+                        height: 38,
+                        decoration: BoxDecoration(color: Colors.white.withOpacity(0.04), shape: BoxShape.circle),
+                        padding: const EdgeInsets.all(4),
+                        child: match.team2Logo.isNotEmpty && match.team2Logo.startsWith('http')
+                            ? Image.network(match.team2Logo, fit: BoxFit.contain, errorBuilder: (_, __, ___) => const Icon(Icons.shield, color: Colors.white24, size: 24))
+                            : const Icon(Icons.shield, color: Colors.white24, size: 24),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(child: Text(match.team2, maxLines: 1, overflow: TextOverflow.ellipsis, textAlign: TextAlign.left, style: GoogleFonts.cairo(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold))),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            
+            const Padding(padding: EdgeInsets.symmetric(vertical: 6.0), child: Divider(color: Colors.white10, height: 1)),
+            
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: Colors.black45, 
+                        borderRadius: BorderRadius.circular(5),
+                        border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.2), width: 0.5),
+                      ),
+                      child: Text("NF", style: GoogleFonts.cairo(color: const Color(0xFF00A3FF).withOpacity(0.7), fontSize: 8, fontWeight: FontWeight.w900)),
+                    ),
+                    const SizedBox(width: 6),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
+                      decoration: BoxDecoration(
+                        color: Colors.black87, 
+                        borderRadius: BorderRadius.circular(4),
+                        border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.4), width: 0.8),
+                      ),
+                      child: Text("FT", style: GoogleFonts.cairo(color: const Color(0xFF00A3FF), fontSize: 7, fontWeight: FontWeight.w900)),
+                    ),
+                  ],
+                ),
+                
+                Row(
+                  children: [
+                    // 🚀 زر "مناقشة" الجديد
+                    InkWell(
+                      onTap: () {
+                        HapticFeedback.lightImpact();
+                        _openMatchDiscussion(match.team1, match.team2, match.id);
+                      },
+                      borderRadius: BorderRadius.circular(8),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF00A3FF).withOpacity(0.12),
+                          borderRadius: BorderRadius.circular(8), 
+                          border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.4), width: 1),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.chat_bubble_outline_rounded, color: Color(0xFF00A3FF), size: 14),
+                            const SizedBox(width: 4),
+                            Text('مناقشة', style: GoogleFonts.cairo(color: const Color(0xFF00A3FF), fontSize: 10, fontWeight: FontWeight.bold)),
+                          ],
+                        ),
+                      ),
+                    ),
+                    
+                    const SizedBox(width: 8),
+
+                    // زر "تفاصيل اللقاء" الأصلي
+                    InkWell(
+                      onTap: () {
+                        HapticFeedback.lightImpact();
+                        Navigator.push(context, MaterialPageRoute(builder: (_) => MatchDetailScreen(team1: match.team1, team2: match.team2)));
+                      },
+                      borderRadius: BorderRadius.circular(8),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 12),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF00A3FF).withOpacity(0.08),
+                          borderRadius: BorderRadius.circular(8), 
+                          border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.25), width: 1),
+                        ),
+                        child: Text('تفاصيل اللقاء', style: GoogleFonts.cairo(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ],
         ),
       ),
-    );
-  }
-
-  Widget buildCustomResultCard(BuildContext context, MatchModel match) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
-      child: Container(
-        decoration: BoxDecoration(
-          color: const Color(0xFF161926).withOpacity(0.6),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: const Color(0xFF00A3FF).withOpacity(0.18), // تم التغيير
-            width: 1,
-          ),
-        ),
-        child: GlassCard(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-          borderRadius: 20,
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Row(
-                      textDirection: TextDirection.rtl,
-                      children: [
-                        Container(
-                          width: 38,
-                          height: 38,
-                          decoration: BoxDecoration(color: Colors.white.withOpacity(0.04), shape: BoxShape.circle),
-                          padding: const EdgeInsets.all(4),
-                          child: match.team1Logo.isNotEmpty && match.team1Logo.startsWith('http')
-                              ? Image.network(match.team1Logo, fit: BoxFit.contain, errorBuilder: (_, __, ___) => const Icon(Icons.shield, color: Colors.white24, size: 24))
-                              : const Icon(Icons.shield, color: Colors.white24, size: 24),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(child: Text(match.team1, maxLines: 1, overflow: TextOverflow.ellipsis, style: GoogleFonts.cairo(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold))),
-                      ],
-                    ),
-                  ),
-
-                  Column(
-                    children: [
-                      Text(match.score, style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w900, letterSpacing: 0.5)),
-                      Text('انتهت', style: GoogleFonts.cairo(color: Colors.white38, fontSize: 9)),
-                    ],
-                  ),
-
-                  Expanded(
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 38,
-                          height: 38,
-                          decoration: BoxDecoration(color: Colors.white.withOpacity(0.04), shape: BoxShape.circle),
-                          padding: const EdgeInsets.all(4),
-                          child: match.team2Logo.isNotEmpty && match.team2Logo.startsWith('http')
-                              ? Image.network(match.team2Logo, fit: BoxFit.contain, errorBuilder: (_, __, ___) => const Icon(Icons.shield, color: Colors.white24, size: 24))
-                              : const Icon(Icons.shield, color: Colors.white24, size: 24),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(child: Text(match.team2, maxLines: 1, overflow: TextOverflow.ellipsis, textAlign: TextAlign.left, style: GoogleFonts.cairo(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold))),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              
-              const Padding(padding: EdgeInsets.symmetric(vertical: 6.0), child: Divider(color: Colors.white10, height: 1)),
-              
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: Colors.black45, 
-                          borderRadius: BorderRadius.circular(5),
-                          border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.2), width: 0.5), // تم التغيير
-                        ),
-                        child: Text("NF", style: GoogleFonts.cairo(color: const Color(0xFF00A3FF).withOpacity(0.7), fontSize: 8, fontWeight: FontWeight.w900)), // تم التغيير
-                      ),
-                      const SizedBox(width: 6),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
-                        decoration: BoxDecoration(
-                          color: Colors.black87, 
-                          borderRadius: BorderRadius.circular(4),
-                          border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.4), width: 0.8), // تم التغيير
-                        ),
-                        child: Text("FT", style: GoogleFonts.cairo(color: const Color(0xFF00A3FF), fontSize: 7, fontWeight: FontWeight.w900)), // تم التغيير
-                      ),
-                    ],
-                  ),
-                  
-                  InkWell(
-                    onTap: () {
-                      HapticFeedback.lightImpact();
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => MatchDetailScreen(team1: match.team1, team2: match.team2)));
-                    },
-                    borderRadius: BorderRadius.circular(8),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 12),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF00A3FF).withOpacity(0.08), // تم التغيير
-                        borderRadius: BorderRadius.circular(8), 
-                        border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.25), width: 1), // تم التغيير
-                      ),
-                      child: Text('تفاصيل اللقاء', style: GoogleFonts.cairo(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+    ),
+  );
 }
