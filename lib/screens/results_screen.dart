@@ -198,8 +198,10 @@ class _ResultsScreenState extends State<ResultsScreen> with TickerProviderStateM
           matchId: matchId,
         ),
       ),
-    ).
+    ).then((_) {
+      // بعد العودة، يمكن إضافة كود تحديث هنا إذا لزم الأمر
     });
+  
   Widget buildCustomResultCard(BuildContext context, MatchModel match) {
   return Padding(
     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
