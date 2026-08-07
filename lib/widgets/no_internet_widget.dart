@@ -44,7 +44,8 @@ class _NoInternetWidgetState extends State<NoInternetWidget> with TickerProvider
   @override
   Widget build(BuildContext context) {
     return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: const SystemUiOverlayStyle(
+      // ✅ تم إزالة const هنا لحل خطأ البناء
+      value: SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
         statusBarIconBrightness: Brightness.light,
         statusBarBrightness: Brightness.dark,
@@ -56,7 +57,6 @@ class _NoInternetWidgetState extends State<NoInternetWidget> with TickerProvider
           builder: (context, child) {
             return Stack(
               children: [
-                // ✨ الهالة المحيطية
                 Positioned.fill(
                   child: Container(
                     decoration: const BoxDecoration(
@@ -72,7 +72,6 @@ class _NoInternetWidgetState extends State<NoInternetWidget> with TickerProvider
                   ),
                 ),
                 
-                // 🏷️ علامة NF SPORTS النيونية (إضافة جديدة)
                 Positioned(
                   top: 60,
                   right: 20,
@@ -102,7 +101,6 @@ class _NoInternetWidgetState extends State<NoInternetWidget> with TickerProvider
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        // 🔮 الهولوغرام الكروي (مع إصلاح الخطأ الرئيسي وتأثير Hero للانتقال السلس)
                         Hero(
                           tag: 'internet_globe',
                           child: Stack(
@@ -140,7 +138,6 @@ class _NoInternetWidgetState extends State<NoInternetWidget> with TickerProvider
                                   ),
                                 ),
                               ),
-                              // ✅ إصلاح الخطأ: استخدام Color.lerp الصحيح
                               Icon(
                                 Icons.sports_soccer_rounded,
                                 size: 75,
