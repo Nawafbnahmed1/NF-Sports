@@ -111,6 +111,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen>
   int _homeVotes = 0, _drawVotes = 0, _awayVotes = 0;
   bool _hasVoted = false;
   String? _myVoteChoice;
+  final ValueNotifier<bool> _isRecordingNotifier = ValueNotifier<bool>(false);
   bool _isRecording = false;
   String? _currentUser;
 
