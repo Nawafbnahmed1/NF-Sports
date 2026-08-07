@@ -5,8 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import 'package:url_launcher/url_launcher.dart'; // المكتبة السريعة والخفيفة كالبث الليزري لفتح المصدر بنقاء
+import 'package:url_launcher/url_launcher.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:record/record.dart'; // ✅ مكتبة التسجيل الصوتي الخفيفة
+import 'package:path_provider/path_provider.dart'; // ✅ للوصول لمسار الملفات
+import 'dart:io';
 import '../theme/app_theme.dart';
 import '../widgets/glass_card.dart';
 import 'news_screen.dart';
@@ -31,11 +34,15 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
   
   double _readingProgress = 0.0;
   final TextEditingController _commentController = TextEditingController();
+  final AudioRecorder _audioRecorder = AudioRecorder(); // ✅ مسجل الصوت
+  final ValueNotifier<bool> _isRecordingNotifier = ValueNotifier<bool>(false); // ✅ متحكم حالة التسجيل (جديد)
+
   String? _replyingToCommentId;
   String? _replyingToUserName;
 
+  // ✅ تحديث قائمة الكلمات المسيئة لتشمل الروابط
   final List<String> _toxicityFilter = [
-    'كلب', 'حمار', 'غبي', 'حيوان', 'يلعن', 'تفو', 'ياكلب', 'ياحمار', 'منيوك', 'كس'
+    'كلب', 'حمار', 'غبي', 'حيوان', 'يلعن', 'تفو', 'ياكلب', 'ياحمار', 'منيوك', 'كس', 'عرص', 'قحبة'
   ];
 
   @override
@@ -52,12 +59,14 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
       CurvedAnimation(parent: _sparkController, curve: Curves.easeOut),
     );
   }
+
   @override
   void dispose() {
     _scrollController.removeListener(_updateReadingProgress);
     _scrollController.dispose();
     _sparkController.dispose();
     _commentController.dispose();
+    _audioRecorder.dispose();
     super.dispose();
   }
 
@@ -70,25 +79,73 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
     });
   }
 
-  Future<void> _postComment() async {
-    final text = _commentController.text.trim();
-    if (text.isEmpty) return;
-
-    bool isToxic = false;
-    for (var word in _toxicityFilter) {
-      if (text.toLowerCase().contains(word)) {
-        isToxic = true;
-        break;
-      }
+  // ✅ حارس الأمان المطور (فحص الروابط + الكلمات المسيئة)
+  bool _checkAndApplyBotGuard(String text) {
+    final cleanText = text.toLowerCase().trim();
+    
+    // فحص الروابط الضارة
+    if (cleanText.contains('http://') || cleanText.contains('https://') || 
+        cleanText.contains('.com') || cleanText.contains('www.')) {
+      return true;
     }
 
-    if (isToxic) {
+    // فحص الكلمات المسيئة
+    for (var word in _toxicityFilter) {
+      if (cleanText.contains(word)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  // ✅ دالة التسجيل الصوتي المحدثة (مطابقة للـ match_detail)
+  Future<void> _toggleRecording() async {
+    if (_isRecordingNotifier.value) {
+      // إيقاف التسجيل
+      final String? path = await _audioRecorder.stop();
+      if (path != null) {
+        _isRecordingNotifier.value = false;
+        try {
+          final file = File(path);
+          final fileName = 'audio_comments/${DateTime.now().millisecondsSinceEpoch}.m4a';
+          await supabase.storage.from('audio_comments').upload(fileName, file);
+          final audioUrl = supabase.storage.from('audio_comments').getPublicUrl(fileName);
+          await _postComment(null, audioUrl);
+        } catch (e) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('فشل رفع التسجيل الصوتي', style: GoogleFonts.cairo())),
+          );
+        }
+      }
+    } else {
+      // بدء التسجيل
+      _isRecordingNotifier.value = true;
+      try {
+        final directory = await getApplicationDocumentsDirectory();
+        final path = '${directory.path}/${DateTime.now().millisecondsSinceEpoch}.m4a';
+        await _audioRecorder.start(RecordConfig(encoder: AudioEncoder.aacLc), path: path);
+      } catch (e) {
+        _isRecordingNotifier.value = false;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('تعذر الوصول إلى الميكروفون', style: GoogleFonts.cairo())),
+        );
+      }
+    }
+  }
+
+  // ✅ دالة إرسال التعليق (مع دعم الصوت والروابط)
+  Future<void> _postComment([String? text, String? audioUrl]) async {
+    final String commentText = text ?? _commentController.text.trim();
+    if (commentText.isEmpty && audioUrl == null) return;
+
+    // فحص الحماية (إذا كان نصياً)
+    if (commentText.isNotEmpty && _checkAndApplyBotGuard(commentText)) {
       HapticFeedback.vibrate();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           backgroundColor: Colors.redAccent,
           content: Text(
-            'نعتذر منك، الرجاء الالتزام بالروح الرياضية والابتعاد عن الألفاظ المسيئة للحفاظ على مجتمع التطبيق!',
+            'تم حظر الرسالة لاحتواءها على محتوى غير لائق أو رابط خارجي.',
             textAlign: TextAlign.right,
             style: GoogleFonts.cairo(fontWeight: FontWeight.bold, fontSize: 12),
           ),
@@ -105,7 +162,8 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
       await supabase.from('comments').insert({
         'article_url': widget.article.articleUrl,
         'user_name': userName,
-        'comment_text': text,
+        'comment_text': commentText,
+        'audio_url': audioUrl,
         'parent_id': _replyingToCommentId,
         'created_at': DateTime.now().toIso8601String(),
       });
@@ -123,15 +181,12 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
   Future<void> _likeComment(String commentId, int currentLikes) async {
     HapticFeedback.selectionClick();
     try {
-      await supabase
-          .from('comments')
-          .update({'likes': currentLikes + 1})
-          .eq('id', commentId);
+      await supabase.from('comments').update({'likes': currentLikes + 1}).eq('id', commentId);
     } catch (e) {
       print('❌ Error liking comment: $e');
     }
   }
-  @override
+    @override
   Widget build(BuildContext context) {
     String formattedDate = '';
     try {
@@ -335,7 +390,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
                           ),
                         ),
                         const SizedBox(height: 20),
-                        // 🔮 المربع الزجاجي المصلح والمحمي بالكامل لعرض نصوص السحاب الصافية بدون إعلانات أو تشوهات بصرية
+                        // 🔮 المربع الزجاجي لنص الخبر
                         Container(
                           width: double.infinity,
                           padding: const EdgeInsets.all(18),
@@ -357,7 +412,6 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // عرض متن نص الخبر الصافي العربي المجلوب من خادمك السحابي الفخم
                               Align(
                                 alignment: Alignment.centerRight,
                                  child: Text(
@@ -377,7 +431,6 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
                               const Divider(color: Colors.white10, height: 1),
                               const SizedBox(height: 15),
                               
-                              // 🚀 زر اقرأ المزيد الذكي لفتح الرابط الأصلي من متصفح النظام السريع لحماية خيوط المعالج
                               InkWell(
                                 onTap: () async {
                                   HapticFeedback.lightImpact();
@@ -504,6 +557,8 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
                               ],
                             ),
                           ),
+                        
+                        // 🛠️ حقل الإدخال المطور مع التسجيل الصوتي
                         Row(
                           textDirection: ui.TextDirection.rtl,
                           children: [
@@ -513,7 +568,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
                                 textDirection: ui.TextDirection.rtl,
                                 style: GoogleFonts.cairo(color: Colors.white, fontSize: 13),
                                 decoration: InputDecoration(
-                                  hintText: _replyingToCommentId != null ? 'اكتب ردك الرياضي الفخم هنا...' : 'شارك برأيك الكروي in ساحة النقاش...',
+                                  hintText: _replyingToCommentId != null ? 'اكتب ردك الرياضي الفخم هنا...' : 'شارك برأيك الكروي في ساحة النقاش...',
                                   hintStyle: GoogleFonts.cairo(color: Colors.white24, fontSize: 12),
                                   hintTextDirection: ui.TextDirection.rtl,
                                   filled: true,
@@ -528,6 +583,39 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
                               ),
                             ),
                             const SizedBox(width: 10),
+
+                            // ✅ زر التسجيل الصوتي النابض (جديد)
+                            AnimatedBuilder(
+                              animation: _isRecordingNotifier,
+                              builder: (context, child) {
+                                return GestureDetector(
+                                  onLongPressStart: (_) => _toggleRecording(),
+                                  onLongPressEnd: (_) => _toggleRecording(),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: _isRecordingNotifier.value
+                                          ? Colors.redAccent.withOpacity(0.2)
+                                          : const Color(0xFF00A3FF).withOpacity(0.12),
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: _isRecordingNotifier.value
+                                            ? Colors.redAccent
+                                            : const Color(0xFF00A3FF).withOpacity(0.4),
+                                        width: 1.5,
+                                      ),
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8),
+                                      child: _isRecordingNotifier.value
+                                          ? const Icon(Icons.stop_rounded, color: Colors.white, size: 20)
+                                          : const Icon(Icons.mic_rounded, color: Color(0xFF00A3FF), size: 20),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+
+                            const SizedBox(width: 6),
                             Container(
                               decoration: BoxDecoration(
                                 color: const Color(0xFF00A3FF).withOpacity(0.15),
@@ -536,7 +624,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
                               ),
                               child: IconButton(
                                 icon: const Icon(Icons.send_rounded, color: Color(0xFF00A3FF), size: 20),
-                                onPressed: _postComment,
+                                onPressed: () => _postComment(),
                               ),
                             ),
                           ],
@@ -592,7 +680,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
             ),
           ),
           
-          // 📱 شريط الليزر الأفقي العلوي المطور المتفاعل مع سحب إصبع المشجع لمعرفة مستوى قراءة المقال
+          // 📱 شريط الليزر الأفقي العلوي
           Positioned(
             top: 0, left: 0, right: 0,
             child: SafeArea(
@@ -630,7 +718,6 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
     return 'قبل ${duration.inDays} يوم';
   }
 
-  // 👑 كرت التعليقات الحية والردود المتداخلة المحمي بحاوية الـ Container لمنع تشوهات ألوان النظام
   Widget _buildCommentCard(Map<String, dynamic> comment, bool isReply) {
     final String commentId = comment['id'].toString();
     final String userName = comment['user_name'] ?? 'مشجع';
