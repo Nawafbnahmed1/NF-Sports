@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class NoInternetWidget extends StatefulWidget {
   final VoidCallback onRetry;
