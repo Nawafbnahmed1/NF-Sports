@@ -7,8 +7,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:record/record.dart'; // ✅ مكتبة التسجيل الصوتي الخفيفة
-import 'package:path_provider/path_provider.dart'; // ✅ للوصول لمسار الملفات
+import 'package:record/record.dart';
+import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import '../theme/app_theme.dart';
 import '../widgets/glass_card.dart';
@@ -34,13 +34,12 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
   
   double _readingProgress = 0.0;
   final TextEditingController _commentController = TextEditingController();
-  final AudioRecorder _audioRecorder = AudioRecorder(); // ✅ مسجل الصوت
-  final ValueNotifier<bool> _isRecordingNotifier = ValueNotifier<bool>(false); // ✅ متحكم حالة التسجيل (جديد)
+  final AudioRecorder _audioRecorder = AudioRecorder();
+  final ValueNotifier<bool> _isRecordingNotifier = ValueNotifier<bool>(false);
 
   String? _replyingToCommentId;
   String? _replyingToUserName;
 
-  // ✅ تحديث قائمة الكلمات المسيئة لتشمل الروابط
   final List<String> _toxicityFilter = [
     'كلب', 'حمار', 'غبي', 'حيوان', 'يلعن', 'تفو', 'ياكلب', 'ياحمار', 'منيوك', 'كس', 'عرص', 'قحبة'
   ];
@@ -79,17 +78,14 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
     });
   }
 
-  // ✅ حارس الأمان المطور (فحص الروابط + الكلمات المسيئة)
   bool _checkAndApplyBotGuard(String text) {
     final cleanText = text.toLowerCase().trim();
     
-    // فحص الروابط الضارة
     if (cleanText.contains('http://') || cleanText.contains('https://') || 
         cleanText.contains('.com') || cleanText.contains('www.')) {
       return true;
     }
 
-    // فحص الكلمات المسيئة
     for (var word in _toxicityFilter) {
       if (cleanText.contains(word)) {
         return true;
@@ -98,10 +94,8 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
     return false;
   }
 
-  // ✅ دالة التسجيل الصوتي المحدثة (مطابقة للـ match_detail)
   Future<void> _toggleRecording() async {
     if (_isRecordingNotifier.value) {
-      // إيقاف التسجيل
       final String? path = await _audioRecorder.stop();
       if (path != null) {
         _isRecordingNotifier.value = false;
@@ -118,7 +112,6 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
         }
       }
     } else {
-      // بدء التسجيل
       _isRecordingNotifier.value = true;
       try {
         final directory = await getApplicationDocumentsDirectory();
@@ -133,12 +126,10 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
     }
   }
 
-  // ✅ دالة إرسال التعليق (مع دعم الصوت والروابط)
   Future<void> _postComment([String? text, String? audioUrl]) async {
     final String commentText = text ?? _commentController.text.trim();
     if (commentText.isEmpty && audioUrl == null) return;
 
-    // فحص الحماية (إذا كان نصياً)
     if (commentText.isNotEmpty && _checkAndApplyBotGuard(commentText)) {
       HapticFeedback.vibrate();
       ScaffoldMessenger.of(context).showSnackBar(
@@ -186,7 +177,8 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> with TickerProvider
       print('❌ Error liking comment: $e');
     }
   }
-    @override
+
+  @override
   Widget build(BuildContext context) {
     String formattedDate = '';
     try {
