@@ -32,4 +32,12 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/
-    
+    - assets/icons/  # ✅ تمت إضافة مجلد الأيقونات
+
+# ✅ إضافة أداة بناء الأيقونات التلقائية
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/icons/nf_sports_icon.png"
+  adaptive_icon_background: "#070D14"
+  adaptive_icon_foreground: "assets/icons/nf_sports_icon.png"
