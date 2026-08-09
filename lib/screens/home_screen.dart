@@ -476,7 +476,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           ),
                         ),
                         _buildAdMarqueeRow('مباريات اليوم', 'MATCHES🏟️'),
-                        SizedBox(height: 290,
+                        SizedBox(height: 290),
                           child: _liveMatches.isEmpty
                               ? Center(child: Text('لا توجد مباريات جارية اليوم', style: GoogleFonts.cairo(color: Colors.white38, fontSize: 14)))
                               : ListView.builder(
