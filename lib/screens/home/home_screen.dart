@@ -13,7 +13,7 @@ import '../../core/widgets/section_title.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
-
+ 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
