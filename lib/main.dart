@@ -2,17 +2,16 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-<<<<<<< HEAD
 import 'theme/app_theme.dart';
-import 'screens/navigation_screen.dart'; 
-import 'widgets/no_internet_widget.dart'; // 🔵 استدعاء شاشتنا السينمائية الفخمة
+import 'screens/navigation_screen.dart';
+import 'widgets/no_internet_widget.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
   await Supabase.initialize(
     url: 'https://njdeduovwamcbcucmull.supabase.co',
-    publishableKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qZGVkdW92d2FtY2JjdWNtdWxsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxODM3NDgsImV4cCI6MjA5OTc1OTc0OH0.AeQM-jGZOQrufBMmav7SxPK93LUi2DqEeSi2O95esq0',
+    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qZGVkdW92d2FtY2JjdWNtdWxsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxODM3NDgsImV4cCI6MjA5OTc1OTc0OH0.AeQM-jGZOQrufBMmav7SxPK93LUi2DqEeSi2O95esq0',
   );
   
   runApp(const MyApp());
@@ -34,7 +33,6 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     _checkInternetSilence(); // الفحص الفوري عند إقلاع التطبيق
-    // رادار صامت يفحص الاتصال كل 5 ثوانٍ لضمان حماية اللحظات الحرجة
     _internetCheckTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
       _checkInternetSilence();
     });
@@ -46,7 +44,6 @@ class _MyAppState extends State<MyApp> {
     super.dispose();
   }
 
-  /// دالة الفحص الصامت لتحديث حالة الشبكة بدون إزعاج المستخدم
   Future<void> _checkInternetSilence() async {
     if (_isChecking) return;
     try {
@@ -59,7 +56,6 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
-  /// دالة الفحص اليدوي التفاعلي عند ضغط زر "إعادة المحاولة" الفخم
   Future<void> _checkInternetManual() async {
     setState(() => _isChecking = true);
     try {
@@ -77,7 +73,6 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
-  /// وميض ضوئي سفلي أنيق يظهر لو ضغط المستخدم ولم يجد إنترنت بعد
   void _showFailureSnack() {
     setState(() => _isChecking = false);
     ScaffoldMessenger.of(context).clearSnackBars();
@@ -101,31 +96,10 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       title: 'NF Sports',
       theme: AppTheme.darkTheme,
-      debugShowCheckedModeBanner: false, // إخفاء الشريط المزعج لتبدو النسخة نهائية وعالمية
-      // 🔮 الرادار السحري: التحكم الكامل بظهور الشاشات بناءً على حالة الإشارة وحقن الهولوغرام
+      debugShowCheckedModeBanner: false,
       home: _isOnline 
-          ? NavigationScreen() 
+          ? const NavigationScreen() 
           : NoInternetWidget(onRetry: _checkInternetManual),
     );
   }
-=======
-import 'app.dart';
-
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-
-  // تهيئة الاتصال الحقيقي والتلقائي بسحابتك الخاصة لـ NF Sports
-  await Supabase.initialize(
-    url: const String.fromEnvironment(
-      'SUPABASE_URL',
-      defaultValue: 'https://supabase.co',
-    ),
-    anonKey: const String.fromEnvironment(
-      'SUPABASE_ANON_KEY',
-      defaultValue: 'sb_publishable_CODEuxqyVTgVE9uuTkuQ_x1xlPV',
-    ),
-  );
-
-  runApp(const NFApp());
->>>>>>> 128b556 (Fix and generate app icons)
 }
