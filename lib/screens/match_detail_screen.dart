@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:math' as math;
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
-<<<<<<< HEAD
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -12,7 +11,6 @@ import 'dart:io';
 import '../theme/app_theme.dart';
 import '../widgets/glass_card.dart';
 
-// 👑 نماذج البيانات
 class MatchEventModel {
   final String id, minute, type, playerName, detail;
   final bool isHomeTeam;
@@ -25,7 +23,7 @@ class MatchEventModel {
     required this.isHomeTeam,
   });
 }
-    
+
 class MatchStatsModel {
   final int homePossession, awayPossession, homeShots, awayShots;
   final int homeShotsOnTarget, awayShotsOnTarget, homeCorners, awayCorners;
@@ -40,7 +38,7 @@ class MatchStatsModel {
     this.awayCorners = 0,
   });
 }
-   
+
 class PlayerLineupModel {
   final String name, number, rating, position;
   final int xGrid, yGrid;
@@ -81,7 +79,6 @@ class MatchCommentModel {
   }
 }
 
-// 👑 الشاشة الرئيسية
 class MatchDetailScreen extends StatefulWidget {
   final String team1, team2, matchId;
   const MatchDetailScreen({
@@ -94,7 +91,6 @@ class MatchDetailScreen extends StatefulWidget {
   State<MatchDetailScreen> createState() => _MatchDetailScreenState();
 }
 
-// 👑 حالة الشاشة
 class _MatchDetailScreenState extends State<MatchDetailScreen>
     with TickerProviderStateMixin {
   final supabase = Supabase.instance.client;
@@ -135,7 +131,6 @@ class _MatchDetailScreenState extends State<MatchDetailScreen>
     super.dispose();
   }
 
-  // دالة جلب الأصوات من السحابة
   void _syncVotesFromCloud() async {
     try {
       final response = await supabase
@@ -154,7 +149,6 @@ class _MatchDetailScreenState extends State<MatchDetailScreen>
     } catch (_) {}
   }
 
-  // حارس الحماية من الإساءة والروابط
   bool _checkAndApplyBotGuard(String text, String userName) {
     final cleanText = text.toLowerCase().trim();
     if (cleanText.contains('http://') || cleanText.contains('https://') ||
@@ -167,7 +161,6 @@ class _MatchDetailScreenState extends State<MatchDetailScreen>
     return false;
   }
 
-  // 🎙️ التسجيل الصوتي الحقيقي (مسار قصير ومضمون)
   Future<void> _toggleRecording() async {
     if (_isRecording) {
       final String? path = await _audioRecorder.stop();
@@ -203,7 +196,6 @@ class _MatchDetailScreenState extends State<MatchDetailScreen>
     }
   }
 
-  // إرسال التعليق (نصي أو صوتي)
   Future<void> _submitComment(String? text, [String? audioUrl]) async {
     final user = supabase.auth.currentUser;
     if (user == null) {
@@ -240,7 +232,6 @@ class _MatchDetailScreenState extends State<MatchDetailScreen>
     }
   }
 
-  // الإعجاب الحقيقي بالسحابة
   Future<void> _likeComment(String commentId, int currentLikes) async {
     final user = supabase.auth.currentUser;
     if (user == null) {
@@ -255,233 +246,227 @@ class _MatchDetailScreenState extends State<MatchDetailScreen>
       print('Error liking comment: $e');
     }
   }
-  // 🏟️ بناء الملعب ثلاثي الأبعاد
-Widget _buildPerspectivePitch(
-  String teamName,
-  List<PlayerLineupModel> players,
-) {
-  return Container(
-    margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-    decoration: BoxDecoration(
-      color: const Color(0xFF161926).withOpacity(0.4),
-      borderRadius: BorderRadius.circular(24),
-      border: Border.all(
-        color: const Color(0xFF00A3FF).withOpacity(0.2),
-        width: 1.5,
-      ),
-    ),
-    child: ClipRRect(
-      borderRadius: BorderRadius.circular(24),
-      child: Stack(
-        children: [
-          // 🗺️ الخلفية المائلة
-          Transform(
-            transform: Matrix4.identity()
-              ..setEntry(3, 2, 0.002)
-              ..rotateX(-0.35),
-            alignment: Alignment.center,
-            child: Container(
-              margin: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: const Color(0xFF0C1424),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color: const Color(0xFF00A3FF).withOpacity(0.3),
-                  width: 2,
-                ),
-              ),
-              child: Stack(
-                children: [
-                  Center(
-                    child: Container(
-                      height: 1,
-                      width: double.infinity,
-                      color: const Color(0xFF00A3FF).withOpacity(0.15),
-                    ),
-                  ),
-                  Center(
-                    child: Container(
-                      width: 90,
-                      height: 90,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: const Color(0xFF00A3FF).withOpacity(0.15),
-                          width: 1.5,
-                        ),
-                      ),
-                    ),
-                  ),
-                  Center(
-                    child: Text(
-                      'NF',
-                      style: GoogleFonts.cairo(
-                        color: const Color(0xFF00A3FF).withOpacity(0.12),
-                        fontSize: 24,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: 2,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
 
-          // ترويسة اسم الفريق
-          Positioned(
-            top: 14,
-            left: 0,
-            right: 0,
-            child: Center(
+  Widget _buildPerspectivePitch(
+    String teamName,
+    List<PlayerLineupModel> players,
+  ) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      decoration: BoxDecoration(
+        color: const Color(0xFF161926).withOpacity(0.4),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: const Color(0xFF00A3FF).withOpacity(0.2),
+          width: 1.5,
+        ),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: Stack(
+          children: [
+            Transform(
+              transform: Matrix4.identity()
+                ..setEntry(3, 2, 0.002)
+                ..rotateX(-0.35),
+              alignment: Alignment.center,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+                margin: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF0F111A).withOpacity(0.85),
-                  borderRadius: BorderRadius.circular(12),
+                  color: const Color(0xFF0C1424),
+                  borderRadius: BorderRadius.circular(16),
                   border: Border.all(
                     color: const Color(0xFF00A3FF).withOpacity(0.3),
-                    width: 0.8,
+                    width: 2,
                   ),
                 ),
-                child: Text(
-                  teamName,
-                  style: GoogleFonts.cairo(
-                    color: Colors.white,
-                    fontSize: 11,
-                    fontWeight: FontWeight.bold,
+                child: Stack(
+                  children: [
+                    Center(
+                      child: Container(
+                        height: 1,
+                        width: double.infinity,
+                        color: const Color(0xFF00A3FF).withOpacity(0.15),
+                      ),
+                    ),
+                    Center(
+                      child: Container(
+                        width: 90,
+                        height: 90,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: const Color(0xFF00A3FF).withOpacity(0.15),
+                            width: 1.5,
+                          ),
+                        ),
+                      ),
+                    ),
+                    Center(
+                      child: Text(
+                        'NF',
+                        style: GoogleFonts.cairo(
+                          color: const Color(0xFF00A3FF).withOpacity(0.12),
+                          fontSize: 24,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 2,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Positioned(
+              top: 14,
+              left: 0,
+              right: 0,
+              child: Center(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF0F111A).withOpacity(0.85),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: const Color(0xFF00A3FF).withOpacity(0.3),
+                      width: 0.8,
+                    ),
+                  ),
+                  child: Text(
+                    teamName,
+                    style: GoogleFonts.cairo(
+                      color: Colors.white,
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
+            ...players.map((player) {
+              final double alignmentX = -1.0 + ((player.xGrid - 1) * 0.5);
+              final double alignmentY = 0.85 - ((player.yGrid - 1) * 0.42);
 
-          // 🎽 توزيع قمصان اللاعبين
-          ...players.map((player) {
-            final double alignmentX = -1.0 + ((player.xGrid - 1) * 0.5);
-            final double alignmentY = 0.85 - ((player.yGrid - 1) * 0.42);
-
-            return Align(
-              alignment: Alignment(alignmentX, alignmentY),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      Container(
-                        width: 32,
-                        height: 32,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF0F111A),
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: const Color(0xFF00A3FF),
-                            width: 1.5,
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color(0xFF00A3FF).withOpacity(0.3),
-                              blurRadius: 6,
-                            ),
-                          ],
-                        ),
-                        child: Center(
-                          child: Text(
-                            player.number,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        top: -3,
-                        right: -6,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+              return Align(
+                alignment: Alignment(alignmentX, alignmentY),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        Container(
+                          width: 32,
+                          height: 32,
                           decoration: BoxDecoration(
-                            color: const Color(0xFF00A3FF),
-                            borderRadius: BorderRadius.circular(4),
+                            color: const Color(0xFF0F111A),
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: const Color(0xFF00A3FF),
+                              width: 1.5,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(0xFF00A3FF).withOpacity(0.3),
+                                blurRadius: 6,
+                              ),
+                            ],
                           ),
-                          child: Text(
-                            player.rating,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 7,
-                              fontWeight: FontWeight.bold,
+                          child: Center(
+                            child: Text(
+                              player.number,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 3),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF0F111A).withOpacity(0.75),
-                      borderRadius: BorderRadius.circular(4),
+                        Positioned(
+                          top: -3,
+                          right: -6,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF00A3FF),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              player.rating,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 7,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                    child: Text(
-                      player.name,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.cairo(
-                        color: Colors.white,
-                        fontSize: 8,
-                        fontWeight: FontWeight.bold,
+                    const SizedBox(height: 3),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF0F111A).withOpacity(0.75),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        player.name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.cairo(
+                          color: Colors.white,
+                          fontSize: 8,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            );
-          }),
-        ],
-      ),
-    ),
-  );
-}
-
-// 🔄 شريط الأحداث (فارغ حاليًا، جاهز للسحابة)
-Widget _buildTimelineEventsSection() {
-  return Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
-    child: Container(
-      decoration: BoxDecoration(
-        color: const Color(0xFF161926).withOpacity(0.6),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: const Color(0xFF00A3FF).withOpacity(0.18),
-          width: 1,
+                  ],
+                ),
+              );
+            }),
+          ],
         ),
       ),
-      child: GlassCard(
-        borderRadius: 20,
-        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-        child: ListView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: 0,
-          itemBuilder: (context, index) => const SizedBox(),
+    );
+  }
+
+  Widget _buildTimelineEventsSection() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+      child: Container(
+        decoration: BoxDecoration(
+          color: const Color(0xFF161926).withOpacity(0.6),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: const Color(0xFF00A3FF).withOpacity(0.18),
+            width: 1,
+          ),
+        ),
+        child: GlassCard(
+          borderRadius: 20,
+          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+          child: ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: 0,
+            itemBuilder: (context, index) => const SizedBox(),
+          ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
 
-// ⏱️ تحويل الوقت إلى صيغة عربية
-String _getFormatedTimeAgo(DateTime dateTime) {
-  final duration = DateTime.now().difference(dateTime);
-  if (duration.inMinutes < 1) return 'الآن';
-  if (duration.inMinutes < 60) return 'منذ ${duration.inMinutes} د';
-  if (duration.inHours < 24) return 'قبل ${duration.inHours} ساعة';
-  return 'قبل ${duration.inDays} يوم';
-}
-    @override
+  String _getFormatedTimeAgo(DateTime dateTime) {
+    final duration = DateTime.now().difference(dateTime);
+    if (duration.inMinutes < 1) return 'الآن';
+    if (duration.inMinutes < 60) return 'منذ ${duration.inMinutes} د';
+    if (duration.inHours < 24) return 'قبل ${duration.inHours} ساعة';
+    return 'قبل ${duration.inDays} يوم';
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
@@ -513,13 +498,11 @@ String _getFormatedTimeAgo(DateTime dateTime) {
       body: TabBarView(
         controller: _tabController,
         children: [
-          // 📌 التبويبة الأولى: تفاصيل المباراة
           SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // هيدر المباراة
                 Container(
                   width: double.infinity,
                   height: 180,
@@ -549,7 +532,6 @@ String _getFormatedTimeAgo(DateTime dateTime) {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            // الفريق الأول
                             Expanded(
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -581,8 +563,6 @@ String _getFormatedTimeAgo(DateTime dateTime) {
                                 ],
                               ),
                             ),
-
-                            // النتيجة
                             Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
@@ -629,8 +609,6 @@ String _getFormatedTimeAgo(DateTime dateTime) {
                                 ),
                               ],
                             ),
-
-                            // الفريق الثاني
                             Expanded(
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -668,8 +646,6 @@ String _getFormatedTimeAgo(DateTime dateTime) {
                     ],
                   ),
                 ),
-
-                // معلومات المباراة
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
                   child: Container(
@@ -752,10 +728,7 @@ String _getFormatedTimeAgo(DateTime dateTime) {
                     ),
                   ),
                 ),
-
                 const SizedBox(height: 14),
-
-                // إحصائيات اللقاء
                 const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 24, vertical: 4),
                   child: Text(
@@ -831,10 +804,7 @@ String _getFormatedTimeAgo(DateTime dateTime) {
                     ),
                   ),
                 ),
-
                 const SizedBox(height: 14),
-
-                // التشكيلة
                 const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 24, vertical: 4),
                   child: Text(
@@ -862,15 +832,12 @@ String _getFormatedTimeAgo(DateTime dateTime) {
                   ),
                 ),
                 const SizedBox(height: 6),
-
-                // صفحة الملعب المائل
                 SizedBox(
                   height: 380,
                   child: PageView(
                     controller: _lineupPageController,
                     physics: const BouncingScrollPhysics(),
                     children: [
-                      // تشكيلة الفريق الأول
                       _buildPerspectivePitch(widget.team1, [
                         const PlayerLineupModel(name: 'بونو', number: '1', rating: '7.8', position: 'GK', xGrid: 3, yGrid: 1),
                         const PlayerLineupModel(name: 'كوليبالي', number: '3', rating: '8.1', position: 'DEF', xGrid: 2, yGrid: 2),
@@ -880,7 +847,6 @@ String _getFormatedTimeAgo(DateTime dateTime) {
                         const PlayerLineupModel(name: 'مالكوم', number: '77', rating: '8.2', position: 'ATT', xGrid: 2, yGrid: 4),
                         const PlayerLineupModel(name: 'ميتروفيتش', number: '9', rating: '9.0', position: 'ATT', xGrid: 3, yGrid: 5),
                       ]),
-                      // تشكيلة الفريق الثاني
                       _buildPerspectivePitch(widget.team2, [
                         const PlayerLineupModel(name: 'بينتو', number: '24', rating: '7.5', position: 'GK', xGrid: 3, yGrid: 1),
                         const PlayerLineupModel(name: 'لا بورت', number: '27', rating: '8.0', position: 'DEF', xGrid: 3, yGrid: 2),
@@ -893,10 +859,7 @@ String _getFormatedTimeAgo(DateTime dateTime) {
                     ],
                   ),
                 ),
-
                 const SizedBox(height: 14),
-
-                // شريط الأحداث
                 const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 24, vertical: 4),
                   child: Text(
@@ -909,14 +872,11 @@ String _getFormatedTimeAgo(DateTime dateTime) {
               ],
             ),
           ),
-
-          // 📌 التبويبة الثانية: مناقشات كروية (مع صوتيات)
           SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // استفتاء التوقع
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
                   child: Container(
@@ -956,8 +916,6 @@ String _getFormatedTimeAgo(DateTime dateTime) {
                             ],
                           ),
                           const SizedBox(height: 12),
-
-                          // شريط النسب
                           ClipRRect(
                             borderRadius: BorderRadius.circular(8),
                             child: Container(
@@ -1018,8 +976,6 @@ String _getFormatedTimeAgo(DateTime dateTime) {
                               ),
                             ),
                           ),
-
-                          // أزرار التصويت
                           if (!_hasVoted) ...[
                             const SizedBox(height: 12),
                             Row(
@@ -1118,8 +1074,6 @@ String _getFormatedTimeAgo(DateTime dateTime) {
                     ),
                   ),
                 ),
-
-                // قائمة التعليقات الحقيقية من السحابة
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24),
                   child: Text(
@@ -1315,8 +1269,6 @@ String _getFormatedTimeAgo(DateTime dateTime) {
                     );
                   },
                 ),
-
-                // حقل التعليق
                 Padding(
                   padding: const EdgeInsets.all(20),
                   child: Row(
@@ -1351,9 +1303,9 @@ String _getFormatedTimeAgo(DateTime dateTime) {
                         ),
                       ),
                       const SizedBox(width: 8),
-
-                      // زر التسجيل الصوتي
-                      AnimatedBuilder(animation: _isRecordingNotifier, builder: (context, child) {
+                      AnimatedBuilder(
+                        animation: _isRecordingNotifier,
+                        builder: (context, child) {
                           return GestureDetector(
                             onLongPressStart: (_) => _toggleRecording(),
                             onLongPressEnd: (_) => _toggleRecording(),
@@ -1378,8 +1330,6 @@ String _getFormatedTimeAgo(DateTime dateTime) {
                         },
                       ),
                       const SizedBox(width: 6),
-
-                      // زر الإرسال
                       Container(
                         decoration: BoxDecoration(
                           color: const Color(0xFF00A3FF).withOpacity(0.15),
@@ -1406,29 +1356,6 @@ String _getFormatedTimeAgo(DateTime dateTime) {
             ),
           ),
         ],
-=======
-
-class MatchDetailScreen extends StatelessWidget {
-  final dynamic match;
-
-  const MatchDetailScreen({
-    super.key,
-    this.match,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xff050B14),
-      body: Center(
-        child: Text(
-          "تفاصيل المباراة",
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-          ),
-        ),
->>>>>>> 128b556 (Fix and generate app icons)
       ),
     );
   }
