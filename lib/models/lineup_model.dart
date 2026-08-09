@@ -4,7 +4,7 @@ class LineupModel {
   final String team;
   final String formation;
   final List<Map<String, dynamic>> players;
-
+ 
   const LineupModel({
     required this.id,
     required this.matchId,
