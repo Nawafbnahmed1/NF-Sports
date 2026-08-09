@@ -10,7 +10,7 @@ import '../widgets/neon_button.dart';
 import 'match_detail_screen.dart';
 import 'news_detail_screen.dart';
 import 'news_screen.dart';
-
+ 
 class HomeMatchModel {
   final String id;
   final String team1;
