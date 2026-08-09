@@ -7,7 +7,7 @@ class NewsPreviewCard extends StatelessWidget {
   final String time;
   final String? imageUrl;
   final VoidCallback? onTap;
-
+ 
   const NewsPreviewCard({
     super.key,
     required this.title,
