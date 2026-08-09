@@ -11,7 +11,7 @@ class NewsService {
           .from('news')
           .select()
           .order('published_at', ascending: false);
-
+ 
       return (response as List)
           .map((item) => NewsModel.fromJson(item))
           .toList();
