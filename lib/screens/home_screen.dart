@@ -669,8 +669,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                     );
                                   },
                                 ),
-                          ),
-                        ),
                         _buildAdMarqueeRow('آخر الأخبار', 'NEWS🗞️'),
                         _buildHorizontalList(isNews: true),
                         _buildAdMarqueeRow('أبرز اللقطات', 'HIGHLIGHTS 🎬'),
