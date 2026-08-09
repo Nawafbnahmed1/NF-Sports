@@ -3,7 +3,7 @@ import '../models/highlight_model.dart';
 
 class HighlightService {
   final SupabaseClient _client = Supabase.instance.client;
-
+ 
   /// جلب جميع الملخصات والأهداف حية ومُرتبة زمنياً من السيرفر
   Future<List<HighlightModel>> getHighlights() async {
     try {
