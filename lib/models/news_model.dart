@@ -6,7 +6,7 @@ class NewsModel {
   final String? source;
   final String category;
   final DateTime publishedAt;
-
+ 
   NewsModel({
     required this.id,
     required this.title,
