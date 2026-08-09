@@ -3,14 +3,10 @@
     <application
         android:label="NF SPORTS"
         android:name="${applicationName}"
-<<<<<<< HEAD
         android:icon="@mipmap/ic_launcher"
         android:usesCleartextTraffic="true">
         
         
-=======
-        android:icon="@mipmap/launcher_icon">
->>>>>>> 128b556 (Fix and generate app icons)
         <activity
             android:name=".MainActivity"
             android:exported="true"
