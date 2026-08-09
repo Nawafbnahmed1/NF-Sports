@@ -7,7 +7,7 @@ class SupabaseTest extends StatefulWidget {
   @override
   State<SupabaseTest> createState() => _SupabaseTestState();
 }
-
+ 
 class _SupabaseTestState extends State<SupabaseTest> {
   String result = "Loading...";
 
