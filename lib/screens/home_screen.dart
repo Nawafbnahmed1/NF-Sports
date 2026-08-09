@@ -1,6 +1,5 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
-<<<<<<< HEAD
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart'; 
@@ -95,7 +94,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   late AnimationController _pulseController;
   late AnimationController _audioWaveController;
-  late AnimationController _marqueeController; // متحكم حركة النص للمستطيلات
+  late AnimationController _marqueeController;
   final Set<String> _homeReadMemory = <String>{};
   
   List<HomeMatchModel> _liveMatches = [];
@@ -116,7 +115,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       duration: const Duration(milliseconds: 600),
     )..repeat(reverse: true);
 
-    // ✅ متحكم النص المتحرك للمستطيلات
     _marqueeController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 12),
@@ -149,7 +147,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   void dispose() {
     _pulseController.dispose();
     _audioWaveController.dispose();
-    _marqueeController.dispose(); // ✅ تنظيف المتحكم
+    _marqueeController.dispose();
     super.dispose();
   }
 
@@ -337,13 +335,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     });
   }
 
-  // ✅ دالة بناء المستطيلات المتحركة (على نفس السطر مع العنوان)
   Widget _buildAdMarqueeRow(String title, String adText) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       child: Row(
         children: [
-          // جهة اليمين: العنوان
           Text(
             title,
             style: GoogleFonts.cairo(
@@ -353,10 +349,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             ),
           ),
           const SizedBox(width: 12),
-          // جهة اليسار: المستطيل الإعلاني
           Expanded(
             child: Container(
-              height: 46, // ✅ حجم المستطيل مناسب للاعلانات ومتناسق مع السطر
+              height: 46,
               padding: const EdgeInsets.symmetric(horizontal: 14),
               decoration: BoxDecoration(
                 color: AppTheme.surfaceColor.withOpacity(0.85),
@@ -419,135 +414,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   },
                 ),
               ),
-=======
-import '../services/match_service.dart';
-import '../services/news_service.dart';
-import '../services/highlight_service.dart';
-import '../models/match_model.dart';
-import '../models/news_model.dart';
-import '../models/highlight_model.dart';
-import 'home/widgets/home_header.dart';
-import 'home/widgets/featured_match_card.dart';
-import 'home/widgets/news_preview_card.dart';
-import 'home/widgets/highlights_preview_card.dart';
-import '../core/widgets/section_title.dart';
-
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
-
-  @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-  final NewsService _newsService = NewsService();
-  final HighlightService _highlightService = HighlightService();
-
-  late Future<List<MatchModel>> matches;
-  late Future<List<NewsModel>> news;
-  late Future<List<HighlightModel>> highlights;
-
-  @override
-  void initState() {
-    super.initState();
-    matches = MatchService.getTodayMatches();
-    news = _newsService.getNews();
-    highlights = _highlightService.getHighlights();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFF050B14),
-      body: SafeArea(
-        child: RefreshIndicator(
-          onRefresh: () async {
-            setState(() {
-              matches = MatchService.getTodayMatches();
-              news = _newsService.getNews();
-              highlights = _highlightService.getHighlights();
-            });
-          },
-          child: SingleChildScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            child: Column(
-              children: [
-                const HomeHeader(),
-                const SizedBox(height: 20),
-                const SectionTitle(title: "مباريات اليوم"),
-                FutureBuilder<List<MatchModel>>(
-                  future: matches,
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-                    if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return const Text(
-                        "لا توجد مباريات حالياً",
-                        style: TextStyle(color: Colors.white),
-                      );
-                    }
-                    return Column(
-                      children: snapshot.data!
-                          .map(
-                            (match) => FeaturedMatchCard(
-                              leagueName: match.leagueName,
-                              homeTeam: match.homeTeam,
-                              awayTeam: match.awayTeam,
-                              matchTime: match.matchDate.toString(),
-                              status: match.status,
-                            ),
-                          )
-                          .toList(),
-                    );
-                  },
-                ),
-                const SectionTitle(title: "آخر الأخبار"),
-                FutureBuilder<List<NewsModel>>(
-                  future: news,
-                  builder: (context, snapshot) {
-                    if (!snapshot.hasData) return const SizedBox();
-                    return Column(
-                      children: snapshot.data!
-                          .map(
-                            (item) => NewsPreviewCard(
-                              title: item.title,
-                              time: item.publishedAt.toString(),
-                              imageUrl: item.imageUrl,
-                            ),
-                          )
-                          .toList(),
-                    );
-                  },
-                ),
-                const SectionTitle(title: "أبرز الملخصات"),
-                FutureBuilder<List<HighlightModel>>(
-                  future: highlights,
-                  builder: (context, snapshot) {
-                    if (!snapshot.hasData) return const SizedBox();
-                    return Column(
-                      children: snapshot.data!
-                          .map(
-                            (item) => HighlightsPreviewCard(
-                              title: item.title,
-                              duration: item.duration,
-                              thumbnailUrl: item.thumbnailUrl,
-                            ),
-                          )
-                          .toList(),
-                    );
-                  },
-                ),
-                const SizedBox(height: 40),
-              ],
->>>>>>> 128b556 (Fix and generate app icons)
             ),
           ),
         ],
       ),
     );
   }
-<<<<<<< HEAD
 
   @override
   Widget build(BuildContext context) {
@@ -603,11 +475,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             ],
                           ),
                         ),
-
-                        // ✅ المستطيل 1: قسم المباريات
                         _buildAdMarqueeRow('مباريات اليوم', 'MATCHES🏟️'),
                         SizedBox(
-                          height: 290, // تم تصغير الارتفاع ليتناسب مع حجم الكروت الجديد
+                          height: 290,
                           child: _liveMatches.isEmpty
                               ? Center(child: Text('لا توجد مباريات جارية اليوم', style: GoogleFonts.cairo(color: Colors.white38, fontSize: 14)))
                               : ListView.builder(
@@ -620,7 +490,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     final bool isLive = match.status.contains('مباشر') || match.status.toLowerCase().contains('live');
 
                                     return Container(
-                                      width: 250, // ✅ تم تصغير العرض
+                                      width: 250,
                                       margin: const EdgeInsets.only(right: 16),
                                       decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(24),
@@ -629,7 +499,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             : null,
                                       ),
                                       child: GlassCard(
-                                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10), // تقليل الحشو
+                                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                                         borderRadius: 24,
                                         child: Column(
                                           children: [
@@ -799,16 +669,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                     );
                                   },
                                 ),
+                          ),
                         ),
-
-                        // ✅ المستطيل 2: قسم الأخبار
                         _buildAdMarqueeRow('آخر الأخبار', 'NEWS🗞️'),
                         _buildHorizontalList(isNews: true),
-
-                        // ✅ المستطيل 3: قسم الملخصات
                         _buildAdMarqueeRow('أبرز اللقطات', 'HIGHLIGHTS 🎬'),
                         _buildHorizontalList(isNews: false),
-
                         const SizedBox(height: 120)
                       ],
                     ),
@@ -986,6 +852,4 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
     );
   }
-=======
->>>>>>> 128b556 (Fix and generate app icons)
 }
