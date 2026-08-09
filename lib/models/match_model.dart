@@ -14,7 +14,7 @@ class MatchModel {
   final String? countdown;
   final String? homeScorer;
   final String? awayScorer;
-
+ 
   const MatchModel({
     required this.id,
     required this.leagueName,
