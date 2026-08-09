@@ -2,7 +2,7 @@ name: nf_sports
 description: "A new Flutter project."
 publish_to: 'none'
 version: 1.0.0+1
- 
+
 environment:
   sdk: ">=3.2.12"
 
@@ -27,24 +27,14 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^4.0.0
-<<<<<<< HEAD
-  flutter_launcher_icons: "^0.13.1" # 👑 حقن أداة التوليد الأصلية والنظيفة
-=======
   flutter_launcher_icons: "^0.13.1"
->>>>>>> 128b556 (Fix and generate app icons)
 
 flutter:
   uses-material-design: true
   assets:
     - assets/images/
-<<<<<<< HEAD
-    - assets/icons/  # ✅ مسار مجلد أيقونتك الفخمة
-
-# 👑 تفعيل محرك الأيقونات السحري لإعادة بناء كافة مجلدات الأندرويد المحذوفة تلقائياً
-=======
     - assets/icons/
 
->>>>>>> 128b556 (Fix and generate app icons)
 flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
