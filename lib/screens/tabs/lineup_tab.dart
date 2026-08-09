@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 <<<<<<< HEAD
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../theme/app_theme.dart';
-
+ 
 class LineupPlayerModel {
   final String name;
   final String number;
