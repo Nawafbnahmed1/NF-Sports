@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+<<<<<<< HEAD
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../theme/app_theme.dart';
 
@@ -21,13 +22,36 @@ class LineupPlayerModel {
       isSubstitute: map['is_substitute'] == true,
     );
   }
+=======
+import '../../models/lineup_model.dart';
+import '../../services/lineup_service.dart';
+
+class LineupTab extends StatefulWidget {
+  final String matchId;
+
+  const LineupTab({
+    super.key,
+    required this.matchId,
+  });
+
+  @override
+  State<LineupTab> createState() => _LineupTabState();
+>>>>>>> 128b556 (Fix and generate app icons)
 }
 
-class LineupTab extends StatelessWidget {
-  const LineupTab({super.key});
+class _LineupTabState extends State<LineupTab> {
+  final LineupService _service = LineupService();
+  late Future<List<LineupModel>> lineups;
+
+  @override
+  void initState() {
+    super.initState();
+    lineups = _service.getMatchLineups(widget.matchId);
+  }
 
   @override
   Widget build(BuildContext context) {
+<<<<<<< HEAD
     return FutureBuilder<List<Map<String, dynamic>>>(
       future: Supabase.instance.client.from('lineups').select(),
       builder: (context, snapshot) {
@@ -197,6 +221,109 @@ class LineupTab extends StatelessWidget {
           child: Text(name, style: const TextStyle(color: Colors.white, fontSize: 10, fontFamily: 'Cairo'), maxLines: 1, overflow: TextOverflow.ellipsis),
         ),
       ],
+=======
+    return FutureBuilder<List<LineupModel>>(
+      future: lineups,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+
+        if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return const Center(
+            child: Text(
+              "التشكيلة غير متوفرة حالياً",
+              style: TextStyle(
+                color: Colors.white,
+              ),
+            ),
+          );
+        }
+
+        return Column(
+          children: snapshot.data!
+              .map(
+                (lineup) => Expanded(
+                  child: _buildPitch(lineup),
+                ),
+              )
+              .toList(),
+        );
+      },
+    );
+  }
+
+  Widget _buildPitch(LineupModel lineup) {
+    return Container(
+      margin: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFF063B25),
+        borderRadius: BorderRadius.circular(25),
+        border: Border.all(
+          color: Colors.lightBlueAccent,
+          width: 2,
+        ),
+      ),
+      child: Stack(
+        children: [
+          _fieldLines(),
+          ...lineup.players.map(
+            (player) => Positioned(
+              left: (player['x'] ?? 50).toDouble(),
+              top: (player['y'] ?? 50).toDouble(),
+              child: _playerCircle(
+                player['name'] ?? "Player",
+              ),
+            ),
+          ),
+        ],
+      ),
+>>>>>>> 128b556 (Fix and generate app icons)
+    );
+  }
+
+  Widget _fieldLines() {
+    return Center(
+      child: Container(
+        width: 120,
+        height: 120,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(
+            color: Colors.white54,
+            width: 2,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _playerCircle(String name) {
+    return Container(
+      width: 55,
+      height: 55,
+      decoration: BoxDecoration(
+        color: const Color(0xFF00B4FF),
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.blueAccent.withOpacity(0.5),
+            blurRadius: 10,
+          ),
+        ],
+      ),
+      alignment: Alignment.center,
+      child: Text(
+        name,
+        textAlign: TextAlign.center,
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 10,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
     );
   }
 }

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math' as math;
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
+<<<<<<< HEAD
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -1405,6 +1406,29 @@ String _getFormatedTimeAgo(DateTime dateTime) {
             ),
           ),
         ],
+=======
+
+class MatchDetailScreen extends StatelessWidget {
+  final dynamic match;
+
+  const MatchDetailScreen({
+    super.key,
+    this.match,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xff050B14),
+      body: Center(
+        child: Text(
+          "تفاصيل المباراة",
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 18,
+          ),
+        ),
+>>>>>>> 128b556 (Fix and generate app icons)
       ),
     );
   }

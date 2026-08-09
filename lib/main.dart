@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+<<<<<<< HEAD
 import 'theme/app_theme.dart';
 import 'screens/navigation_screen.dart'; 
 import 'widgets/no_internet_widget.dart'; // 🔵 استدعاء شاشتنا السينمائية الفخمة
@@ -107,4 +108,24 @@ class _MyAppState extends State<MyApp> {
           : NoInternetWidget(onRetry: _checkInternetManual),
     );
   }
+=======
+import 'app.dart';
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // تهيئة الاتصال الحقيقي والتلقائي بسحابتك الخاصة لـ NF Sports
+  await Supabase.initialize(
+    url: const String.fromEnvironment(
+      'SUPABASE_URL',
+      defaultValue: 'https://supabase.co',
+    ),
+    anonKey: const String.fromEnvironment(
+      'SUPABASE_ANON_KEY',
+      defaultValue: 'sb_publishable_CODEuxqyVTgVE9uuTkuQ_x1xlPV',
+    ),
+  );
+
+  runApp(const NFApp());
+>>>>>>> 128b556 (Fix and generate app icons)
 }

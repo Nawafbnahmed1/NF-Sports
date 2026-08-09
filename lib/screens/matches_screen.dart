@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+<<<<<<< HEAD
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -104,6 +105,12 @@ class _CyberFireBallPainter extends CustomPainter {
   bool shouldRepaint(covariant _CyberFireBallPainter oldDelegate) => oldDelegate.angle != angle;
 }
 
+=======
+import '../models/match_model.dart';
+import '../services/match_service.dart';
+import 'match_detail_screen.dart';
+
+>>>>>>> 128b556 (Fix and generate app icons)
 class MatchesScreen extends StatefulWidget {
   const MatchesScreen({super.key});
 
@@ -111,6 +118,7 @@ class MatchesScreen extends StatefulWidget {
   State<MatchesScreen> createState() => _MatchesScreenState();
 }
 
+<<<<<<< HEAD
 class _MatchesScreenState extends State<MatchesScreen> with TickerProviderStateMixin {
   final supabase = Supabase.instance.client;
   int _selectedDateIndex = 3; 
@@ -123,10 +131,17 @@ class _MatchesScreenState extends State<MatchesScreen> with TickerProviderStateM
   late AnimationController _sparkController;
   late Animation<double> _sparkAnimation;
   late AnimationController _marqueeController;
+=======
+class _MatchesScreenState extends State<MatchesScreen> {
+  late Future<List<MatchModel>> matches;
+  bool showResults = false;
+  int selectedDay = 0;
+>>>>>>> 128b556 (Fix and generate app icons)
 
   @override
   void initState() {
     super.initState();
+<<<<<<< HEAD
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
 
@@ -195,11 +210,15 @@ class _MatchesScreenState extends State<MatchesScreen> with TickerProviderStateM
     setState(() {
       matchesFuture = fetchMatchesForDay(_days[_selectedDateIndex]);
     });
+=======
+    matches = MatchService.getTodayMatches();
+>>>>>>> 128b556 (Fix and generate app icons)
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+<<<<<<< HEAD
       backgroundColor: AppTheme.backgroundColor,
       body: SafeArea(
         child: Stack(
@@ -484,10 +503,60 @@ class _MatchesScreenState extends State<MatchesScreen> with TickerProviderStateM
             ),
           ],
         ),
+=======
+      backgroundColor: const Color(0xFF050B14),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        title: const Text(
+          "المباريات والنتائج",
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        centerTitle: true,
+      ),
+      body: Column(
+        children: [
+          _buildTabs(),
+          _buildDays(),
+          Expanded(
+            child: FutureBuilder<List<MatchModel>>(
+              future: matches,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return const Center(
+                    child: Text(
+                      "لا توجد مباريات حالياً",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  );
+                }
+                final data = snapshot.data!.where((match) {
+                  if (showResults) return match.status == "finished";
+                  return match.status != "finished";
+                }).toList();
+
+                return ListView.builder(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: data.length,
+                  itemBuilder: (context, index) {
+                    return _matchCard(data[index]);
+                  },
+                );
+              },
+            ),
+          ),
+        ],
+>>>>>>> 128b556 (Fix and generate app icons)
       ),
     );
   }
 
+<<<<<<< HEAD
   Widget buildLiveCard(BuildContext context, MatchModel match) {
     final bool isHotMatch = match.leagueName.contains('كأس') || match.leagueName.contains('دوري أبطال') || match.isLive;
 
@@ -622,9 +691,131 @@ class _MatchesScreenState extends State<MatchesScreen> with TickerProviderStateM
                 ],
               ),
             ],
+=======
+  Widget _buildTabs() {
+    return Container(
+      margin: const EdgeInsets.all(16),
+      height: 50,
+      decoration: BoxDecoration(
+        color: const Color(0xFF101C2B),
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: Row(
+        children: [
+          Expanded(child: _tabButton("المباريات", !showResults)),
+          Expanded(child: _tabButton("النتائج", showResults)),
+        ],
+      ),
+    );
+  }
+
+  Widget _tabButton(String title, bool active) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          showResults = title == "النتائج";
+        });
+      },
+      child: Container(
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: active ? const Color(0xFF00B4FF) : Colors.transparent,
+          borderRadius: BorderRadius.circular(15),
+        ),
+        child: Text(
+          title,
+          style: TextStyle(
+            color: active ? Colors.black : Colors.white,
+            fontWeight: FontWeight.bold,
+>>>>>>> 128b556 (Fix and generate app icons)
           ),
         ),
       ),
     );
   }
+<<<<<<< HEAD
+=======
+
+  Widget _buildDays() {
+    return SizedBox(
+      height: 70,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: 7,
+        itemBuilder: (context, index) {
+          return GestureDetector(
+            onTap: () {
+              setState(() {
+                selectedDay = index;
+              });
+            },
+            child: Container(
+              width: 60,
+              margin: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: selectedDay == index ? const Color(0xFF00B4FF) : const Color(0xFF101C2B),
+                borderRadius: BorderRadius.circular(15),
+              ),
+              alignment: Alignment.center,
+              child: Text(
+                "${index + 1}",
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _matchCard(MatchModel match) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => MatchDetailScreen(match: match),
+          ),
+        );
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 16),
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          color: const Color(0xFF101C2B),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Column(
+          children: [
+            Text(
+              match.leagueName,
+              style: const TextStyle(color: Colors.lightBlueAccent),
+            ),
+            const SizedBox(height: 15),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Text(match.homeTeam, style: const TextStyle(color: Colors.white)),
+                Text(
+                  "${match.homeScore ?? '-'} : ${match.awayScore ?? '-'}",
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(match.awayTeam, style: const TextStyle(color: Colors.white)),
+              ],
+            ),
+            const SizedBox(height: 10),
+            Text(match.status, style: const TextStyle(color: Colors.grey)),
+          ],
+        ),
+      ),
+    );
+  }
+>>>>>>> 128b556 (Fix and generate app icons)
 }
