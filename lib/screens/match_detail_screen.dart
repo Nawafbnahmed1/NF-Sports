@@ -10,7 +10,7 @@ import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import '../theme/app_theme.dart';
 import '../widgets/glass_card.dart';
-
+ 
 class MatchEventModel {
   final String id, minute, type, playerName, detail;
   final bool isHomeTeam;
