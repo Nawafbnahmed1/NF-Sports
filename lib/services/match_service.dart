@@ -3,7 +3,7 @@ import '../models/match_model.dart';
 
 class MatchService {
   MatchService._();
-
+ 
   static final SupabaseClient _client = Supabase.instance.client;
 
   /// جلب مباريات اليوم حية من السيرفر
