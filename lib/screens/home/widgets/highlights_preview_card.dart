@@ -7,7 +7,7 @@ class HighlightsPreviewCard extends StatelessWidget {
   final String duration;
   final String? thumbnailUrl;
   final VoidCallback? onTap;
-
+ 
   const HighlightsPreviewCard({
     super.key,
     required this.title,
