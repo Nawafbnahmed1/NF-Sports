@@ -3,7 +3,7 @@ import '../models/match_detail_model.dart';
 
 class MatchDetailService {
   final SupabaseClient _client = Supabase.instance.client;
-
+ 
   /// جلب تفاصيل وإحصائيات مباراة واحدة بواسطة المعرف حياً
   Future<MatchDetailModel?> getMatchDetails(String matchId) async {
     try {
