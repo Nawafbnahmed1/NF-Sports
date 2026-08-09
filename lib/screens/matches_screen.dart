@@ -1,627 +1,597 @@
-import 'dart:async';
-import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../theme/app_theme.dart';
 import '../widgets/glass_card.dart';
-import 'match_detail_screen.dart';
 
-class MatchModel {
-  final String id;
-  final String leagueName;
-  final String team1;
-  final String team2;
-  final String team1Logo;
-  final String team2Logo;
-  final String time12Hour;
-  final String score;
-  final bool isLive;
-  final bool isEnded;
-  final DateTime matchDate;
-
-  const MatchModel({
-    required this.id,
-    required this.leagueName,
-    required this.team1,
-    required this.team2,
-    required this.team1Logo,
-    required this.team2Logo,
-    required this.time12Hour,
-    required this.score,
-    required this.isLive,
-    required this.isEnded,
-    required this.matchDate,
-  });
-
-  factory MatchModel.fromMap(Map<String, dynamic> map) {
-    final rawDate = (map['match_date'] ?? '').toString();
-    final dt = DateTime.tryParse(rawDate)?.toLocal() ?? DateTime.now();
-
-    final hour12 = dt.hour > 12 ? dt.hour - 12 : (dt.hour == 0 ? 12 : dt.hour);
-    final amPm = dt.hour >= 12 ? 'PM' : 'AM';
-    final mm = dt.minute.toString().padLeft(2, '0');
-    final formattedTime = '$hour12:$mm $amPm';
-
-    final status = (map['status'] ?? '').toString().toLowerCase();
-    final isLiveMatch = status == 'live' || status == 'playing' || status == 'in_play';
-    final isFinished = status == 'finished' || status == 'ended' || status == 'final';
-
-    final leagueData = map['leagues'] as Map<String, dynamic>?;
-    final homeTeamData = map['home_team'] as Map<String, dynamic>?;
-    final awayTeamData = map['away_team'] as Map<String, dynamic>?;
-
-    return MatchModel(
-      id: (map['id'] ?? '').toString(),
-      leagueName: (leagueData?['name_ar'] ?? leagueData?['name'] ?? map['league_name'] ?? 'مباراة ودية للأندية').toString(),
-      team1: (homeTeamData?['name_ar'] ?? homeTeamData?['name'] ?? map['home_team_name'] ?? '').toString(),
-      team2: (awayTeamData?['name_ar'] ?? awayTeamData?['name'] ?? map['away_team_name'] ?? '').toString(),
-      team1Logo: (homeTeamData?['logo_url'] ?? map['home_logo_url'] ?? '').toString(),
-      team2Logo: (awayTeamData?['logo_url'] ?? map['away_logo_url'] ?? '').toString(),
-      time12Hour: formattedTime,
-      score: '${map['home_score'] ?? '0'} - ${map['away_score'] ?? '0'}',
-      isLive: isLiveMatch,
-      isEnded: isFinished,
-      matchDate: dt,
-    );
-  }
-}
-class _CyberFireBallPainter extends CustomPainter {
-  final double angle;
-  final Color glowColor;
-
-  _CyberFireBallPainter({required this.angle, required this.glowColor});
+class MoreScreen extends StatefulWidget {
+  const MoreScreen({super.key});
 
   @override
-  void paint(Canvas canvas, Size size) {
-    final center = Offset(size.width / 2, size.height / 2);
-    final radius = math.min(size.width, size.height) / 3;
-
-    final ballPaint = Paint()
-      ..color = Colors.white.withOpacity(0.12)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.5;
-    canvas.drawCircle(center, radius, ballPaint);
-
-    final flamePaint = Paint()
-      ..color = glowColor
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 3.0;
-
-    final path = Path();
-    for (int i = 0; i < 3; i++) {
-      final currentAngle = angle + (i * math.pi / 1.5);
-      final start = Offset(center.dx + math.cos(currentAngle) * radius, center.dy + math.sin(currentAngle) * radius);
-      final end = Offset(center.dx + math.cos(currentAngle + 0.3) * (radius + 12), center.dy + math.sin(currentAngle + 0.3) * (radius + 12));
-      path.moveTo(start.dx, start.dy);
-      path.lineTo(end.dx, end.dy);
-    }
-    canvas.drawPath(path, flamePaint);
-  }
-
-  @override
-  bool shouldRepaint(covariant _CyberFireBallPainter oldDelegate) => oldDelegate.angle != angle;
+  State<MoreScreen> createState() => _MoreScreenState();
 }
 
-class MatchesScreen extends StatefulWidget {
-  const MatchesScreen({super.key});
+class _MoreScreenState extends State<MoreScreen> with TickerProviderStateMixin {
+  late AnimationController _glowController;
+  final TextEditingController _userSuggestionController = TextEditingController();
 
-  @override
-  State<MatchesScreen> createState() => _MatchesScreenState();
-}
-
-class _MatchesScreenState extends State<MatchesScreen> with TickerProviderStateMixin {
-  final supabase = Supabase.instance.client;
-  int _selectedDateIndex = 3; 
-  late List<DateTime> _days;
-  late Future<List<Map<String, dynamic>>> matchesFuture;
-
-  late AnimationController _blinkController;
-  late Animation<double> _blinkAnimation;
-  late AnimationController _refreshBallController;
-  late AnimationController _sparkController;
-  late Animation<double> _sparkAnimation;
-  late AnimationController _marqueeController;
+  // متغيرات الحالة الحقيقية القادمة من السحابة
+  bool _isLoggedIn = false;
+  bool _isLoading = true;
+  String _userName = '';
+  String _userBio = '';
+  int _correctPredictions = 0;
+  String _avatarLetter = 'G';
+  String? _userId;
 
   @override
   void initState() {
     super.initState();
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-
-    _days = List.generate(7, (i) => today.add(Duration(days: i - 3)));
-    matchesFuture = fetchMatchesForDay(_days[_selectedDateIndex]);
-
-    _blinkController = AnimationController(
-      duration: const Duration(milliseconds: 800),
+    _glowController = AnimationController(
       vsync: this,
+      duration: const Duration(seconds: 2),
     )..repeat(reverse: true);
-
-    _blinkAnimation = Tween<double>(begin: 0.3, end: 1.0).animate(_blinkController);
-
-    _refreshBallController = AnimationController(
-      duration: const Duration(seconds: 1),
-      vsync: this,
-    )..repeat();
-
-    _sparkController = AnimationController(
-      duration: const Duration(milliseconds: 300),
-      vsync: this,
-    );
-
-    _sparkAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _sparkController, curve: Curves.easeOut),
-    );
-
-    _marqueeController = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 12),
-    )..repeat();
+    _fetchUserProfile();
   }
 
   @override
   void dispose() {
-    _blinkController.dispose();
-    _refreshBallController.dispose();
-    _sparkController.dispose();
-    _marqueeController.dispose();
+    _glowController.dispose();
+    _userSuggestionController.dispose();
     super.dispose();
   }
 
-  Future<List<Map<String, dynamic>>> fetchMatchesForDay(DateTime day) async {
-    final data = await supabase
-        .from('matches')
-        .select('''
-          *,
-          leagues ( name, name_ar, emblem ),
-          home_team:teams!home_team_id ( name, name_ar, logo_url ),
-          away_team:teams!away_team_id ( name, name_ar, logo_url )
-        ''');
-    return List<Map<String, dynamic>>.from(data);
+  // 🔮 جلب بيانات المستخدم الحقيقية من السحابة
+  Future<void> _fetchUserProfile() async {
+    final user = Supabase.instance.client.auth.currentUser;
+    if (user == null) {
+      setState(() {
+        _isLoggedIn = false;
+        _isLoading = false;
+      });
+      return;
+    }
+
+    setState(() {
+      _isLoggedIn = true;
+      _userId = user.id;
+      _avatarLetter = user.email?.substring(0, 1).toUpperCase() ?? 'U';
+    });
+
+    try {
+      // جلب البيانات من جدول profiles الذي سننشئه لاحقاً
+      final response = await Supabase.instance.client
+          .from('profiles')
+          .select('username, bio, correct_predictions')
+          .eq('id', _userId!)
+          .maybeSingle();
+
+      if (response != null && mounted) {
+        setState(() {
+          _userName = response['username'] ?? 'مشجع NF Sports';
+          _userBio = response['bio'] ?? 'عاشق كرة القدم والمستقبل الرقمي';
+          _correctPredictions = response['correct_predictions'] ?? 0;
+          _isLoading = false;
+        });
+      } else {
+        setState(() => _isLoading = false);
+      }
+    } catch (e) {
+      setState(() => _isLoading = false);
+    }
   }
 
-  Future<void> _loadDay(int index) async {
-    _sparkController.forward(from: 0.0);
+  // 🚀 دالة مشاركة التطبيق (تستخدم الحافظة لتكون خفيفة جداً)
+  void _shareAppLink() {
     HapticFeedback.lightImpact();
-    setState(() {
-      _selectedDateIndex = index;
-      matchesFuture = fetchMatchesForDay(_days[index]);
-    });
+    // 🔵 هنا سنضع رابط متجرك الحقيقي لاحقاً
+    const String appLink = 'https://play.google.com/store/apps/details?id=com.nf.sports';
+    Clipboard.setData(ClipboardData(text: appLink));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('📋 تم نسخ رابط التطبيق! شاركه مع عشاق كرة القدم.', style: GoogleFonts.cairo()),
+        backgroundColor: const Color(0xFF0A1220),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
   }
 
-  Future<void> _handleDayRefresh() async {
+  // 🔐 دالة تسجيل الخروج الآمنة
+  Future<void> _handleLogout() async {
     HapticFeedback.mediumImpact();
-    setState(() {
-      matchesFuture = fetchMatchesForDay(_days[_selectedDateIndex]);
-    });
+    try {
+      await Supabase.instance.client.auth.signOut();
+      if (mounted) {
+        setState(() {
+          _isLoggedIn = false;
+          _userName = '';
+          _userBio = '';
+          _correctPredictions = 0;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('خطأ أثناء تسجيل الخروج، حاول مجدداً.', style: GoogleFonts.cairo())),
+        );
+      }
+    }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
-      body: SafeArea(
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: Opacity(
-                opacity: 0.02,
-                child: Transform.rotate(
-                  angle: -math.pi / 6,
-                  child: const Center(
+  // 🗂️ صفحة سياسة الخصوصية والأمان (صفحة كاملة بمستطيلات زجاجية)
+  void _openPrivacyPolicyPage() {
+    HapticFeedback.mediumImpact();
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => Scaffold(
+          backgroundColor: AppTheme.backgroundColor,
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back_ios_new, color: AppTheme.neonBlue, size: 20),
+              onPressed: () => Navigator.pop(context),
+            ),
+            title: Text(
+              'سياسة الخصوصية والأمان',
+              style: GoogleFonts.cairo(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+            ),
+            centerTitle: true,
+          ),
+          body: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              children: [
+                // مستطيل 1: المقدمة وبيان الأمان
+                GlassCard(
+                  borderRadius: 16,
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('المقدمة وبيان الأمان', style: GoogleFonts.cairo(color: AppTheme.neonBlue, fontSize: 13, fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 8),
+                      Text(
+                        'في NF SPORTS، نضع أمان بياناتك أولوياتنا، نحن نلتزم بأعلى معايير الحماية العالمية للخصوصية (GDPR و CCPA)، ونستخدم تقنيات تشفير متقدمة ومتطورة لحماية جميع بياناتك الحساسة أثناء نقلها عبر الخوادم وأثناء تخزينها، لضمان عدم تمكن أي جهة خارجية من اختراقها أو الاطلاع عليها، بياناتك آمنة تماماً في خزائننا الرقمية.',
+                        textDirection: TextDirection.rtl,
+                        style: GoogleFonts.cairo(color: Colors.white70, fontSize: 12, height: 1.6),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 12),
+                // مستطيل 2: ما هي البيانات التي نجمعها؟
+                GlassCard(
+                  borderRadius: 16,
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('ما هي البيانات التي نجمعها؟', style: GoogleFonts.cairo(color: AppTheme.neonBlue, fontSize: 13, fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 8),
+                      Text(
+                        'لنقدم لك تجربة رياضية مخصصة وفريدة، نقوم بجمع أنواع أساسية من البيانات:\n1. معلومات الحساب: مثل الاسم الذي تختاره، البريد الإلكتروني، أو رقم الهاتف الذي تستخدمه للتسجيل.\n2. بيانات التفاعل الرياضي: التعليقات التي تكتبها في الأخبار والمباريات، الإعجابات، ونوع المحتوى (الدوري أو النادي) الذي تتابعه.',
+                        textDirection: TextDirection.rtl,
+                        style: GoogleFonts.cairo(color: Colors.white70, fontSize: 12, height: 1.6),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 12),
+                // مستطيل 3: كيف نستخدم بياناتك؟
+                GlassCard(
+                  borderRadius: 16,
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('كيف نستخدم بياناتك؟', style: GoogleFonts.cairo(color: AppTheme.neonBlue, fontSize: 13, fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 8),
+                      Text(
+                        'نستخدم بياناتك لأغراض محددة وواضحة جداً فقط:\n1. التخصيص الذكي: لضمان ظهور أخبار وإحصائيات فرقك المفضلة لك أولاً بأول.\n2. تطوير التطبيق: تحليل كيفية استخدام التطبيق لتحسين تصميماته وجعلها أكثر انسيابية.\n3. الاتصال الهادف: إرسال تنبيهات وإشعارات فورية لك حول الأهداف والمباريات العاجلة (يمكنك تعطيلها في أي وقت).\nنؤكد لك: نحن لا نبيع بياناتك إطلاقاً، ولا نشاركها مع أي شركات إعلانات أو جهات تسويقية خارجية.',
+                        textDirection: TextDirection.rtl,
+                        style: GoogleFonts.cairo(color: Colors.white70, fontSize: 12, height: 1.6),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 12),
+                // مستطيل 4: حقوقك الكاملة في بياناتك
+                GlassCard(
+                  borderRadius: 16,
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('حقوقك الكاملة في بياناتك', style: GoogleFonts.cairo(color: AppTheme.neonBlue, fontSize: 13, fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 8),
+                      Text(
+                        'أنت المتحكم الوحيد ببياناتك. وفقاً للقوانين الدولية، يحق لك في أي وقت:\n· التصحيح: تعديل اسمك أو صورتك أو أي معلومات حسابية.\n· النسخ الاحتياطي: طلب نسخة من جميع بياناتك التي بحوزتنا.\n· الحذف الدائم: طلب حذف حسابك بالكامل وجميع بياناتك من خوادمنا (سيتم الحذف نهائياً ولا يمكن استعادته).\nفترة الاحتفاظ بالبيانات: نحتفظ ببياناتك فقط طالما أن حسابك نشط. في حالة حذف الحساب، سيتم مسح جميع السجلات الخاصة بك بشكل آمن وفوري.',
+                        textDirection: TextDirection.rtl,
+                        style: GoogleFonts.cairo(color: Colors.white70, fontSize: 12, height: 1.6),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 30),
+                // زر الموافقة والإغلاق
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppTheme.neonBlue,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                    onPressed: () => Navigator.pop(context),
                     child: Text(
-                      'NF SPORTS',
-                      style: TextStyle(color: Colors.white, fontSize: 54, fontWeight: FontWeight.bold, letterSpacing: 10),
+                      'الموافقة وإغلاق',
+                      style: GoogleFonts.cairo(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),
-              ),
+                const SizedBox(height: 40),
+              ],
             ),
+          ),
+        ),
+      ),
+    );
+  }
 
-            RefreshIndicator(
-              color: const Color(0xFF00A3FF),
-              backgroundColor: const Color(0xFF0A1220),
-              strokeWidth: 3,
-              onRefresh: _handleDayRefresh,
-              child: SingleChildScrollView(
-                physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+  // 💬 نافذة إرسال الاقتراح
+  void _showSuggestionDialog() {
+    HapticFeedback.mediumImpact();
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          backgroundColor: const Color(0xFF0A1220),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text('اقتراح ميزة لتطوير التطبيق', style: GoogleFonts.cairo(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: _userSuggestionController,
+                  maxLines: 3,
+                  textAlign: TextAlign.right,
+                  style: const TextStyle(color: Colors.white, fontSize: 12),
+                  decoration: InputDecoration(
+                    hintText: 'اكتب ميزتك التوقعية المقترحة هنا...',
+                    hintStyle: GoogleFonts.cairo(color: Colors.white24, fontSize: 11),
+                    filled: true,
+                    fillColor: Colors.black26,
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    const SizedBox(height: 16),
-                    SizedBox(
-                      height: 80,
-                      child: ListView.builder(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        scrollDirection: Axis.horizontal,
-                        physics: const BouncingScrollPhysics(),
-                        itemCount: _days.length, 
-                        itemBuilder: (context, index) {
-                          final isSelected = index == _selectedDateIndex;
-                          final d = _days[index];
-                          
-                          final List<String> weekDaysAr = ['أحد', 'إثنين', 'ثلاثاء', 'أربعاء', 'خميس', 'جمعة', 'سبت'];
-                          final String dayName = weekDaysAr[d.weekday % 7];
-
-                          return InkWell(
-                            onTap: () => _loadDay(index),
-                            borderRadius: BorderRadius.circular(18),
-                            child: AnimatedBuilder(
-                              animation: _sparkAnimation,
-                              builder: (context, child) {
-                                return Container(
-                                  width: 68,
-                                  margin: const EdgeInsets.only(right: 12),
-                                  decoration: BoxDecoration(
-                                    color: isSelected ? const Color(0xFF161926).withOpacity(0.6) : AppTheme.surfaceColor,
-                                    borderRadius: BorderRadius.circular(18),
-                                    border: Border.all(
-                                      color: isSelected 
-                                          ? const Color(0xFF00A3FF).withOpacity(0.5 + (_sparkAnimation.value * 0.5))
-                                          : Colors.white10, 
-                                      width: isSelected ? 2.0 : 1.5
-                                    ),
-                                    boxShadow: isSelected ? [
-                                      BoxShadow(color: const Color(0xFF00A3FF).withOpacity(0.15 * _sparkAnimation.value), blurRadius: 10)
-                                    ] : null,
-                                  ),
-                                  child: child,
-                                );
-                              },
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(dayName, style: TextStyle(color: isSelected ? const Color(0xFF00A3FF) : Colors.white38, fontSize: 10, fontFamily: 'Cairo', fontWeight: isSelected ? FontWeight.bold : FontWeight.normal)),
-                                  const SizedBox(height: 4),
-                                  Text('${d.day}', style: TextStyle(color: isSelected ? Colors.white : Colors.white54, fontSize: 14, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
-                      ),
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: Text('إلغاء', style: GoogleFonts.cairo(color: Colors.white38, fontSize: 12)),
                     ),
-                    const SizedBox(height: 14),
-
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                      child: Container(
-                        height: 76,
-                        padding: const EdgeInsets.symmetric(horizontal: 18),
-                        decoration: BoxDecoration(
-                          color: AppTheme.surfaceColor.withOpacity(0.90),
-                          borderRadius: BorderRadius.circular(24),
-                          border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.4), width: 2),
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color(0xFF00A3FF).withOpacity(0.2),
-                              blurRadius: 15,
-                              spreadRadius: 1,
-                            )
-                          ],
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(22),
-                          child: AnimatedBuilder(
-                            animation: _marqueeController,
-                            builder: (context, child) {
-                              return FractionalTranslation(
-                                translation: Offset(-1.0 + (_marqueeController.value * 2.0), 0.0),
-                                child: Center(
-                                  child: Text.rich(
-                                    TextSpan(
-                                      children: [
-                                        const WidgetSpan(child: Padding(padding: EdgeInsets.only(right: 4), child: Icon(Icons.sports_soccer, color: Colors.white, size: 28))),
-                                        TextSpan(
-                                          text: ' NF',
-                                          style: GoogleFonts.cairo(
-                                            color: const Color(0xFF00A3FF),
-                                            fontSize: 22,
-                                            fontWeight: FontWeight.w900,
-                                            shadows: [
-                                              Shadow(color: const Color(0xFF00A3FF).withOpacity(0.6), blurRadius: 8)
-                                            ],
-                                          ),
-                                        ),
-                                        TextSpan(
-                                          text: ' SPORTS',
-                                          style: GoogleFonts.cairo(
-                                            color: Colors.white,
-                                            fontSize: 22,
-                                            fontWeight: FontWeight.w900,
-                                          ),
-                                        ),
-                                        TextSpan(
-                                          text: ' MATCHES 🏟️',
-                                          style: GoogleFonts.cairo(
-                                            color: Colors.redAccent,
-                                            fontSize: 22,
-                                            fontWeight: FontWeight.w900,
-                                            shadows: [
-                                              Shadow(color: Colors.redAccent.withOpacity(0.6), blurRadius: 8)
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
+                    const SizedBox(width: 8),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppTheme.neonBlue,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                       ),
-                    ),
-                    const SizedBox(height: 20),
-                    FutureBuilder<List<Map<String, dynamic>>>(
-                      future: matchesFuture,
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
-                          return Padding(
-                            padding: const EdgeInsets.all(40),
-                            child: Center(
-                              child: AnimatedBuilder(
-                                animation: _refreshBallController,
-                                builder: (context, _) {
-                                  return CustomPaint(
-                                    size: const Size(40, 40),
-                                    painter: _CyberFireBallPainter(
-                                      angle: _refreshBallController.value * math.pi * 2, 
-                                      glowColor: const Color(0xFF00A3FF),
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
+                      onPressed: () {
+                        if (_userSuggestionController.text.trim().isNotEmpty) {
+                          // 🔮 هنا سنقوم بحفظ الاقتراح في السحابة لاحقاً
+                          _userSuggestionController.clear();
+                          Navigator.pop(context);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('شكراً لاقتراحك الأسطوري! سيتم مراجعته فوراً 🚀', style: GoogleFonts.cairo())),
                           );
                         }
-                        if (snapshot.hasError) {
-                          return const Padding(
-                            padding: EdgeInsets.all(20),
-                            child: Center(child: Text('', style: TextStyle(color: Colors.white24))),
-                          );
-                        }
-
-                        final matchesData = snapshot.data ?? [];
-                        var matches = matchesData.map((e) => MatchModel.fromMap(e)).toList();
-
-                        final selectedDate = _days[_selectedDateIndex];
-                        matches = matches.where((m) {
-                          final isSameDay = m.matchDate.year == selectedDate.year &&
-                              m.matchDate.month == selectedDate.month &&
-                              m.matchDate.day == selectedDate.day;
-                          if (!isSameDay) return false;
-                          return !m.isEnded;
-                        }).toList();
-
-                        matches.sort((a, b) {
-                          if (a.isLive && !b.isLive) return -1;
-                          if (!a.isLive && b.isLive) return 1;
-                          return a.matchDate.compareTo(b.matchDate);
-                        });
-
-                        if (matches.isEmpty) {
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 50),
-                            child: Center(
-                              child: Column(
-                                children: [
-                                  AnimatedBuilder(
-                                    animation: _refreshBallController,
-                                    builder: (context, _) {
-                                      return CustomPaint(
-                                        size: const Size(48, 48),
-                                        painter: _CyberFireBallPainter(
-                                          angle: _refreshBallController.value * math.pi * 0.5, 
-                                          glowColor: const Color(0xFF00A3FF).withOpacity(0.3),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                  const SizedBox(height: 16),
-                                  Text(
-                                    'لا توجد مباريات متاحة لهذا اليوم',
-                                    style: GoogleFonts.cairo(color: Colors.white38, fontSize: 13, fontWeight: FontWeight.bold),
-                                  ),
-                                  const SizedBox(height: 20),
-                                  InkWell(
-                                    onTap: _handleDayRefresh,
-                                    borderRadius: BorderRadius.circular(12),
-                                    child: Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                                      decoration: BoxDecoration(
-                                        color: const Color(0xFF00A3FF).withOpacity(0.08),
-                                        borderRadius: BorderRadius.circular(12), 
-                                        border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.2)),
-                                      ),
-                                      child: Text('تحديث جدول السحاب', style: GoogleFonts.cairo(color: const Color(0xFF00A3FF), fontSize: 11, fontWeight: FontWeight.bold)),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        }
-
-                        return ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: matches.length,
-                          itemBuilder: (context, index) {
-                            final match = matches[index];
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                                  child: Row(
-                                    textDirection: TextDirection.rtl,
-                                    children: [
-                                      const Icon(Icons.emoji_events, color: Colors.amber, size: 16),
-                                      const SizedBox(width: 8),
-                                      Text(
-                                        match.leagueName,
-                                        style: GoogleFonts.cairo(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.bold),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                buildLiveCard(context, match),
-                              ],
-                            );
-                          },
-                        );
                       },
+                      child: Text('إرسال الاقتراح', style: GoogleFonts.cairo(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold)),
                     ),
-                    const SizedBox(height: 120),
                   ],
                 ),
-              ),
+              ],
             ),
+          ),
+        );
+      },
+    );
+  }
+
+  // 📋 دالة فتح نافذة تسجيل الدخول
+  void _showAuthBottomSheet() {
+    HapticFeedback.mediumImpact();
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: const Color(0xFF0A1220),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.white10, borderRadius: BorderRadius.circular(2))),
+              const SizedBox(height: 20),
+              Text('انضم إلى عائلة NF Sports', style: GoogleFonts.cairo(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 6),
+              Text('سجل حسابك لتوقع التشكيلات والمناقشة حياً مع جماهير فريقك', textAlign: TextAlign.center, style: GoogleFonts.cairo(color: Colors.white38, fontSize: 11)),
+              const SizedBox(height: 24),
+              _buildAuthButton(
+                icon: Icons.g_mobiledata_rounded,
+                text: 'تسجيل الدخول عبر Google',
+                color: const Color(0xFF4285F4),
+                onTap: () {
+                  Navigator.pop(context);
+                  // 🔮 سيتم تفعيلها عند الربط السحابي
+                },
+              ),
+              const SizedBox(height: 12),
+              _buildAuthButton(
+                icon: Icons.mail_outline_rounded,
+                text: 'تسجيل الدخول عبر البريد الإلكتروني',
+                color: AppTheme.neonBlue,
+                onTap: () {
+                  Navigator.pop(context);
+                  // 🔮 سيتم تفعيلها عند الربط السحابي
+                },
+              ),
+              const SizedBox(height: 12),
+              _buildAuthButton(
+                icon: Icons.phone_android_rounded,
+                text: 'تسجيل الدخول عبر رقم الهاتف',
+                color: Colors.green,
+                onTap: () {
+                  Navigator.pop(context);
+                  // 🔮 سيتم تفعيلها عند الربط السحابي
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildAuthButton({
+    required IconData icon,
+    required String text,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(14),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.08),
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: Row(
+          textDirection: TextDirection.rtl,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, color: color, size: 20),
+            const SizedBox(width: 10),
+            Text(text, style: GoogleFonts.cairo(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
           ],
         ),
       ),
     );
   }
 
-  Widget buildLiveCard(BuildContext context, MatchModel match) {
-    final bool isHotMatch = match.leagueName.contains('كأس') || match.leagueName.contains('دوري أبطال') || match.isLive;
+  // 🏗️ بناء واجهة المستخدم الرئيسية
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppTheme.backgroundColor,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: Text('المزيد', style: GoogleFonts.cairo(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+        centerTitle: true,
+      ),
+      body: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
+        child: Column(
+          children: [
+            const SizedBox(height: 12),
+            _buildUserProfileCard(),
+            const SizedBox(height: 20),
+            _buildSettingsSection(),
+            const SizedBox(height: 40),
+          ],
+        ),
+      ),
+    );
+  }
 
-        return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: (isHotMatch && match.isLive) ? [
-            BoxShadow(color: Color(0xFF00A3FF).withOpacity(0.12), blurRadius: 12, spreadRadius: 1), // تم التغيير
-            BoxShadow(color: Color(0xFF00A3FF).withOpacity(0.06), blurRadius: 6, spreadRadius: 0) // تم التغيير
-          ] : null,
-          color: Color(0xFF161926).withOpacity(0.6),
-           border: Border.all(color: Color(0xFF00A3FF).withOpacity(0.15), width: 1), // تم التغيير
-                  ),
-        child: GlassCard(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-          borderRadius: 20,
+  Widget _buildUserProfileCard() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: GlassCard(
+        borderRadius: 20,
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(20),
           child: Column(
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
+              AnimatedBuilder(
+                animation: _glowController,
+                builder: (context, _) {
+                  return Container(
+                    padding: const EdgeInsets.all(3),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: AppTheme.neonBlue.withOpacity(0.3 + (_glowController.value * 0.5)),
+                        width: 2,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppTheme.neonBlue.withOpacity(0.2 * _glowController.value),
+                          blurRadius: 15,
+                          spreadRadius: 2,
+                        )
+                      ],
+                    ),
+                    child: CircleAvatar(
+                      radius: 36,
+                      backgroundColor: Colors.white.withOpacity(0.05),
+                      child: Text(
+                        _isLoading ? '...' : (_isLoggedIn ? _avatarLetter : 'G'),
+                        style: GoogleFonts.cairo(color: AppTheme.neonBlue, fontSize: 24, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(height: 14),
+              if (_isLoading)
+                const SizedBox(width: 100, child: LinearProgressIndicator(color: AppTheme.neonBlue))
+              else ...[
+                Text(
+                  _isLoggedIn ? _userName : 'زائر منصة NF Sports',
+                  style: GoogleFonts.cairo(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  _isLoggedIn ? _userBio : 'سجل حسابك لفتح كامل المزايا التفاعلية',
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.cairo(color: Colors.white38, fontSize: 11),
+                ),
+                if (_isLoggedIn) ...[
+                  const SizedBox(height: 16),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.02),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.white10),
+                    ),
                     child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       textDirection: TextDirection.rtl,
                       children: [
-                        Container(
-                          width: 38,
-                          height: 38,
-                          decoration: BoxDecoration(color: Colors.white.withOpacity(0.04), shape: BoxShape.circle),
-                          padding: const EdgeInsets.all(4),
-                          child: match.team1Logo.isNotEmpty && match.team1Logo.startsWith('http')
-                              ? Image.network(match.team1Logo, fit: BoxFit.contain, errorBuilder: (_, __, ___) => const Icon(Icons.shield, color: Colors.white24, size: 24))
-                              : const Icon(Icons.shield, color: Colors.white24, size: 24),
+                        Text('التوقعات الصحيحة المتطابقة:', style: GoogleFonts.cairo(color: Colors.white70, fontSize: 11)),
+                        Text(
+                          '🏆 $_correctPredictions',
+                          style: GoogleFonts.cairo(color: Colors.amberAccent, fontSize: 12, fontWeight: FontWeight.bold),
                         ),
-                        const SizedBox(width: 8),
-                        Expanded(child: Text(match.team1, maxLines: 1, overflow: TextOverflow.ellipsis, style: GoogleFonts.cairo(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold))),
                       ],
                     ),
                   ),
-
-                  Column(
-                    children: [
-                      if (match.isLive)
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            FadeTransition(
-                              opacity: _blinkAnimation,
-                              child: Container(
-                                width: 6,
-                                height: 6,
-                                decoration: const BoxDecoration(color: Colors.redAccent, shape: BoxShape.circle),
-                              ),
-                            ),
-                            const SizedBox(width: 4),
-                            Text(match.score, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w900, letterSpacing: 1.0)),
-                          ],
-                        )
-                      else
-                        Text(match.time12Hour, style: GoogleFonts.cairo(color: const Color(0xFF00A3FF), fontSize: 11, fontWeight: FontWeight.bold)), // تم التغيير
-                    ],
-                  ),
-                  Expanded(
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 38,
-                          height: 38,
-                          decoration: BoxDecoration(color: Colors.white.withOpacity(0.04), shape: BoxShape.circle),
-                          padding: const EdgeInsets.all(4),
-                          child: match.team2Logo.isNotEmpty && match.team2Logo.startsWith('http')
-                              ? Image.network(match.team2Logo, fit: BoxFit.contain, errorBuilder: (_, __, ___) => const Icon(Icons.shield, color: Colors.white24, size: 24))
-                              : const Icon(Icons.shield, color: Colors.white24, size: 24),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(child: Text(match.team2, maxLines: 1, overflow: TextOverflow.ellipsis, textAlign: TextAlign.left, style: GoogleFonts.cairo(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold))),
-                      ],
+                ] else ...[
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppTheme.neonBlue,
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
+                    onPressed: _showAuthBottomSheet,
+                    child: Text('تسجيل الدخول الفوري', style: GoogleFonts.cairo(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold)),
                   ),
                 ],
-              ),
-              
-              const Padding(padding: EdgeInsets.symmetric(vertical: 6.0), child: Divider(color: Colors.white10, height: 1)),
-              
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: Colors.black45, 
-                          borderRadius: BorderRadius.circular(5),
-                          border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.2), width: 0.5),
-                        ),
-                        child: Text("NF", style: GoogleFonts.cairo(color: const Color(0xFF00A3FF).withOpacity(0.7), fontSize: 8, fontWeight: FontWeight.w900)),
-                      ),
-                      if (match.isLive) ...[
-                        const SizedBox(width: 6),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
-                          decoration: BoxDecoration(
-                            color: Colors.black87, 
-                            borderRadius: BorderRadius.circular(4), 
-                            border: Border.all(color: const Color(0xFF00A3FF), width: 0.8),
-                          ),
-                          child: Text("LIVE HD", style: GoogleFonts.cairo(color: const Color(0xFF00A3FF), fontSize: 7, fontWeight: FontWeight.w900)),
-                        ),
-                      ],
-                    ],
-                  ),
-                  
-                  InkWell(
-                    onTap: () {
-                      HapticFeedback.lightImpact();
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => MatchDetailScreen(team1: match.team1, team2: match.team2)));
-                    },
-                    borderRadius: BorderRadius.circular(8),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF00A3FF).withOpacity(0.08),
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: const Color(0xFF00A3FF).withOpacity(0.25), width: 1),
-                      ),
-                      child: Text('تفاصيل اللقاء', style: GoogleFonts.cairo(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
-                    ),
-                  ),
-                ],
-              ),
+              ],
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSettingsSection() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: GlassCard(
+        borderRadius: 20,
+        child: Column(
+          children: [
+            _buildSettingTile(
+              icon: Icons.privacy_tip_outlined,
+              iconColor: Colors.amberAccent,
+              title: 'سياسة الخصوصية والشروط',
+              subtitle: 'معايير الأمان ومعالجة البيانات الرسمية',
+              onTap: _openPrivacyPolicyPage,
+            ),
+            Divider(color: Colors.white.withOpacity(0.03), height: 1, indent: 20, endIndent: 20),
+            _buildSettingTile(
+              icon: Icons.assistant_photo_outlined,
+              iconColor: Colors.cyanAccent,
+              title: 'اقتراح ميزة أو إرسال تقرير',
+              subtitle: 'شاركنا أفكارك لتطوير المنصة الرياضية',
+              onTap: _showSuggestionDialog,
+            ),
+            Divider(color: Colors.white.withOpacity(0.03), height: 1, indent: 20, endIndent: 20),
+            _buildSettingTile(
+              icon: Icons.share_rounded,
+              iconColor: Colors.purpleAccent,
+              title: 'مشاركة التطبيق مع الأصدقاء',
+              subtitle: 'انشر المنصة في مجتمعات كرة القدم',
+              onTap: _shareAppLink,
+            ),
+            if (_isLoggedIn) ...[
+              Divider(color: Colors.white.withOpacity(0.03), height: 1, indent: 20, endIndent: 20),
+              _buildSettingTile(
+                icon: Icons.logout_rounded,
+                iconColor: Colors.redAccent,
+                title: 'تسجيل الخروج من الحساب',
+                subtitle: 'العودة كزائر للمنصة دون حفظ البيانات الحية',
+                onTap: _handleLogout,
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSettingTile({
+    required IconData icon,
+    required Color iconColor,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        child: Row(
+          textDirection: TextDirection.rtl,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: iconColor.withOpacity(0.06),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, color: iconColor, size: 20),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(title, style: GoogleFonts.cairo(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 2),
+                  Text(subtitle, style: GoogleFonts.cairo(color: Colors.white38, fontSize: 10)),
+                ],
+              ),
+            ),
+            const Icon(Icons.arrow_forward_ios_rounded, color: Colors.white12, size: 14),
+          ],
         ),
       ),
     );
