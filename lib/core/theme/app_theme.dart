@@ -3,7 +3,7 @@ import '../constants/app_colors.dart';
 
 class AppTheme {
   AppTheme._();
-
+ 
   static ThemeData darkTheme = ThemeData(
     useMaterial3: true,
     brightness: Brightness.dark,
