@@ -3,7 +3,7 @@ import '../../../core/constants/app_colors.dart';
 
 class HomeHeader extends StatelessWidget {
   const HomeHeader({super.key});
-
+ 
   @override
   Widget build(BuildContext context) {
     return Container(
