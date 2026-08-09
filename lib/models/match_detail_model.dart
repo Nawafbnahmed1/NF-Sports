@@ -24,7 +24,7 @@ class MatchDetailModel {
     required this.awayInjuries,
     required this.events,
   });
-
+ 
   factory MatchDetailModel.fromJson(Map<String, dynamic> json) {
     return MatchDetailModel(
       id: json['id']?.toString() ?? '',
