@@ -6,7 +6,7 @@ class SectionTitle extends StatelessWidget {
   final String? actionText;
   final VoidCallback? onActionPressed;
   final IconData? icon;
-
+ 
   const SectionTitle({
     super.key,
     required this.title,
