@@ -94,7 +94,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   late AnimationController _pulseController;
   late AnimationController _audioWaveController;
-  late AnimationController _marqueeController;
+  late AnimationController _marqueeController; // متحكم حركة النص للمستطيلات
   final Set<String> _homeReadMemory = <String>{};
   
   List<HomeMatchModel> _liveMatches = [];
@@ -115,6 +115,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       duration: const Duration(milliseconds: 600),
     )..repeat(reverse: true);
 
+    // ✅ متحكم النص المتحرك للمستطيلات
     _marqueeController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 12),
@@ -147,7 +148,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   void dispose() {
     _pulseController.dispose();
     _audioWaveController.dispose();
-    _marqueeController.dispose();
+    _marqueeController.dispose(); // ✅ تنظيف المتحكم
     super.dispose();
   }
 
@@ -335,11 +336,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     });
   }
 
+  // ✅ دالة بناء المستطيلات المتحركة (على نفس السطر مع العنوان)
   Widget _buildAdMarqueeRow(String title, String adText) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       child: Row(
         children: [
+          // جهة اليمين: العنوان
           Text(
             title,
             style: GoogleFonts.cairo(
@@ -349,9 +352,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             ),
           ),
           const SizedBox(width: 12),
+          // جهة اليسار: المستطيل الإعلاني
           Expanded(
             child: Container(
-              height: 46,
+              height: 46, // ✅ حجم المستطيل مناسب للاعلانات ومتناسق مع السطر
               padding: const EdgeInsets.symmetric(horizontal: 14),
               decoration: BoxDecoration(
                 color: AppTheme.surfaceColor.withOpacity(0.85),
@@ -475,12 +479,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             ],
                           ),
                         ),
+
+                        // ✅ المستطيل 1: قسم المباريات
                         _buildAdMarqueeRow('مباريات اليوم', 'MATCHES🏟️'),
-                      SizedBox(
-                      height: 290,
-                      child: _liveMatches.isEmpty
-                          ? Center(child: Text('لا توجد مباريات جارية اليوم', style: GoogleFonts.cairo(color: Colors.white38, fontSize: 14)))
-                          : ListView.builder(
+                        SizedBox(
+                          height: 290, // تم تصغير الارتفاع ليتناسب مع حجم الكروت الجديد
+                          child: _liveMatches.isEmpty
+                              ? Center(child: Text('لا توجد مباريات جارية اليوم', style: GoogleFonts.cairo(color: Colors.white38, fontSize: 14)))
+                              : ListView.builder(
                                   padding: const EdgeInsets.symmetric(horizontal: 20),
                                   scrollDirection: Axis.horizontal,
                                   physics: const BouncingScrollPhysics(),
@@ -490,7 +496,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                     final bool isLive = match.status.contains('مباشر') || match.status.toLowerCase().contains('live');
 
                                     return Container(
-                                      width: 250,
+                                      width: 250, // ✅ تم تصغير العرض
                                       margin: const EdgeInsets.only(right: 16),
                                       decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(24),
@@ -499,7 +505,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                             : null,
                                       ),
                                       child: GlassCard(
-                                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10), // تقليل الحشو
                                         borderRadius: 24,
                                         child: Column(
                                           children: [
@@ -598,7 +604,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                                 ),
                                               ],
                                             ),
-                                            ),
                                             const Padding(padding: EdgeInsets.symmetric(vertical: 6.0), child: Divider(color: Colors.white10, height: 1)),
                                             Row(
                                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -670,10 +675,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                     );
                                   },
                                 ),
+                        ),
+
+                        // ✅ المستطيل 2: قسم الأخبار
                         _buildAdMarqueeRow('آخر الأخبار', 'NEWS🗞️'),
                         _buildHorizontalList(isNews: true),
+
+                        // ✅ المستطيل 3: قسم الملخصات
                         _buildAdMarqueeRow('أبرز اللقطات', 'HIGHLIGHTS 🎬'),
                         _buildHorizontalList(isNews: false),
+
                         const SizedBox(height: 120)
                       ],
                     ),
