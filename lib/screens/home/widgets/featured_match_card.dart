@@ -8,7 +8,7 @@ class FeaturedMatchCard extends StatelessWidget {
   final String awayTeam;
   final String matchTime;
   final String status;
-
+ 
   const FeaturedMatchCard({
     super.key,
     required this.leagueName,
