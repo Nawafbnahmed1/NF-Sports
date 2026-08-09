@@ -27,17 +27,16 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^4.0.0
+  flutter_launcher_icons: "^0.13.1" # 👑 حقن أداة التوليد الأصلية والنظيفة
 
 flutter:
   uses-material-design: true
   assets:
     - assets/images/
-    - assets/icons/  # ✅ تمت إضافة مجلد الأيقونات
+    - assets/icons/  # ✅ مسار مجلد أيقونتك الفخمة
 
-# ✅ إضافة أداة بناء الأيقونات التلقائية
-flutter_icons:
-  android: true
+# 👑 تفعيل محرك الأيقونات السحري لإعادة بناء كافة مجلدات الأندرويد المحذوفة تلقائياً
+flutter_launcher_icons:
+  android: "launcher_icon"
   ios: true
   image_path: "assets/icons/nf_sports_icon.png"
-  adaptive_icon_background: "#070D14"
-  adaptive_icon_foreground: "assets/icons/nf_sports_icon.png"
