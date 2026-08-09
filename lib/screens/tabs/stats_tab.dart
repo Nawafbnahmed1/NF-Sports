@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../theme/app_theme.dart';
 import '../../../widgets/glass_card.dart';
-
+ 
 class StatsTab extends StatelessWidget {
   const StatsTab({super.key});
 
