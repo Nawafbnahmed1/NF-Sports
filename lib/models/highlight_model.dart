@@ -6,7 +6,7 @@ class HighlightModel {
   final String? videoUrl;
   final String duration;
   final DateTime? createdAt;
-
+ 
   HighlightModel({
     required this.id,
     this.matchId,
