@@ -19,7 +19,7 @@ class LineupService {
       throw Exception('Failed to load lineups: $e');
     }
   }
-
+ 
   /// إضافة تشكيلة جديدة (خاص بلوحة تحكم الإدارة حقتك سحابياً)
   Future<void> addLineup(LineupModel lineup) async {
     try {
