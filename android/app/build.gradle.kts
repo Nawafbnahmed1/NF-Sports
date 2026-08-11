@@ -1,4 +1,4 @@
-import java.util.Properties
+import java.util.Properties // 👈 تم حقن الاستيراد الرسمي هنا في السطر الأول لحسم المشكلة للأبد
 
 plugins {
     id("com.android.application")
@@ -9,7 +9,10 @@ plugins {
 android {
     namespace = "com.example.nf_sports"
     
+    // ✓ الترقية الجراحية الحاسمة لـ compileSdk لتلبية شرط المكتبات المحدثة لعام 2026
     compileSdk = 36
+
+    // 🚀 حقن إصدار الـ NDK الأعلى والمطلوب رسمياً من السيرفر لتدمير تعارض مكتبة الـ jni للأبد
     ndkVersion = "28.2.13676358"
 
     compileOptions {
@@ -21,6 +24,7 @@ android {
         create("release") {
             val keystorePropertiesFile = rootProject.file("key.properties")
             if (keystorePropertiesFile.exists()) {
+                // ✓ تم تصحيح السطر هنا ليعتمد على الـ Import الصافي بدون كلمات محجوزة
                 val keystoreProperties = Properties()
                 keystoreProperties.load(keystorePropertiesFile.inputStream())
                 
@@ -36,7 +40,9 @@ android {
 
     defaultConfig {
         applicationId = "com.example.nf_sports"
+        // ✓ الحد الأدنى المستقر المستهدف بناءً على خطة المساعد
         minSdk = 24
+        // ✓ الإصدار المستهدف للمتجر بناءً على خطة المساعد
         targetSdk = 36
         
         versionCode = 1
@@ -61,12 +67,4 @@ kotlin {
 
 flutter {
     source = "../.."
-}
-
-// ✅ الإضافة المطلوبة لإجبار بناء الأيقونات المفقودة
-tasks.whenTaskAdded { task ->
-    if (task.name == 'assembleRelease') {
-        task.dependsOn 'processReleaseResources'
-        task.dependsOn 'flutterBuildRelease'
-    }
 }
