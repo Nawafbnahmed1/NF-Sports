@@ -24,8 +24,8 @@
                 android:name="io.flutter.embedding.android.NormalTheme"
                 android:resource="@android:style/Theme.Black.NoTitleBar" />
             <intent-filter>
-                <action android:name="android:action.MAIN"/>
-                <category android:name="android:category.LAUNCHER"/>
+                <action android:name="android:action.MAIN" />
+                <category android:name="android:category.LAUNCHER" />
             </intent-filter>
         </activity>
         <meta-data
