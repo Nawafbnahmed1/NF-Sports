@@ -9,8 +9,9 @@
     <application
         android:label="NF SPORTS"
         android:name="${applicationName}"
-        android:icon="@mipmap/nf_sports_icon"
-        android:roundIcon="@mipmap/launcher_icon">
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher"
+        android:usesCleartextTraffic="true">
         <activity
             android:name=".MainActivity"
             android:exported="true"
