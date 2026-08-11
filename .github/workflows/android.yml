@@ -11,7 +11,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/unlock@v4 || actions/checkout@v4
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
@@ -42,8 +42,9 @@ jobs:
 
       - name: Build APK
         run: |
-          # 🛠️ توليد ملفات الـ gradle المفقودة تلقائياً عبر أمر Flutter الرسمي لمنع خطأ No such file للأبد
+          # 🛠️ تنشيط المكتبات وإطلاق محرك توليد وقص الأيقونة الملكية الجديدة تلقائياً قبل بناء التطبيق
           flutter pub get
+          flutter pub run flutter_launcher_icons
           cd android
           gradle wrapper --gradle-version 8.11.1
           chmod +x gradlew
