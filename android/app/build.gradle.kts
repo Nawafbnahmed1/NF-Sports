@@ -63,10 +63,10 @@ flutter {
     source = "../.."
 }
 
-// ✅ إضافة أمر الإجبار لبناء الأيقونات (بصيغة Kotlin الصحيحة)
+// ✅ إضافة أمر الإجبار لبناء الأيقونات (الاسم الصحيح للمهمة)
 tasks.whenTaskAdded {
     if (name == "assembleRelease") {
         dependsOn("processReleaseResources")
-        dependsOn("flutterBuildRelease")
+        dependsOn("compileFlutterBuildRelease") // ✅ تم التصحيح
     }
 }
