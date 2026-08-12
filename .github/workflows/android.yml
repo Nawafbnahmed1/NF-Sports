@@ -42,13 +42,11 @@ jobs:
 
       - name: Build APK
         run: |
-          # 🛠️ تنظيف الكاش، سحب المكتبات، إعادة توليد روابط الملحقات للأندرويد، ثم إطلاق محرك الأيقونات الاحترافي المتناسق
           flutter pub get
           flutter clean
           flutter pub get
           flutter pub run flutter_launcher_icons
           cd android
-          gradle wrapper --gradle-version 8.13
           chmod +x gradlew
           ./gradlew assembleRelease --no-daemon
 
