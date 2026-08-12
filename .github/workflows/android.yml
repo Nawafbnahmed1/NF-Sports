@@ -42,9 +42,8 @@ jobs:
 
       - name: Build APK
         run: |
-          # 🛠️ إبادة الكاش القديم وتوليد الأيقونة الموزونة والمصغرة تلقائياً بالخلفية الزرقاء الداكنة
+          # 🛠️ تنشيط المكتبات وإطلاق محرك توليد وقص الأيقونة الملكية الجديدة تلقائياً قبل بناء التطبيق
           flutter pub get
-          flutter clean
           flutter pub run flutter_launcher_icons
           cd android
           gradle wrapper --gradle-version 8.11.1
