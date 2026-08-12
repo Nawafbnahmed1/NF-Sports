@@ -36,8 +36,9 @@ flutter:
     - assets/icons/
 
 flutter_launcher_icons:
-  android: "launcher_icon"
+  android: "ic_launcher"
   ios: true
   image_path: "assets/icons/nf_sports_icon.png"
   adaptive_icon_background: "#070D14"
   adaptive_icon_foreground: "assets/icons/nf_sports_icon.png"
+  
