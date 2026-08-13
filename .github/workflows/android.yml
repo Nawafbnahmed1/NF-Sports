@@ -22,10 +22,15 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: "21"
+          java-version: '21'
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
+
+      - name: Setup Gradle 8.13
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.13'
 
       - name: Generate Production Keystore & Properties
         run: |
@@ -50,26 +55,18 @@ jobs:
         run: |
           flutter --version
           flutter pub get
-          flutter clean
-          flutter pub get
 
       - name: Generate App Icons
         run: |
           flutter pub run flutter_launcher_icons
 
-      - name: Make Gradle Wrapper Executable
+      - name: Verify Gradle
         run: |
-          chmod +x android/gradlew
-
-      - name: Verify Gradle Version
-        working-directory: android
-        run: |
-          ./gradlew --version
+          gradle --version
 
       - name: Build Release APK
-        working-directory: android
         run: |
-          ./gradlew assembleRelease --no-daemon --stacktrace
+          gradle -p android assembleRelease --no-daemon
 
       - name: Upload APK
         if: always()
@@ -79,3 +76,4 @@ jobs:
           path: |
             android/app/build/outputs/apk/release/*.apk
             build/app/outputs/flutter-apk/*.apk
+          if-no-files-found: warn
