@@ -10,38 +10,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # --------------------------------------------------
-      # 1. تحميل المشروع
-      # --------------------------------------------------
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # --------------------------------------------------
-      # 2. إعداد Flutter
-      # --------------------------------------------------
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: stable
 
-      # --------------------------------------------------
-      # 3. إعداد Java 21
-      # --------------------------------------------------
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: 21
+          java-version: "21"
 
-      # --------------------------------------------------
-      # 4. إعداد Android SDK
-      # --------------------------------------------------
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      # --------------------------------------------------
-      # 5. إنشاء Production Keystore
-      # --------------------------------------------------
       - name: Generate Production Keystore & Properties
         run: |
           keytool -genkeypair -v \
@@ -61,101 +46,31 @@ jobs:
           storeFile=upload-keystore.jks
           EOF
 
-      # --------------------------------------------------
-      # 6. تجهيز Flutter
-      # --------------------------------------------------
-      - name: Prepare Flutter Project
+      - name: Prepare Flutter
         run: |
           flutter --version
           flutter pub get
           flutter clean
           flutter pub get
 
-      # --------------------------------------------------
-      # 7. إنشاء أيقونات NF SPORTS
-      # --------------------------------------------------
       - name: Generate App Icons
         run: |
           flutter pub run flutter_launcher_icons
 
-      # --------------------------------------------------
-      # 8. فحص Gradle الموجود على GitHub Runner
-      # --------------------------------------------------
-      - name: Check System Gradle
+      - name: Make Gradle Wrapper Executable
         run: |
-          gradle --version
+          chmod +x android/gradlew
 
-      # --------------------------------------------------
-      # 9. إنشاء Gradle Wrapper باستخدام 8.13
-      # --------------------------------------------------
-      - name: Create Gradle Wrapper
+      - name: Verify Gradle Version
+        working-directory: android
         run: |
-          cd android
-
-          gradle wrapper \
-            --gradle-version 8.13 \
-            --distribution-type all
-
-          chmod +x gradlew
-
-          echo "======================================"
-          echo "Gradle Wrapper Version:"
-          echo "======================================"
-
           ./gradlew --version
 
-      # --------------------------------------------------
-      # 10. التحقق من ملف Gradle Wrapper
-      # --------------------------------------------------
-      - name: Verify Gradle Wrapper Configuration
-        run: |
-          echo "======================================"
-          echo "gradle-wrapper.properties"
-          echo "======================================"
-
-          cat android/gradle/wrapper/gradle-wrapper.properties
-
-          echo "======================================"
-          echo "Gradle Wrapper File"
-          echo "======================================"
-
-          ls -la android/gradle/wrapper/
-          ls -la android/gradlew
-
-      # --------------------------------------------------
-      # 11. تنظيف Android Build
-      # --------------------------------------------------
-      - name: Clean Android Build
-        run: |
-          cd android
-          ./gradlew clean --no-daemon
-
-      # --------------------------------------------------
-      # 12. بناء Release APK
-      # --------------------------------------------------
       - name: Build Release APK
+        working-directory: android
         run: |
-          cd android
+          ./gradlew assembleRelease --no-daemon --stacktrace
 
-          ./gradlew assembleRelease \
-            --no-daemon \
-            --stacktrace
-
-      # --------------------------------------------------
-      # 13. عرض ملفات APK الناتجة
-      # --------------------------------------------------
-      - name: Find Generated APK
-        if: always()
-        run: |
-          echo "======================================"
-          echo "Generated APK files:"
-          echo "======================================"
-
-          find . -type f -name "*.apk" -print
-
-      # --------------------------------------------------
-      # 14. رفع APK إلى GitHub Actions
-      # --------------------------------------------------
       - name: Upload APK
         if: always()
         uses: actions/upload-artifact@v4
@@ -164,4 +79,3 @@ jobs:
           path: |
             android/app/build/outputs/apk/release/*.apk
             build/app/outputs/flutter-apk/*.apk
-          if-no-files-found: warn
