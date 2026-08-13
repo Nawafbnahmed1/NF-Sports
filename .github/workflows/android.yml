@@ -27,10 +27,10 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Setup Gradle 8.13
+      - name: Setup Gradle 8.14
         uses: gradle/actions/setup-gradle@v4
         with:
-          gradle-version: '8.13'
+          gradle-version: '8.14'
 
       - name: Generate Production Keystore & Properties
         run: |
