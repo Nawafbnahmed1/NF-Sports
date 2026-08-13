@@ -1,10 +1,10 @@
 name: Android APK Build
- 
+
 on:
   push:
     branches:
       - main
- 
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -29,10 +29,18 @@ jobs:
 
       - name: Generate Production Keystore & Properties
         run: |
-          # 🔐 توليد مفتاح الأمان بداخل مجلد الأندرويد الصحيح
-          keytool -genkeypair -v -keystore android/upload-keystore.jks -keyalg RSA -keysize 2048 -validity 10000 -alias upload -storepass "${{ secrets.KEYSTORE_PASSWORD }}" -keypass "${{ secrets.KEYSTORE_PASSWORD }}" -dname "CN=Nawaf, O=NFSports, C=SA"
-          
-          # 📝 إنشاء ملف الخصائص بداخل مجلد android السليم
+          # توليد مفتاح الأمان داخل مجلد Android
+          keytool -genkeypair -v \
+            -keystore android/upload-keystore.jks \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 10000 \
+            -alias upload \
+            -storepass "${{ secrets.KEYSTORE_PASSWORD }}" \
+            -keypass "${{ secrets.KEYSTORE_PASSWORD }}" \
+            -dname "CN=Nawaf, O=NFSports, C=SA"
+
+          # إنشاء key.properties
           cat > android/key.properties <<EOF
           storePassword=${{ secrets.KEYSTORE_PASSWORD }}
           keyPassword=${{ secrets.KEYSTORE_PASSWORD }}
@@ -40,14 +48,25 @@ jobs:
           storeFile=upload-keystore.jks
           EOF
 
-      - name: Build APK
+      - name: Prepare Flutter Project
         run: |
           flutter pub get
           flutter clean
           flutter pub get
+
+      - name: Generate App Icons
+        run: |
           flutter pub run flutter_launcher_icons
+
+      - name: Verify Gradle Wrapper
+        run: |
           cd android
-          gradle wrapper --gradle-version 8.13
+          chmod +x gradlew
+          ./gradlew --version
+
+      - name: Build Release APK
+        run: |
+          cd android
           chmod +x gradlew
           ./gradlew assembleRelease --no-daemon
 
