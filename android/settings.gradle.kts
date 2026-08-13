@@ -5,7 +5,7 @@ pluginManagement {
         file("local.properties").inputStream().use {
             properties.load(it)
         }
-
+ 
         val flutterSdkPath = properties.getProperty("flutter.sdk")
 
         require(flutterSdkPath != null) {
