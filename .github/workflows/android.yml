@@ -46,8 +46,8 @@ jobs:
           flutter clean
           flutter pub get
           flutter pub run flutter_launcher_icons
-          cd android
           gradle wrapper --gradle-version 8.13
+          cd android
           chmod +x gradlew
           ./gradlew assembleRelease --no-daemon
 
